@@ -24,6 +24,8 @@ install_package "git"
 install_package "python3"
 install_package "mysql-client"
 install_package "python-mysqldb"
+install_package "python3-serial"
+install_package "picocom"
 #install_package "python-numpy"
 
 pushd "$HOME/kamstrupd"
