@@ -5,7 +5,7 @@
 import configparser
 import os
 import platform
-# import subprocess
+import shutil
 import sys
 import syslog
 import time
@@ -59,17 +59,14 @@ def do_markdown(flock, fdata):
   uname             = os.uname()
 
   fi = home + "/.kamstrupd.branch"
-  fedefault =
   with open(fi, 'r') as f:
     kamstrupbranch  = f.read().strip('\n')
 
   lock(flock)
+  shutil.copyfile(home + '/' + MYAPP + '/default.md', fdata)
 
-  with open(fdata, 'w') as f:
+  with open(fdata, 'a') as f:
     syslog_trace("writing {0}".format(fdata), False, DEBUG)
-    # YAML header
-    with open(fdefault, 'r') as fhead:
-      f.write = fhead.read()
 
     f.write('![A GNUplot image should be here: kamstrup11.png](img/kamstrup11.png)\n')
     f.write('![A GNUplot image should be here: kamstrup12.png](img/kamstrup12.png)\n')
