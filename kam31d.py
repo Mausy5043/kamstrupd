@@ -87,7 +87,7 @@ class MyDaemon(Daemon):
         syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
         raise
 
-def do_work(stat1):
+def do_work():
   electra1in  = 0
   electra2in  = 0
   powerin     = 0
@@ -148,6 +148,7 @@ def gettelegram():
   while abort == 0:
     try:
       line = "".join(iter(lambda: port.read(1), delim)).strip()
+      line = str(port.readline().strip(), 'utf-8')
       if line == "!":
         abort = 1
       if line != "":
