@@ -5,7 +5,7 @@
 
 ```
 sudo su -
-cd /path/to/where/you/want/store/domod
+cd /path/to/where/you/want/store/kamstrupd
 git clone https://github.com/Mausy5043/kamstrupd.git
 cd kamstrupd
 ./install.sh
