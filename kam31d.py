@@ -147,7 +147,7 @@ def gettelegram():
 
   while abort == 0:
     try:
-      line = "".join(iter(lambda: port.read(1), delim)).strip()
+      # line = "".join(iter(lambda: port.read(1), delim)).strip()
       line = str(port.readline().strip(), 'utf-8')
       if line == "!":
         abort = 1
