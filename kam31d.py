@@ -73,7 +73,7 @@ class MyDaemon(Daemon):
           # not all entries should be float
           # ['3088596', '3030401', '270', '0', '0', '0', '1', '1']
           # averages    = [format(sm / len(data), '.2f') for sm in somma]
-          averages = data
+          averages = data[0]
           syslog_trace("Averages : {0}".format(averages),  False, DEBUG)
           do_report(averages, flock, fdata)
 
