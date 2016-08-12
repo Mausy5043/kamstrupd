@@ -62,18 +62,21 @@ class MyDaemon(Daemon):
         result        = do_work()
         result        = result.split(',')
         syslog_trace("Result   : {0}".format(result), False, DEBUG)
-        data.append(list(map(int, result)))
+        # data.append(list(map(int, result)))
+        data.append([int(d) for d in result])
         if (len(data) > samples):
           data.pop(0)
         syslog_trace("Data     : {0}".format(data),   False, DEBUG)
 
         # report sample average
         if (startTime % reportTime < sampleTime):
-          # somma       = map(sum, zip(*data))
+          # somma       = list(map(sum, zip(*data)))
+          somma = [sum(d) for d in zip(*data)]
           # not all entries should be float
           # ['3088596', '3030401', '270', '0', '0', '0', '1', '1']
           # averages    = [format(sm / len(data), '.2f') for sm in somma]
-          averages = data[0]
+          averages = data[len(data)-1]
+          averages[2]  = int(somma[2] / len(data))
           syslog_trace("Averages : {0}".format(averages),  False, DEBUG)
           do_report(averages, flock, fdata)
 
@@ -81,7 +84,13 @@ class MyDaemon(Daemon):
         if (waitTime > 0):
           syslog_trace("Waiting  : {0}s".format(waitTime), False, DEBUG)
           syslog_trace("................................", False, DEBUG)
-          time.sleep(waitTime)
+          # no need to wait for the next cycles
+          # the meter will pace the meaurements
+          # any required waiting will be inside gettelegram()
+          # time.sleep(waitTime)
+        else:
+          syslog_trace("Behind   : {0}s".format(waitTime), False, DEBUG)
+          syslog_trace("................................", False, DEBUG)
       except Exception:
         syslog_trace("Unexpected error in run()", syslog.LOG_CRIT, DEBUG)
         syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
@@ -143,7 +152,7 @@ def gettelegram():
   # storage space for the telegram
   telegram = []
   # end of line delimiter
-  delim = "\x0a"
+  # delim = "\x0a"
 
   while abort == 0:
     try:
@@ -177,7 +186,7 @@ def do_report(result, flock, fdata):
   outDate  = time.strftime('%Y-%m-%dT%H:%M:%S')
   outEpoch = int(time.strftime('%s'))
   # round to current minute to ease database JOINs
-  outEpoch = outEpoch - (outEpoch % 60)
+  # outEpoch = outEpoch - (outEpoch % 60)
   result   = ', '.join(map(str, result))
   lock(flock)
   with open(fdata, 'a') as f:
