@@ -12,8 +12,13 @@ echo "Waiting 30s..."
 sleep 30
 
 # make sure working tree exists
-if [ ! -d /tmp/kamstrupd ]; then
-  mkdir -p /tmp/kamstrupd
+if [ ! -d /tmp/kamstrupd/site/img ]; then
+  mkdir -p /tmp/kamstrupd/site/img
+  chmod -R 755 /tmp/kamstrupd
+fi
+# make sure working tree exists
+if [ ! -d /tmp/kamstrupd/mysql ]; then
+  mkdir -p /tmp/kamstrupd/mysql
   chmod -R 755 /tmp/kamstrupd
 fi
 
