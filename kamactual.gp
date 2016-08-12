@@ -75,7 +75,7 @@ set format x "%a %d"            # Display time in 24 hour notation on the X axis
 set xrange [ Xw_min : Xw_max ]
 
 # ***************************************************************** Y-axis *****
-set ylabel "Vermogen [kW]"
+set ylabel "Vermogen [W]"
 set yrange [ Ymin : Ymax ]
 
 # ***************************************************************** Legend *****
@@ -96,7 +96,7 @@ set rmargin at screen LMPOS
 
 # ***** PLOT *****
 plot ifnamew \
-      using ($2+utc_offset):5 title " Vermogen [kW]" with points pt 5 ps 0.2 fc rgb "#ccbb0000" \
+      using ($2+utc_offset):5 title " Vermogen [W]" with points pt 5 ps 0.2 fc rgb "#ccbb0000" \
 
 
 
