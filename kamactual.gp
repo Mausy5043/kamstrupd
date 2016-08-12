@@ -6,7 +6,7 @@
 ifnameh = "/tmp/kamstrup/mysql/kamh.csv"
 ifnamed = "/tmp/kamstrup/mysql/kamd.csv"
 ifnamew = "/tmp/kamstrup/mysql/kamw.csv"
-set output "/tmp/kamstrup/site/img/kamstrup11.png"
+set output "/tmp/kamstrupd/site/img/kamstrup11.png"
 
 # ******************************************************* General settings *****
 set terminal png enhanced font "Vera,9" size 1280,320

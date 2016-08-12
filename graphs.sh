@@ -8,7 +8,7 @@ UTC=$(date -u -d "$LOCAL" +"%Y-%m-%d %H:%M:%S")  #remove timezone reference
 UTCSECONDS=$(date -d "$UTC" +%s)
 UTCOFFSET=$((LOCALSECONDS - UTCSECONDS))
 
-pushd "$HOME/lnxdiagd" >/dev/null
+pushd "$HOME/kamstrupd" >/dev/null
   if [ $(wc -l < /tmp/kamstrupd/mysql/kamd.csv) -gt 5 ]; then
     gnuplot -e "utc_offset='${UTCOFFSET}'" ./kamactual.gp &
   fi
