@@ -3,9 +3,9 @@
 # graph of CPU temperature
 
 # datafiles
-ifnameh = "/tmp/kamstrup/mysql/kamh.csv"
-ifnamed = "/tmp/kamstrup/mysql/kamd.csv"
-ifnamew = "/tmp/kamstrup/mysql/kamw.csv"
+ifnameh = "/tmp/kamstrupd/mysql/kamh.csv"
+ifnamed = "/tmp/kamstrupd/mysql/kamd.csv"
+ifnamew = "/tmp/kamstrupd/mysql/kamw.csv"
 set output "/tmp/kamstrupd/site/img/kamstrup11.png"
 
 # ******************************************************* General settings *****
