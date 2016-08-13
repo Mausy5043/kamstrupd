@@ -83,6 +83,7 @@ def do_mv_data(flock, homedir, script):
       syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
   except subprocess.TimeoutExpired:
     syslog_trace("***:  {0}".format(cmnd), syslog.LOG_CRIT, DEBUG)
+    pass
 
 def getsqldata(homedir, nu):
   minit = int(time.strftime('%M'))
