@@ -127,7 +127,7 @@ def do_sql_data(flock, inicnfg, cnsql):
       try:
         sqlcmd = []
         sqlcmd = inicnfg.get(inisect, "sqlcmd")
-        syslog_trace("   {0}".format(sqlcmd), False, DEBUG)
+        syslog_trace("   CMD : {0}".format(sqlcmd), False, DEBUG)
 
         data = cat(ifile).splitlines()
         if data:
