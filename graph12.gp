@@ -86,8 +86,8 @@ set style data boxes
 set style fill solid noborder
 
 plot ifnamed \
-      using ($2+utc_offset):(delta($3+$4)/1000)  title "T1"  fc "yellow"  \
-  ,'' using ($2+utc_offset):(delta($4)/1000)     title "T2"  fc rgb "green"
+      using ($2+utc_offset):(delta($3+$4)/1000)  title "T1"  fc "green"  \
+  ,'' using ($2+utc_offset):(delta($4)/1000)     title "T2"  fc "yellow"
 
 old_x = NaN
 
@@ -118,8 +118,8 @@ set rmargin at screen RMARG
 
 # ***** PLOT *****
 plot ifnameh \
-      using ($2+utc_offset):(delta($3+$4)/1000)  title "T1"  fc "yellow"  \
-  ,'' using ($2+utc_offset):(delta($4)/1000)     title "T2"  fc rgb "green"
+      using ($2+utc_offset):(delta($3+$4)/1000)  title "T1"  fc "green"  \
+  ,'' using ($2+utc_offset):(delta($4)/1000)     title "T2"  fc "yellow"
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #                                                                 FINALIZING
