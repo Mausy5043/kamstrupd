@@ -95,8 +95,8 @@ set style data boxes
 set style fill solid noborder
 
 plot ifnamew \
-      using ($2+utc_offset):((delta($3))+(delta($4)))  title "T2"  fc "yellow"  \
-  ,'' using ($2+utc_offset):(delta($3))                title "T1"  fc rgb "green"
+      using ($2+utc_offset):((delta($3))+(delta($4)))/1000  title "T2"  fc "yellow"  \
+  ,'' using ($2+utc_offset):(delta($3))/1000                title "T1"  fc rgb "green"
 
 old_x = NaN
 
@@ -126,8 +126,8 @@ set rmargin at screen MRPOS
 
 # ***** PLOT *****
 plot ifnamed \
-      using ($2+utc_offset):((delta($3))+(delta($4)))  title "T2"  fc "yellow"  \
-  ,'' using ($2+utc_offset):(delta($3))                title "T1"  fc rgb "green"
+      using ($2+utc_offset):((delta($3))+(delta($4)))/1000  title "T2"  fc "yellow"  \
+  ,'' using ($2+utc_offset):(delta($3))/1000                title "T1"  fc rgb "green"
 old_x = NaN
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -148,10 +148,6 @@ set xtics textcolor rgb "red"
 set ylabel " "
 set ytics format " "
 
-# **************************************************************** Y2-axis *****
-set y2label "Load"
-set y2tics border
-
 # ***************************************************************** Legend *****
 unset key
 
@@ -161,8 +157,8 @@ set rmargin at screen RMARG
 
 # ***** PLOT *****
 plot ifnameh \
-      using ($2+utc_offset):((delta($3))+(delta($4)))  title "T2"  fc "yellow"  \
-  ,'' using ($2+utc_offset):(delta($3))                title "T1"  fc rgb "green"
+      using ($2+utc_offset):((delta($3))+(delta($4)))/1000  title "T2"  fc "yellow"  \
+  ,'' using ($2+utc_offset):(delta($3))/1000                title "T1"  fc rgb "green"
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #                                                                 FINALIZING
