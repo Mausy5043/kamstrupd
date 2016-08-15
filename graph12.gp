@@ -62,7 +62,7 @@ set xrange [ Xw_min : Xw_max ]
 
 # ***************************************************************** Y-axis *****
 set ylabel "Verbruik [kWh/min]"
-#set yrange [ 0 : 100 ]
+set yrange [ 0 : 0.06 ]
 
 # ***************************************************************** Legend *****
 set key opaque box inside top left
