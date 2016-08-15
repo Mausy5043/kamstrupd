@@ -37,22 +37,13 @@ stats ifnameh using 2 name "X" nooutput
 Xh_min = X_min + utc_offset - epoch_compensate
 Xh_max = X_max + utc_offset - epoch_compensate
 
-
-# ********************************************************* Statistics (M) *****
-# stats to be calculated here of column 2 (UX-epoch)
-stats ifnamed using 2 name "X" nooutput
-
-Xd_min = X_min + utc_offset - epoch_compensate
-Xd_max = X_max + utc_offset - epoch_compensate
-
-
 # ********************************************************* Statistics (L) *****
 # stats to be calculated here of column 2 (UX-epoch)
-stats ifnamew using 2 name "X" nooutput
+stats ifnamed using 2 name "X" nooutput
 Xw_min = X_min + utc_offset - epoch_compensate
 Xw_max = X_max + utc_offset - epoch_compensate
 
-set multiplot layout 1, 2 title "Power History ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
+set multiplot layout 1, 2 title "Actueel Verbruik ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
 
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
