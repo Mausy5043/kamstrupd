@@ -5,7 +5,7 @@
 # datafiles
 ifnameh = "/tmp/kamstrupd/mysql/kamh.csv"
 ifnamed = "/tmp/kamstrupd/mysql/kamd.csv"
-ifnamew = "/tmp/kamstrupd/mysql/kamw.csv"
+ifnamew = "/tmp/kamstrupd/mysql/kamwr.csv"
 set output "/tmp/kamstrupd/site/img/kamstrup11.png"
 
 # ******************************************************* General settings *****

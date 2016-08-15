@@ -5,7 +5,6 @@
 # datafiles
 ifnameh = "/tmp/kamstrupd/mysql/kamh.csv"
 ifnamed = "/tmp/kamstrupd/mysql/kamd.csv"
-ifnamew = "/tmp/kamstrupd/mysql/kamw.csv"
 set output "/tmp/kamstrupd/site/img/kamstrup12.png"
 
 # ******************************************************* General settings *****
@@ -53,7 +52,7 @@ stats ifnamew using 2 name "X" nooutput
 Xw_min = X_min + utc_offset - epoch_compensate
 Xw_max = X_max + utc_offset - epoch_compensate
 
-set multiplot layout 1, 3 title "Power History ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
+set multiplot layout 1, 2 title "Power History ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
 
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -64,14 +63,14 @@ set multiplot layout 1, 3 title "Power History ".strftime("( %Y-%m-%dT%H:%M:%S )
 
 
 # ***************************************************************** X-axis *****
-set xlabel "past week"       # X-axis label
+set xlabel "past day"       # X-axis label
 set xdata time               # Data on X-axis should be interpreted as time
 set timefmt "%s"             # Time in log-file is given in Unix format
 set format x "%a %d"            # Display time in 24 hour notation on the X axis
 set xrange [ Xw_min : Xw_max ]
 
 # ***************************************************************** Y-axis *****
-set ylabel "Verbruik [kWh]"
+set ylabel "Verbruik [kWh/min]"
 #set yrange [ 0 : 100 ]
 
 # ***************************************************************** Legend *****
@@ -89,46 +88,16 @@ set key maxcols 2
 #set object 2 rect fc rgb "#ffffff" fillstyle solid 1.0 noborder
 
 set lmargin at screen LMARG
-set rmargin at screen LMPOS
+set rmargin at screen MRPOS
 
 # ***** PLOT *****
 set style data boxes
 set style fill solid noborder
 
-plot ifnamew \
-      using ($2+utc_offset):(delta($3+$4)/1000)  title "T1"  fc "yellow"  \
-  ,'' using ($2+utc_offset):(delta($4)/1000)     title "T2"  fc rgb "green"
-
-old_x = NaN
-
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#                                                     MIDDLE PLOT:  past day
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-# ***************************************************************** X-axis *****
-set xlabel "past day"       # X-axis label
-set xdata time               # Data on X-axis should be interpreted as time
-set timefmt "%s"             # Time in log-file is given in Unix format
-set format x "%R"            # Display time in 24 hour notation on the X axis
-set xrange [ Xd_min : Xd_max ]
-
-# ***************************************************************** Y-axis *****
-set ylabel " "
-set ytics format " "
-
-# ***************************************************************** Legend *****
-unset key
-
-# ***************************************************************** Output *****
-set lmargin at screen LMPOS+0.001
-set rmargin at screen MRPOS
-
-# ***** PLOT *****
 plot ifnamed \
       using ($2+utc_offset):(delta($3+$4)/1000)  title "T1"  fc "yellow"  \
   ,'' using ($2+utc_offset):(delta($4)/1000)     title "T2"  fc rgb "green"
+
 old_x = NaN
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
