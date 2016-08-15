@@ -1,6 +1,6 @@
 #!/usr/bin/env gnuplot
 
-# graph of CPU temperature
+# graph of current power usage
 
 # datafiles
 ifnameh = "/tmp/kamstrupd/mysql/kamh.csv"
