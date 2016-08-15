@@ -10,7 +10,8 @@ UTCOFFSET=$((LOCALSECONDS - UTCSECONDS))
 
 pushd "$HOME/kamstrupd" >/dev/null
   if [ $(wc -l < /tmp/kamstrupd/mysql/kamd.csv) -gt 5 ]; then
-    gnuplot -e "utc_offset='${UTCOFFSET}'" ./kamactual.gp &
+    gnuplot -e "utc_offset='${UTCOFFSET}'" ./graph11.gp &
+    gnuplot -e "utc_offset='${UTCOFFSET}'" ./graph12.gp &
   fi
 
   wait
