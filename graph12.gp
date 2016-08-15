@@ -95,8 +95,8 @@ set style data boxes
 set style fill solid noborder
 
 plot ifnamew \
-      using ($2+utc_offset):((delta($3))+(delta($4)))         title "system"  fc "yellow"         \
-  ,'' using ($2+utc_offset):(delta($3))                title "user"    fc rgb "#ccbb0000"
+      using ($2+utc_offset):((delta($3))+(delta($4)))  title "T2"  fc "yellow"  \
+  ,'' using ($2+utc_offset):(delta($3))                title "T1"  fc rgb "green"
 
 old_x = NaN
 
@@ -126,8 +126,8 @@ set rmargin at screen MRPOS
 
 # ***** PLOT *****
 plot ifnamed \
-      using ($2+utc_offset):((delta($3))+(delta($4)))         title "system"  fc "yellow"         \
-  ,'' using ($2+utc_offset):(delta($3))                title "user"    fc rgb "#ccbb0000"
+      using ($2+utc_offset):((delta($3))+(delta($4)))  title "T2"  fc "yellow"  \
+  ,'' using ($2+utc_offset):(delta($3))                title "T1"  fc rgb "green"
 old_x = NaN
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -161,8 +161,8 @@ set rmargin at screen RMARG
 
 # ***** PLOT *****
 plot ifnameh \
-      using ($2+utc_offset):((delta($3))+(delta($4)))         title "system"  fc "yellow"         \
-  ,'' using ($2+utc_offset):(delta($3))                title "user"    fc rgb "#ccbb0000"
+      using ($2+utc_offset):((delta($3))+(delta($4)))  title "T2"  fc "yellow"  \
+  ,'' using ($2+utc_offset):(delta($3))                title "T1"  fc rgb "green"
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #                                                                 FINALIZING
