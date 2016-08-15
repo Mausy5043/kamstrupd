@@ -22,6 +22,12 @@ LMPOS = 0.40
 MRPOS = 0.73
 RMARG = 0.94
 
+# ************************************************************* Functions ******
+# determine delta data
+delta(x) = ( xD = x - old_x, old_x = x, xD <= 0 ? 0.1 : xD)
+# lg(x)    = ( xL = x, xL == NaN ? NaN : log(xL) )
+old_x = NaN
+
 min(x,y) = (x < y) ? x : y
 max(x,y) = (x > y) ? x : y
 
@@ -89,10 +95,10 @@ set style data boxes
 set style fill solid noborder
 
 plot ifnamew \
-      using ($2+utc_offset):($3+$4)         title "system"  fc "yellow"         \
-  ,'' using ($2+utc_offset):3                title "user"    fc rgb "#ccbb0000"
+      using ($2+utc_offset):((delta($3))+(delta($4)))         title "system"  fc "yellow"         \
+  ,'' using ($2+utc_offset):(delta($3))                title "user"    fc rgb "#ccbb0000"
 
-
+old_x = NaN
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -120,8 +126,9 @@ set rmargin at screen MRPOS
 
 # ***** PLOT *****
 plot ifnamed \
-      using ($2+utc_offset):($3+$4)         fc "yellow"         \
-  ,'' using ($2+utc_offset):3                fc rgb "#ccbb0000"
+      using ($2+utc_offset):((delta($3))+(delta($4)))         title "system"  fc "yellow"         \
+  ,'' using ($2+utc_offset):(delta($3))                title "user"    fc rgb "#ccbb0000"
+old_x = NaN
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -154,8 +161,8 @@ set rmargin at screen RMARG
 
 # ***** PLOT *****
 plot ifnameh \
-      using ($2+utc_offset):($3+$4)         fc "yellow"         \
-  ,'' using ($2+utc_offset):3                fc rgb "#ccbb0000"
+      using ($2+utc_offset):((delta($3))+(delta($4)))         title "system"  fc "yellow"         \
+  ,'' using ($2+utc_offset):(delta($3))                title "user"    fc rgb "#ccbb0000"
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #                                                                 FINALIZING
