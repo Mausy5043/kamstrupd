@@ -57,7 +57,7 @@ set multiplot layout 1, 2 title "Actueel Verbruik ".strftime("( %Y-%m-%dT%H:%M:%
 set xlabel "past day"       # X-axis label
 set xdata time               # Data on X-axis should be interpreted as time
 set timefmt "%s"             # Time in log-file is given in Unix format
-set format x "%a %d"            # Display time in 24 hour notation on the X axis
+set format x "%R"            # Display time in 24 hour notation on the X axis
 set xrange [ Xw_min : Xw_max ]
 
 # ***************************************************************** Y-axis *****
