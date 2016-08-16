@@ -33,23 +33,23 @@ max(x,y) = (x > y) ? x : y
 
 # ********************************************************* Statistics (R) *****
 # stats to be calculated here of column 2 (UX-epoch)
-stats ifnamel using 2 name "X" nooutput
+stats ifnamer using 2 name "X" nooutput
 
-Xh_min = X_min + utc_offset - epoch_compensate
-Xh_max = X_max + utc_offset - epoch_compensate
+Xr_min = X_min + utc_offset - epoch_compensate
+Xr_max = X_max + utc_offset - epoch_compensate
 
 # stats to be calculated here for Y-axes
-#stats ifnamel using (delta($3)) name "Yl1" nooutput
+#stats ifnamer using (delta($3)) name "Yr1" nooutput
 #old_x = NaN
-#stats ifnamel using (delta($4)) name "Yl2" nooutput
+#stats ifnamer using (delta($4)) name "Yr2" nooutput
 #old_x = NaN
 
 # ********************************************************* Statistics (M) *****
 # stats to be calculated here of column 2 (UX-epoch)
 stats ifnamem using 2 name "X" nooutput
 
-Xd_min = X_min + utc_offset - epoch_compensate
-Xd_max = X_max + utc_offset - epoch_compensate
+Xm_min = X_min + utc_offset - epoch_compensate
+Xm_max = X_max + utc_offset - epoch_compensate
 
 # stats to be calculated here for Y-axes
 #stats ifnamem using (delta($3)) name "Ym1" nooutput
@@ -59,14 +59,14 @@ Xd_max = X_max + utc_offset - epoch_compensate
 
 # ********************************************************* Statistics (L) *****
 # stats to be calculated here of column 2 (UX-epoch)
-stats ifnamer using 2 name "X" nooutput
-Xw_min = X_min + utc_offset - epoch_compensate
-Xw_max = X_max + utc_offset - epoch_compensate
+stats ifnamel using 2 name "X" nooutput
+Xl_min = X_min + utc_offset - epoch_compensate
+Xl_max = X_max + utc_offset - epoch_compensate
 
 # stats for Y-axis
-#stats ifnamer using (delta($3)) name "Yr1" nooutput
+#stats ifnamel using (delta($3)) name "Yl1" nooutput
 #old_x = NaN
-#stats ifnamer using (delta($4)) name "Yr2" nooutput
+#stats ifnamel using (delta($4)) name "Yl2" nooutput
 #old_x = NaN
 
 Ymax = 10
@@ -87,7 +87,7 @@ set xlabel "past year"       # X-axis label
 set xdata time               # Data on X-axis should be interpreted as time
 set timefmt "%s"             # Time in log-file is given in Unix format
 set format x "%m-%y"            # Display time in 24 hour notation on the X axis
-set xrange [ Xw_min : Xw_max ]
+set xrange [ Xl_min : Xl_max ]
 
 # ***************************************************************** Y-axis *****
 set ylabel "Verbruik [kWh]"
@@ -131,7 +131,7 @@ set xlabel "past month"       # X-axis label
 set xdata time               # Data on X-axis should be interpreted as time
 set timefmt "%s"             # Time in log-file is given in Unix format
 set format x "%R"            # Display time in 24 hour notation on the X axis
-set xrange [ Xd_min : Xd_max ]
+set xrange [ Xm_min : Xm_max ]
 
 # ***************************************************************** Y-axis *****
 set ylabel " "
@@ -163,7 +163,7 @@ set xlabel "past week"       # X-axis label
 set xdata time               # Data on X-axis should be interpreted as time
 set timefmt "%s"             # Time in log-file is given in Unix format
 set format x "%R"            # Display time in 24 hour notation on the X axis
-set xrange [ Xh_min : Xh_max ]
+set xrange [ Xr_min : Xr_max ]
 set xtics textcolor rgb "red"
 
 # ***************************************************************** Y-axis *****
