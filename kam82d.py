@@ -70,6 +70,7 @@ def do_markdown(flock, fdata):
 
     f.write('![A GNUplot image should be here: kamstrup11.png](img/kamstrup11.png)\n')
     f.write('![A GNUplot image should be here: kamstrup12.png](img/kamstrup12.png)\n')
+    f.write('![A GNUplot image should be here: kamstrup13.png](img/kamstrup13.png)\n')
 
     # System ID
     f.write('!!! ')
