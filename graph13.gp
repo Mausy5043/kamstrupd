@@ -12,14 +12,14 @@ set output "/tmp/kamstrupd/site/img/kamstrup13.png"
 set terminal png enhanced font "Vera,9" size 1280,320
 set datafile separator ';'
 set datafile missing "NaN"    # Ignore missing values
-set grid
+set grid front
 tz_offset = utc_offset / 3600 # GNUplot only works with UTC. Need to compensate
                               # for timezone ourselves.
 if (GPVAL_VERSION == 4.6) {epoch_compensate = 946684800} else {if (GPVAL_VERSION == 5.0) {epoch_compensate = 0}}
 # Positions of split between graphs
 LMARG = 0.06
-LMPOS = 0.40
-MRPOS = 0.73
+LMPOS = 0.425
+MRPOS = 0.71
 RMARG = 0.94
 
 # ************************************************************* Functions ******
@@ -91,7 +91,7 @@ set xrange [ Xl_min : Xl_max ]
 
 # ***************************************************************** Y-axis *****
 set ylabel "Verbruik [kWh]"
-set yrange [ Ymin : Ymax ]
+set yrange [ Ymin : * ]
 
 # ***************************************************************** Legend *****
 set key inside top left horizontal box
@@ -107,7 +107,7 @@ set key reverse Left
 #set object 2 rect fc rgb "#ffffff" fillstyle solid 1.0 noborder
 
 set lmargin at screen LMARG
-set rmargin at screen LMPOS
+set rmargin at screen LMPOS - 0.025
 
 # ***** PLOT *****
 set style data boxes
@@ -130,19 +130,19 @@ old_x = NaN
 set xlabel "past month"       # X-axis label
 set xdata time               # Data on X-axis should be interpreted as time
 set timefmt "%s"             # Time in log-file is given in Unix format
-set format x "%R"            # Display time in 24 hour notation on the X axis
+set format x "wk %W"            # Display time in 24 hour notation on the X axis
 set xrange [ Xm_min : Xm_max ]
 
 # ***************************************************************** Y-axis *****
 set ylabel " "
-set ytics format " "
-set yrange [ Ymin : Ymax ]
+#set ytics format " "
+set yrange [ Ymin : * ]
 
 # ***************************************************************** Legend *****
 unset key
 
 # ***************************************************************** Output *****
-set lmargin at screen LMPOS+0.001
+set lmargin at screen LMPOS + 0.001
 set rmargin at screen MRPOS
 
 # ***** PLOT *****
@@ -162,20 +162,20 @@ old_x = NaN
 set xlabel "past week"       # X-axis label
 set xdata time               # Data on X-axis should be interpreted as time
 set timefmt "%s"             # Time in log-file is given in Unix format
-set format x "%R"            # Display time in 24 hour notation on the X axis
+set format x "%a"            # Display time in 24 hour notation on the X axis
 set xrange [ Xr_min : Xr_max ]
 set xtics textcolor rgb "red"
 
 # ***************************************************************** Y-axis *****
 set ylabel " "
-set ytics format " "
-set yrange [ Ymin : Ymax ]
+#set ytics format " "
+set yrange [ Ymin : * ]
 
 # ***************************************************************** Legend *****
 unset key
 
 # ***************************************************************** Output *****
-set lmargin at screen MRPOS+0.001
+set lmargin at screen MRPOS + 0.021
 set rmargin at screen RMARG
 
 # ***** PLOT *****

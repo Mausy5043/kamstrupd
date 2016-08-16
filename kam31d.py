@@ -76,7 +76,8 @@ class MyDaemon(Daemon):
           # ['3088596', '3030401', '270', '0', '0', '0', '1', '1']
           # averages    = [format(sm / len(data), '.2f') for sm in somma]
           averages = data[len(data)-1]
-          averages[2]  = int(somma[2] / len(data))
+          averages[2]  = int(somma[2] / len(data))  # avg powerin
+          averages[5]  = int(somma[5] / len(data))  # avg powerout
           syslog_trace("Averages : {0}".format(averages),  False, DEBUG)
           do_report(averages, flock, fdata)
 
