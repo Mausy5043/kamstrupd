@@ -86,7 +86,7 @@ set multiplot layout 1, 3 title "Historisch verbruik ".strftime("( %Y-%m-%dT%H:%
 set xlabel "past year"       # X-axis label
 set xdata time               # Data on X-axis should be interpreted as time
 set timefmt "%s"             # Time in log-file is given in Unix format
-set format x "%a %d"            # Display time in 24 hour notation on the X axis
+set format x "%m-%y"            # Display time in 24 hour notation on the X axis
 set xrange [ Xw_min : Xw_max ]
 
 # ***************************************************************** Y-axis *****
@@ -110,7 +110,10 @@ set lmargin at screen LMARG
 set rmargin at screen LMPOS
 
 # ***** PLOT *****
-plot ifnamer \
+set style data boxes
+set style fill solid noborder
+
+plot ifnamel \
       using ($2+utc_offset):(delta($3+$4)/1000)  title "T1"  fc "green"  \
   ,'' using ($2+utc_offset):(delta($4)/1000)     title "T2"  fc "yellow"
 
@@ -176,7 +179,7 @@ set lmargin at screen MRPOS+0.001
 set rmargin at screen RMARG
 
 # ***** PLOT *****
-plot ifnamel \
+plot ifnamer \
       using ($2+utc_offset):(delta($3+$4)/1000)  title "T1"  fc "green"  \
   ,'' using ($2+utc_offset):(delta($4)/1000)     title "T2"  fc "yellow"
 
