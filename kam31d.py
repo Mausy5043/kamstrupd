@@ -190,6 +190,7 @@ def do_report(result, flock, fdata):
   # outEpoch = outEpoch - (outEpoch % 60)
   result   = ', '.join(map(str, result))
   lock(flock)
+  syslog_trace("   @: {0}s".format(outDate), False, DEBUG)
   with open(fdata, 'a') as f:
     f.write('{0}, {1}, {2}\n'.format(outDate, outEpoch, result))
   unlock(flock)
