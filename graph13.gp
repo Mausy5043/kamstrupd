@@ -114,8 +114,8 @@ set style data boxes
 set style fill solid noborder
 
 plot ifnamel \
-      using ($2+utc_offset):(delta($3+$4)/1000)  title "T1"  fc "green"  \
-  ,'' using ($2+utc_offset):(delta($4)/1000)     title "T2"  fc "yellow"
+      using ($2+utc_offset):(delta($3+$4)/1000)  title "T2"  fc "yellow"  \
+  ,'' using ($2+utc_offset):(delta($3)/1000)     title "T1"  fc "green"
 
 old_x = NaN
 
@@ -147,8 +147,8 @@ set rmargin at screen MRPOS
 
 # ***** PLOT *****
 plot ifnamem \
-      using ($2+utc_offset):(delta($3+$4)/1000)  title "T1"  fc "green"  \
-  ,'' using ($2+utc_offset):(delta($4)/1000)     title "T2"  fc "yellow"
+      using ($2+utc_offset):(delta($3+$4)/1000)  title "T2"  fc "yellow"  \
+  ,'' using ($2+utc_offset):(delta($3)/1000)     title "T1"  fc "green"
 
 old_x = NaN
 
@@ -180,8 +180,8 @@ set rmargin at screen RMARG
 
 # ***** PLOT *****
 plot ifnamer \
-      using ($2+utc_offset):(delta($3+$4)/1000)  title "T1"  fc "green"  \
-  ,'' using ($2+utc_offset):(delta($4)/1000)     title "T2"  fc "yellow"
+      using ($2+utc_offset):(delta($3+$4)/1000)  title "T2"  fc "yellow"  \
+  ,'' using ($2+utc_offset):(delta($3)/1000)     title "T1"  fc "green"
 
 old_x = NaN
 
