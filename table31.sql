@@ -16,7 +16,8 @@ CREATE TABLE `kamstrup` (
   `powerout`      int(11),
   `tarif`         int(11),
   `swits`         int(11),
-  PRIMARY KEY (`sample_time`)
+  PRIMARY KEY (`sample_time`),
+  INDEX (`sample_epoch`)
   ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ;
 
 # T1* and T2* are stored in [Wh]
