@@ -1,5 +1,5 @@
 # KAMSTRUPd
-
+[![Code Issues](https://www.quantifiedcode.com/api/v1/project/ecdc07e898b848238e982bdb6958c6dc/badge.svg)](https://www.quantifiedcode.com/app/project/ecdc07e898b848238e982bdb6958c6dc)
 
 ## Installing
 
