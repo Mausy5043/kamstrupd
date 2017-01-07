@@ -98,6 +98,9 @@ def do_writesample(cnsql, cmd, sample):
       syslog_trace(" Execution of MySQL command {0} FAILED!".format(cmd), syslog.LOG_INFO, DEBUG)
       syslog_trace(" Not added to MySQLdb: {0}".format(dat), syslog.LOG_INFO, DEBUG)
     pass
+  except mdb.OperationalError:
+    syslog_trace("DB error : {0}".format(sys.exc_info()[1]), syslog.LOG_ERR,  DEBUG)
+    pass
 
   return fail2write
 
