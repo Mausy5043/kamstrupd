@@ -100,6 +100,10 @@ def do_writesample(cnsql, cmd, sample):
     pass
   except mdb.OperationalError:
     syslog_trace("DB error : {0}".format(sys.exc_info()[1]), syslog.LOG_ERR,  DEBUG)
+    fail2write = True
+    if cursql:
+      cursql.close()
+      syslog_trace(" *** Closed MySQL connection in do_writesample() ***", syslog.LOG_ERR, DEBUG)
     pass
 
   return fail2write
@@ -171,6 +175,7 @@ def syslog_trace(trace, logerr, out2console):
       syslog.syslog(logerr, line)
     if line and out2console:
       print(line)
+
 
 if __name__ == "__main__":
   daemon = MyDaemon('/tmp/' + MYAPP + '/' + MYID + '.pid')
