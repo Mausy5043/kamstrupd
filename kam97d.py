@@ -104,7 +104,7 @@ def do_writesample(cnsql, cmd, sample):
     if cursql:
       cursql.close()
       syslog_trace(" *** Closed MySQL connection in do_writesample() ***", syslog.LOG_ERR, DEBUG)
-    pass
+    raise
 
   return fail2write
 
