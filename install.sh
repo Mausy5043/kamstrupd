@@ -45,6 +45,16 @@ install_package "libmysqlclient-dev"
 # install_package "python-mysqldb"  # only required by python 2
 sudo pip3 install mysqlclient
 
+echo "Install common python functions..."
+pushd /tmp
+  git clone https://github.com/Mausy5043/mausy5043-common-python.git
+  # set permissions
+  chmod -R 0755 /tmp/mausy5043-common-python
+  pushd /tmp/mausy5043-common-python
+    sudo ./setup.py install
+  popd
+popd
+
 pushd "$HOME/kamstrupd"
   # To suppress git detecting changes by chmod:
   git config core.fileMode false
