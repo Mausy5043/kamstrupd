@@ -10,7 +10,7 @@ import syslog
 import time
 import traceback
 
-from libdaemon import Daemon
+from mausy5043libs.libdaemon3 import Daemon
 from random import randrange as rnd
 
 # constants
