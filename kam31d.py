@@ -21,7 +21,6 @@ MYID        = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split(
 MYAPP       = os.path.realpath(__file__).split('/')[-2]
 NODE        = os.uname()[1]
 
-
 port = serial.Serial()
 port.baudrate = 9600
 port.bytesize = serial.SEVENBITS
@@ -32,6 +31,9 @@ port.rtscts = 0
 port.dsrdtr = 0
 port.timeout = 15
 port.port = "/dev/ttyUSB0"
+
+# initialise logging
+syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
 
 class MyDaemon(Daemon):
   def run(self):

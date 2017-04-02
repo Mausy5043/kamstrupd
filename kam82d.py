@@ -20,6 +20,9 @@ MYID        = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split(
 MYAPP       = os.path.realpath(__file__).split('/')[-2]
 NODE        = os.uname()[1]
 
+# initialise logging
+syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
+
 class MyDaemon(Daemon):
   def run(self):
     iniconf         = configparser.ConfigParser()

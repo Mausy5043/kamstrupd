@@ -23,6 +23,9 @@ SQLMNT      = rnd(0, 59)
 SQLHR       = rnd(0, 23)
 SQLHRM      = rnd(0, 59)
 
+# initialise logging
+syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
+
 class MyDaemon(Daemon):
   def run(self):
     iniconf         = configparser.ConfigParser()
