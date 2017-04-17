@@ -88,7 +88,7 @@ def do_mv_data(flock, homedir, script):
     syslog_trace("***TIMEOUT***:  {0}".format(cmnd), syslog.LOG_ERR, DEBUG)
     pass
   except subprocess.CalledProcessError:
-    syslog_trace("***ERROR***:  {0}".format(cmnd), syslog.LOG_ERR, DEBUG)
+    syslog_trace("***ERROR***:    {0}".format(cmnd), syslog.LOG_ERR, DEBUG)
     time.sleep(16*60)             # wait 16 minutes for the router to restart.
     pass
 
@@ -143,6 +143,7 @@ def syslog_trace(trace, logerr, out2console):
       syslog.syslog(logerr, line)
     if line and out2console:
       print(line)
+
 
 if __name__ == "__main__":
   daemon = MyDaemon('/tmp/' + MYAPP + '/' + MYID + '.pid')
