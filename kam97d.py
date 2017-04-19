@@ -97,7 +97,7 @@ def do_writesample(cnsql, cmd, sample):
     syslog_trace("DB error : {0}".format(e.__str__), syslog.LOG_ERR,  DEBUG)
     if cursql:
       cursql.close()
-      syslog_trace(" *** Closed MySQL connection in do_writesample() ***", syslog.LOG_ERR, DEBUG)
+      syslog_trace(" *I* Closed MySQL connection in do_writesample() ***", syslog.LOG_ERR, DEBUG)
       syslog_trace(" Execution of MySQL command {0} FAILED!".format(cmd), syslog.LOG_INFO, DEBUG)
       syslog_trace(" Not added to MySQLdb: {0}".format(dat), syslog.LOG_INFO, DEBUG)
     pass
@@ -106,7 +106,7 @@ def do_writesample(cnsql, cmd, sample):
     fail2write = True
     if cursql:
       cursql.close()
-      syslog_trace(" *** Closed MySQL connection in do_writesample() ***", syslog.LOG_ERR, DEBUG)
+      syslog_trace(" *O* Closed MySQL connection in do_writesample() ***", syslog.LOG_ERR, DEBUG)
     raise
 
   return fail2write
