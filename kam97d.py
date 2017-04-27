@@ -93,21 +93,27 @@ def do_writesample(cnsql, cmd, sample):
     cursql.execute(cmd, dat)
     cnsql.commit()
     cursql.close()
-  except mdb.IntegrityError as e:
-    syslog_trace("DB error : {0}".format(e.__str__), syslog.LOG_ERR,  DEBUG)
+  except mdb.IntegrityError:
+    syslog_trace(" ***** MySQL ERROR *****", syslog.LOG_ERR, DEBUG)
+    syslog_trace(" *** DB error : {0}".format(sys.exc_info()[1]), syslog.LOG_ERR,  DEBUG)
     if cursql:
       cursql.close()
-      syslog_trace(" *I* Closed MySQL connection in do_writesample() ***", syslog.LOG_ERR, DEBUG)
-      syslog_trace(" Execution of MySQL command {0} FAILED!".format(cmd), syslog.LOG_INFO, DEBUG)
-      syslog_trace(" Not added to MySQLdb: {0}".format(dat), syslog.LOG_INFO, DEBUG)
+      syslog_trace(" *I* Closed MySQL connection in do_writesample()", syslog.LOG_ERR, DEBUG)
+      syslog_trace(" *** Execution of MySQL command {0} FAILED!".format(cmd), syslog.LOG_ERR, DEBUG)
+      syslog_trace(" *** Not added to MySQLdb: {0}".format(dat), syslog.LOG_ERR, DEBUG)
+      syslog_trace(" ***** MySQL ERROR *****", syslog.LOG_ERR, DEBUG)
     pass
   except mdb.OperationalError:
-    syslog_trace("DB error : {0}".format(sys.exc_info()[1]), syslog.LOG_ERR,  DEBUG)
+    syslog_trace(" ***** MySQL ERROR *****", syslog.LOG_ERR, DEBUG)
+    syslog_trace(" *** DB error : {0}".format(sys.exc_info()[1]), syslog.LOG_ERR,  DEBUG)
     fail2write = True
     if cursql:
       cursql.close()
-      syslog_trace(" *O* Closed MySQL connection in do_writesample() ***", syslog.LOG_ERR, DEBUG)
-    raise
+      syslog_trace(" *O* Closed MySQL connection in do_writesample()", syslog.LOG_ERR, DEBUG)
+      syslog_trace(" *** Execution of MySQL command {0} FAILED!".format(cmd), syslog.LOG_ERR, DEBUG)
+      syslog_trace(" *** Not added to MySQLdb: {0}".format(dat), syslog.LOG_ERR, DEBUG)
+      syslog_trace(" ***** MySQL ERROR *****", syslog.LOG_ERR, DEBUG)
+    pass
 
   return fail2write
 
