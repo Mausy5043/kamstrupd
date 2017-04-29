@@ -66,7 +66,7 @@ def do_markdown(flock, fdata):
   with open(fi, 'r') as f:
     kamstrupbranch  = f.read().strip('\n')
 
-  lock(flock)
+  mf.lock(flock)
   shutil.copyfile(home + '/' + MYAPP + '/default.md', fdata)
 
   with open(fdata, 'a') as f:
@@ -83,14 +83,7 @@ def do_markdown(flock, fdata):
     # branch
     f.write('!!! kamstrupd   on: ' + kamstrupbranch + '\n\n')
 
-  unlock(flock)
-
-def lock(fname):
-  open(fname, 'a').close()
-
-def unlock(fname):
-  if os.path.isfile(fname):
-    os.remove(fname)
+  mf.unlock(flock)
 
 def syslog_trace(trace, logerr, out2console):
   # Log a python stack trace to syslog
@@ -100,6 +93,7 @@ def syslog_trace(trace, logerr, out2console):
       syslog.syslog(logerr, line)
     if line and out2console:
       print(line)
+
 
 if __name__ == "__main__":
   daemon = MyDaemon('/tmp/' + MYAPP + '/' + MYID + '.pid')

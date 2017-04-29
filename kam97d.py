@@ -122,9 +122,9 @@ def do_sql_data(flock, inicnfg, cnsql):
   syslog_trace("============================", False, DEBUG)
   syslog_trace("Pushing data to MySQL-server", False, DEBUG)
   syslog_trace("============================", False, DEBUG)
-  unlock(flock)  # remove stale lock
+  mf.unlock(flock)  # remove stale lock
   time.sleep(2)
-  lock(flock)
+  mf.lock(flock)
   # wait for all other processes to release their locks.
   count_internal_locks = 2
   while (count_internal_locks > 1):
@@ -166,16 +166,7 @@ def do_sql_data(flock, inicnfg, cnsql):
       syslog_trace("*3* {0}".format(e.__str__), False, DEBUG)
 
   # endfor
-  unlock(flock)
-
-def lock(fname):
-  open(fname, 'a').close()
-  syslog_trace("!..LOCK", False, DEBUG)
-
-def unlock(fname):
-  if os.path.isfile(fname):
-    os.remove(fname)
-    syslog_trace("!..UNLOCK", False, DEBUG)
+  mf.unlock(flock)
 
 def syslog_trace(trace, logerr, out2console):
   # Log a python stack trace to syslog

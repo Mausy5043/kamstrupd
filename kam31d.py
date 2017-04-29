@@ -192,18 +192,11 @@ def do_report(result, flock, fdata):
   # round to current minute to ease database JOINs
   # outEpoch = outEpoch - (outEpoch % 60)
   result   = ', '.join(map(str, result))
-  lock(flock)
+  mf.lock(flock)
   syslog_trace("   @: {0}s".format(outDate), False, DEBUG)
   with open(fdata, 'a') as f:
     f.write('{0}, {1}, {2}\n'.format(outDate, outEpoch, result))
-  unlock(flock)
-
-def lock(fname):
-  open(fname, 'a').close()
-
-def unlock(fname):
-  if os.path.isfile(fname):
-    os.remove(fname)
+  mf.unlock(flock)
 
 def syslog_trace(trace, logerr, out2console):
   # Log a python stack trace to syslog
@@ -213,6 +206,7 @@ def syslog_trace(trace, logerr, out2console):
       syslog.syslog(logerr, line)
     if line and out2console:
       print(line)
+
 
 if __name__ == "__main__":
   daemon = MyDaemon('/tmp/' + MYAPP + '/' + MYID + '.pid')
