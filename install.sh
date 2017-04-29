@@ -4,6 +4,8 @@
 # a `*boot` repo.
 
 ME=$(whoami)
+required_commonlibversion="0.4.1"
+commonlibbranch="v0_4"
 
 echo -n "Started installing KAMSTRUPd on "; date
 minit=$(echo $RANDOM/555 |bc)
@@ -45,15 +47,25 @@ install_package "libmysqlclient-dev"
 # install_package "python-mysqldb"  # only required by python 2
 sudo pip3 install mysqlclient
 
-echo "Install common python functions..."
-pushd /tmp
-  git clone https://github.com/Mausy5043/mausy5043-common-python.git
-  # set permissions
-  chmod -R 0755 /tmp/mausy5043-common-python
-  pushd /tmp/mausy5043-common-python
-    sudo ./setup.py install
+commonlibversion=$(pip3 freeze |grep mausy5043 |cut -c 26-)
+if [ $commonlibversion != $required_commonlibversion ]; then
+  echo "Install common python functions..."
+  sudo pip3 uninstall -y mausy5043-common-python
+  pushd /tmp
+    git clone https://github.com/Mausy5043/mausy5043-common-python.git
+    # set permissions
+    chmod -R 0755 /tmp/mausy5043-common-python
+    pushd /tmp/mausy5043-common-python
+      git checkout $commonlibbranch
+      sudo ./setup.py install
+    popd
+    sudo rm -rf mausy5043-common-python/
   popd
-popd
+  echo
+  echo -n "Installed: "
+  pip3 freeze | grep mausy5043
+  echo
+fi
 
 pushd "$HOME/kamstrupd"
   # To suppress git detecting changes by chmod:
