@@ -8,8 +8,8 @@ HOSTNAME=$(cat /etc/hostname)
 branch=$(cat "$HOME/.kamstrupd.branch")
 
 # Wait for the daemons to finish their job. Prevents stale locks when restarting.
-echo "Waiting 30s..."
-sleep 30
+#echo "Waiting 30s..."
+#sleep 30
 
 # make sure working tree exists
 if [ ! -d /tmp/kamstrupd/site/img ]; then
