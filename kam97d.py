@@ -78,13 +78,6 @@ class MyDaemon(Daemon):
           mf.syslog_trace(" *** Closed MySQL connection in run() ***", syslog.LOG_CRIT, DEBUG)
         raise
 
-def cat(filename):
-  ret = ""
-  if os.path.isfile(filename):
-    with open(filename, 'r') as f:
-      ret = f.read().strip('\n')
-  return ret
-
 def do_writesample(cnsql, cmd, sample):
   fail2write  = False
   dat         = (sample.split(', '))
@@ -146,7 +139,7 @@ def do_sql_data(flock, inicnfg, cnsql):
         sqlcmd = inicnfg.get(inisect, "sqlcmd")
         mf.syslog_trace("   CMD : {0}".format(sqlcmd), False, DEBUG)
 
-        data = cat(ifile).splitlines()
+        data = mf.cat(ifile).splitlines()
         if data:
           for entry in range(0, len(data)):
             errsql = do_writesample(cnsql, sqlcmd, data[entry])
