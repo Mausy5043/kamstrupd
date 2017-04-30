@@ -5,6 +5,7 @@
 import configparser
 import glob
 import MySQLdb as mdb
+import MySQLdb.constants.CR as mdbcr
 import os
 import sys
 import syslog
@@ -97,7 +98,7 @@ def do_writesample(cnsql, cmd, sample):
       mf.syslog_trace(" *** Not added to MySQLdb: {0}".format(dat), syslog.LOG_ERR, DEBUG)
       mf.syslog_trace(" ***** MySQL ERROR *****", syslog.LOG_ERR, DEBUG)
     pass
-  except mdb.OperationalError:
+  except mdb.OperationalError as e:
     mf.syslog_trace(" ***** MySQL ERROR *****", syslog.LOG_ERR, DEBUG)
     mf.syslog_trace(" *** DB error : {0}".format(sys.exc_info()[1]), syslog.LOG_ERR,  DEBUG)
     fail2write = True
@@ -107,7 +108,11 @@ def do_writesample(cnsql, cmd, sample):
       mf.syslog_trace(" *** Execution of MySQL command {0} FAILED!".format(cmd), syslog.LOG_ERR, DEBUG)
       mf.syslog_trace(" *** Not added to MySQLdb: {0}".format(dat), syslog.LOG_ERR, DEBUG)
       mf.syslog_trace(" ***** MySQL ERROR *****", syslog.LOG_ERR, DEBUG)
-    raise
+    if e.args[0] in (mdbcr.SERVER_GONE_ERROR, mdbcr.SERVER_LOST):
+      time.sleep(17*60)             # wait 17 minutes for the server to return.
+      raise
+    else:
+      pass
 
   return fail2write
 
