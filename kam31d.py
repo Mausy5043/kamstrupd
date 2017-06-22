@@ -82,7 +82,8 @@ class MyDaemon(Daemon):
           averages[2]  = int(somma[2] / len(data))  # avg powerin
           averages[5]  = int(somma[5] / len(data))  # avg powerout
           mf.syslog_trace("Averages : {0}".format(averages),  False, DEBUG)
-          do_report(averages, flock, fdata)
+          if averages[0] > 0:
+            do_report(averages, flock, fdata)
 
         waitTime    = sampleTime - (time.time() - startTime) - (startTime % sampleTime)
         if (waitTime > 0):
