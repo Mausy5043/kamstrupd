@@ -13,17 +13,17 @@ fi
 pushd "$HOME/kamstrupd" >/dev/null
   #week (per hour = 60')
   interval="INTERVAL 8 DAY "
-  mysql -h sql.lan --skip-column-names -e "USE domotica; SELECT * FROM kamstrup where (sample_time >=NOW() - $interval);" | sed 's/\t/;/g;s/\n//g' |\
+  mysql -h sql --skip-column-names -e "USE domotica; SELECT * FROM kamstrup where (sample_time >=NOW() - $interval);" | sed 's/\t/;/g;s/\n//g' |\
   awk 'NR % 60 == 0' > "$datastore/kamwr.csv"
 
   #month (per day =  1440')
   interval="INTERVAL 32 DAY "
-  mysql -h sql.lan --skip-column-names -e "USE domotica; SELECT * FROM kamstrup where (sample_time >=NOW() - $interval);" | sed 's/\t/;/g;s/\n//g' |\
+  mysql -h sql --skip-column-names -e "USE domotica; SELECT * FROM kamstrup where (sample_time >=NOW() - $interval);" | sed 's/\t/;/g;s/\n//g' |\
   awk 'NR % 1440 == 0' > "$datastore/kammr.csv"
   # 24h*60m = 1440m
   #year (per week = 10080')
   interval="INTERVAL 370 DAY "
-  mysql -h sql.lan --skip-column-names -e "USE domotica; SELECT * FROM kamstrup where (sample_time >=NOW() - $interval);" | sed 's/\t/;/g;s/\n//g' |\
+  mysql -h sql --skip-column-names -e "USE domotica; SELECT * FROM kamstrup where (sample_time >=NOW() - $interval);" | sed 's/\t/;/g;s/\n//g' |\
   awk 'NR % 10080 == 0' > "$datastore/kamyr.csv"
   # 7d*24h*60m = 10080m
   #http://www.sitepoint.com/understanding-sql-joins-mysql-database/
