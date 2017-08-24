@@ -12,7 +12,8 @@ import syslog
 import time
 import traceback
 
-from libdaemon import Daemon
+from mausy5043libs.libdaemon3 import Daemon
+import mausy5043funcs.fileops3 as mf
 
 # constants
 DEBUG       = False
@@ -20,7 +21,6 @@ IS_JOURNALD = os.path.isfile('/bin/journalctl')
 MYID        = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split('/')[-1])))
 MYAPP       = os.path.realpath(__file__).split('/')[-2]
 NODE        = os.uname()[1]
-
 
 port = serial.Serial()
 port.baudrate = 9600
@@ -33,14 +33,17 @@ port.dsrdtr = 0
 port.timeout = 15
 port.port = "/dev/ttyUSB0"
 
+# initialise logging
+syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
+
 class MyDaemon(Daemon):
   def run(self):
     iniconf         = configparser.ConfigParser()
     inisection      = MYID
     home            = os.path.expanduser('~')
     s               = iniconf.read(home + '/' + MYAPP + '/config.ini')
-    syslog_trace("Config file   : {0}".format(s), False, DEBUG)
-    syslog_trace("Options       : {0}".format(iniconf.items(inisection)), False, DEBUG)
+    mf.syslog_trace("Config file   : {0}".format(s), False, DEBUG)
+    mf.syslog_trace("Options       : {0}".format(iniconf.items(inisection)), False, DEBUG)
     reportTime      = iniconf.getint(inisection, "reporttime")
     cycles          = iniconf.getint(inisection, "cycles")
     samplesperCycle = iniconf.getint(inisection, "samplespercycle")
@@ -61,12 +64,12 @@ class MyDaemon(Daemon):
 
         result        = do_work()
         result        = result.split(',')
-        syslog_trace("Result   : {0}".format(result), False, DEBUG)
+        mf.syslog_trace("Result   : {0}".format(result), False, DEBUG)
         # data.append(list(map(int, result)))
         data.append([int(d) for d in result])
         if (len(data) > samples):
           data.pop(0)
-        syslog_trace("Data     : {0}".format(data),   False, DEBUG)
+        mf.syslog_trace("Data     : {0}".format(data),   False, DEBUG)
 
         # report sample average
         if (startTime % reportTime < sampleTime):
@@ -78,23 +81,24 @@ class MyDaemon(Daemon):
           averages = data[-1]
           averages[2]  = int(somma[2] / len(data))  # avg powerin
           averages[5]  = int(somma[5] / len(data))  # avg powerout
-          syslog_trace("Averages : {0}".format(averages),  False, DEBUG)
-          do_report(averages, flock, fdata)
+          mf.syslog_trace("Averages : {0}".format(averages),  False, DEBUG)
+          if averages[0] > 0:
+            do_report(averages, flock, fdata)
 
         waitTime    = sampleTime - (time.time() - startTime) - (startTime % sampleTime)
         if (waitTime > 0):
-          syslog_trace("Waiting  : {0}s".format(waitTime), False, DEBUG)
-          syslog_trace("................................", False, DEBUG)
+          mf.syslog_trace("Waiting  : {0}s".format(waitTime), False, DEBUG)
+          mf.syslog_trace("................................", False, DEBUG)
           # no need to wait for the next cycles
           # the meter will pace the meaurements
           # any required waiting will be inside gettelegram()
           # time.sleep(waitTime)
         else:
-          syslog_trace("Behind   : {0}s".format(waitTime), False, DEBUG)
-          syslog_trace("................................", False, DEBUG)
+          mf.syslog_trace("Behind   : {0}s".format(waitTime), False, DEBUG)
+          mf.syslog_trace("................................", False, DEBUG)
       except Exception:
-        syslog_trace("Unexpected error in run()", syslog.LOG_CRIT, DEBUG)
-        syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+        mf.syslog_trace("Unexpected error in run()", syslog.LOG_CRIT, DEBUG)
+        mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
         raise
 
 def do_work():
@@ -164,8 +168,8 @@ def gettelegram():
       if line != "":
         telegram.append(line)
     except Exception:
-      syslog_trace("*** Serialport read error:", syslog.LOG_CRIT, DEBUG)
-      syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+      mf.syslog_trace("*** Serialport read error:", syslog.LOG_CRIT, DEBUG)
+      mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
       abort = 2
 
     loops2go = loops2go - 1
@@ -189,27 +193,12 @@ def do_report(result, flock, fdata):
   # round to current minute to ease database JOINs
   # outEpoch = outEpoch - (outEpoch % 60)
   result   = ', '.join(map(str, result))
-  lock(flock)
-  syslog_trace("   @: {0}s".format(outDate), False, DEBUG)
+  mf.lock(flock)
+  mf.syslog_trace("   @: {0}s".format(outDate), False, DEBUG)
   with open(fdata, 'a') as f:
     f.write('{0}, {1}, {2}\n'.format(outDate, outEpoch, result))
-  unlock(flock)
+  mf.unlock(flock)
 
-def lock(fname):
-  open(fname, 'a').close()
-
-def unlock(fname):
-  if os.path.isfile(fname):
-    os.remove(fname)
-
-def syslog_trace(trace, logerr, out2console):
-  # Log a python stack trace to syslog
-  log_lines = trace.split('\n')
-  for line in log_lines:
-    if line and logerr:
-      syslog.syslog(logerr, line)
-    if line and out2console:
-      print(line)
 
 if __name__ == "__main__":
   daemon = MyDaemon('/tmp/' + MYAPP + '/' + MYID + '.pid')
@@ -224,7 +213,7 @@ if __name__ == "__main__":
       # assist with debugging.
       print("Debug-mode started. Use <Ctrl>+C to stop.")
       DEBUG = True
-      syslog_trace("Daemon logging is ON", syslog.LOG_DEBUG, DEBUG)
+      mf.syslog_trace("Daemon logging is ON", syslog.LOG_DEBUG, DEBUG)
       daemon.run()
     else:
       print("Unknown command")

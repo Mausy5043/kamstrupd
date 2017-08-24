@@ -8,8 +8,8 @@ HOSTNAME=$(cat /etc/hostname)
 branch=$(cat "$HOME/.kamstrupd.branch")
 
 # Wait for the daemons to finish their job. Prevents stale locks when restarting.
-echo "Waiting 30s..."
-sleep 30
+#echo "Waiting 30s..."
+#sleep 30
 
 # make sure working tree exists
 if [ ! -d /tmp/kamstrupd/site/img ]; then
@@ -32,7 +32,7 @@ pushd "$HOME/kamstrupd"
   git checkout "$branch"
   git reset --hard "origin/$branch" && git clean -f -d
   # Set permissions
-  chmod -R 744 ./*
+  # chmod -R 744 ./*
 
   for fname in $DIFFLIST; do
     echo ">   $fname was updated from GIT"
@@ -45,19 +45,19 @@ pushd "$HOME/kamstrupd"
     fi
 
     # LIBDAEMON.PY changed
-    if [[ "$fname" == "libdaemon.py" ]]; then
-      echo "  ! Diagnostic library changed"
-      echo "  o Restarting all kam daemons"
-      for daemon in $kamlist; do
-        echo "  +- Restart kam$daemon"
-        eval "./kam$daemon"d.py restart
-      done
-      echo "  o Restarting all service daemons"
-      for daemon in $srvclist; do
-        echo "  +- Restart kam$daemon"
-        eval "./kam$daemon"d.py restart
-      done
-    fi
+    #if [[ "$fname" == "libdaemon.py" ]]; then
+    #  echo "  ! Diagnostic library changed"
+    #  echo "  o Restarting all kam daemons"
+    #  for daemon in $kamlist; do
+    #    echo "  +- Restart kam$daemon"
+    #    eval "./kam$daemon"d.py restart
+    #  done
+    #  echo "  o Restarting all service daemons"
+    #  for daemon in $srvclist; do
+    #    echo "  +- Restart kam$daemon"
+    #    eval "./kam$daemon"d.py restart
+    #  done
+    #fi
 
     #CONFIG.INI changed
     if [[ "$fname" == "config.ini" ]]; then
