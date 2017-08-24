@@ -23,12 +23,12 @@ pushd "$HOME/kamstrupd" >/dev/null
   time mysql -h sql --skip-column-names -e       \
   "USE domotica;                             \
    SELECT MIN(sample_epoch),                 \
-          MAX(T1in)                          \
-          MAX(T2in)                          \
+          MAX(T1in),                         \
+          MAX(T2in),                         \
           AVG(powerin)                       \
     FROM kamstrup                            \
     WHERE (sample_time >=NOW() - $interval)  \
-    GROUP_BY (sample_epoch DIV 60)           \
+    GROUP BY (sample_epoch DIV 60)           \
    ;"                                        \
   | sed 's/\t/;/g;s/\n//g' > "$datastore/kamh2.csv"
 
