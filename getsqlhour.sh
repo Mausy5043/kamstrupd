@@ -12,7 +12,7 @@ interval="INTERVAL 70 MINUTE "
 # host=$(hostname)
 
 pushd "$HOME/kamstrupd" >/dev/null
-  mysql -h sql --skip-column-names -e       \
+  time mysql -h sql --skip-column-names -e       \
   "USE domotica;                            \
   SELECT *                                  \
   FROM kamstrup                             \
