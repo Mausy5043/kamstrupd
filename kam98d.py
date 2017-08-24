@@ -23,6 +23,11 @@ NODE        = os.uname()[1]
 SQLMNT      = rnd(0, 59)
 SQLHR       = rnd(0, 23)
 SQLHRM      = rnd(0, 59)
+SQL_UPDATE_HOUR   = 6   # in minutes (shouldn't be shorter than GRAPH_UPDATE)
+SQL_UPDATE_DAY    = 20  # in minutes
+SQL_UPDATE_WEEK   = 4   # in hours
+SQL_UPDATE_YEAR   = 8   # in hours
+GRAPH_UPDATE      = 6   # in minutes
 
 # initialise logging
 syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
@@ -66,9 +71,10 @@ def do_mv_data(flock, homedir, script):
   # unlock(flock)  # remove stale lock
   time.sleep(4)
   minit = int(time.strftime('%M'))
+  nowur = int(time.strftime('%H'))
 
   # Retrieve data from MySQL database
-  getsqldata(homedir, False)
+  getsqldata(homedir, minit, nowur, False)
 
   # Create the graphs based on the MySQL data every 3rd minute
   if ((minit % 3) == 0):
@@ -94,24 +100,30 @@ def do_mv_data(flock, homedir, script):
     time.sleep(17*60)             # wait 17 minutes for the router to restart.
     pass
 
-def getsqldata(homedir, nu):
-  minit = int(time.strftime('%M'))
-  nowur = int(time.strftime('%H'))
-  # data of last hour is updated every 3 minutes
-  if ((minit % 3) == 0):
-    cmnd = homedir + '/' + MYAPP + '/getsqlhour.sh'
+def getsqldata(homedir, minit, nowur, nu):
+  # minit = int(time.strftime('%M'))
+  # nowur = int(time.strftime('%H'))
+  # data of last hour is updated every <SQL_UPDATE_HOUR> minutes
+  if ((minit % SQL_UPDATE_HOUR) == 0) or nu:
+    cmnd = homedir + '/' + MYAPP + '/queries/hour.sh'
     mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
     cmnd = subprocess.call(cmnd)
     mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
-  # data of the last day is updated every 30 minutes
-  if nu or ((minit % 30) == (SQLMNT % 30)):
-    cmnd = homedir + '/' + MYAPP + '/getsqlday.sh'
+  # data of the last day is updated every <SQL_UPDATE_DAY> minutes
+  if ((minit % SQL_UPDATE_DAY) == (SQLMNT % SQL_UPDATE_DAY)) or nu:
+    cmnd = homedir + '/' + MYAPP + '/queries/day.sh'
     mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
     cmnd = subprocess.call(cmnd)
     mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
-  # dat of the last week is updated every 4 hours
-  if nu or ((nowur % 4) == (SQLHR % 4) and (minit == SQLHRM)):
-    cmnd = homedir + '/' + MYAPP + '/getsqlweek.sh'
+  # data of the last week is updated every <SQL_UPDATE_WEEK> hours
+  if ((nowur % SQL_UPDATE_WEEK) == (SQLHR % SQL_UPDATE_WEEK) and (minit == SQLHRM)) or nu:
+    cmnd = homedir + '/' + MYAPP + '/queries/week.sh'
+    mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
+    cmnd = subprocess.call(cmnd)
+    mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
+  # data of the last year is updated at 01:xx
+  if (nowur == SQL_UPDATE_YEAR and minit == SQL_UPDATE_DAY) or nu:
+    cmnd = homedir + '/' + MYAPP + '/queries/year.sh'
     mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
     cmnd = subprocess.call(cmnd)
     mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
