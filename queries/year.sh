@@ -13,15 +13,15 @@ fi
 pushd "$HOME/kamstrupd" >/dev/null
   #year (per week = 10080')
   # 7d*24h*60m = 10080m
-  interval="INTERVAL 370 DAY "
-  time mysql -h sql --skip-column-names -e     \
-  "USE domotica;                          \
-  SELECT *                                \
-  FROM kamstrup                           \
-  WHERE (sample_time >=NOW() - $interval) \
-  ;"                                      \
-  | sed 's/\t/;/g;s/\n//g'                \
-  | awk 'NR % 10080 == 0' > "$datastore/kamyr.csv"
+  # interval="INTERVAL 370 DAY "
+  # time mysql -h sql --skip-column-names -e     \
+  # "USE domotica;                          \
+  # SELECT *                                \
+  # FROM kamstrup                           \
+  # WHERE (sample_time >=NOW() - $interval) \
+  # ;"                                      \
+  # | sed 's/\t/;/g;s/\n//g'                \
+  # | awk 'NR % 10080 == 0' > "$datastore/kamyr.csv"
 
   time mysql -h sql --skip-column-names -e       \
   "USE domotica;                             \
