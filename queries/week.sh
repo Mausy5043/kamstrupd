@@ -54,7 +54,9 @@ pushd "$HOME/kamstrupd" >/dev/null
           AVG(powerin)                       \
     FROM kamstrup                            \
     WHERE (sample_time >=NOW() - $interval)  \
-    GROUP BY (sample_epoch DIV 86400)        \
+    GROUP BY YEAR(sample_time),              \
+             MONTH(sample_time),             \
+             DAY(sample_time)                \
    ;"                                        \
   | sed 's/\t/;/g;s/\n//g' > "$datastore/kamm2.csv"
 
