@@ -12,13 +12,13 @@ interval="INTERVAL 30 HOUR "
 # host=$(hostname)
 
 pushd "$HOME/kamstrupd" >/dev/null
-  time mysql -h sql --skip-column-names -e     \
-  "USE domotica;                          \
-  SELECT *                                \
-  FROM kamstrup                           \
-  WHERE (sample_time >=NOW() - $interval) \
-  ;"                                      \
-  | sed 's/\t/;/g;s/\n//g' > "$datastore/kamd.csv"
+  # time mysql -h sql --skip-column-names -e     \
+  # "USE domotica;                          \
+  # SELECT *                                \
+  # FROM kamstrup                           \
+  # WHERE (sample_time >=NOW() - $interval) \
+  # ;"                                      \
+  # | sed 's/\t/;/g;s/\n//g' > "$datastore/kamd.csv"
 
   time mysql -h sql --skip-column-names -e       \
   "USE domotica;                             \
