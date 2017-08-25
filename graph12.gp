@@ -3,8 +3,8 @@
 # graph of power usage history
 
 # datafiles
-ifnameh = "/tmp/kamstrupd/mysql/kamh.csv"
-ifnamed = "/tmp/kamstrupd/mysql/kamd.csv"
+ifnameh = "/tmp/kamstrupd/mysql/kamh2.csv"
+ifnamed = "/tmp/kamstrupd/mysql/kamd2.csv"
 set output "/tmp/kamstrupd/site/img/kamstrup12.png"
 
 # ******************************************************* General settings *****
@@ -32,14 +32,14 @@ max(x,y) = (x > y) ? x : y
 
 # ********************************************************* Statistics (R) *****
 # stats to be calculated here of column 2 (UX-epoch)
-stats ifnameh using 2 name "X" nooutput
+stats ifnameh using 1 name "X" nooutput
 
 Xh_min = X_min + utc_offset - epoch_compensate
 Xh_max = X_max + utc_offset - epoch_compensate
 
 # ********************************************************* Statistics (L) *****
 # stats to be calculated here of column 2 (UX-epoch)
-stats ifnamed using 2 name "X" nooutput
+stats ifnamed using 1 name "X" nooutput
 Xw_min = X_min + utc_offset - epoch_compensate
 Xw_max = X_max + utc_offset - epoch_compensate
 
@@ -61,8 +61,8 @@ set format x "%R"            # Display time in 24 hour notation on the X axis
 set xrange [ Xw_min : Xw_max ]
 
 # ***************************************************************** Y-axis *****
-set ylabel "Verbruik [kWh/min]"
-set yrange [ 0 : 0.06 ]
+set ylabel "Verbruik [kWh]"
+#set yrange [ 0 : 0.06 ]
 
 # ***************************************************************** Legend *****
 set key opaque box inside top left
@@ -86,8 +86,8 @@ set style data boxes
 set style fill solid noborder
 
 plot ifnamed \
-      using ($2+utc_offset):(delta($3+$4)/1000)  title "T1"  fc "green"  \
-  ,'' using ($2+utc_offset):(delta($4)/1000)     title "T2"  fc "yellow"
+      using ($1+utc_offset):(delta($2+$3)/1000)  title "T1"  fc "green"  \
+  ,'' using ($1+utc_offset):(delta($3)/1000)     title "T2"  fc "yellow"
 
 old_x = NaN
 
@@ -118,8 +118,8 @@ set rmargin at screen RMARG
 
 # ***** PLOT *****
 plot ifnameh \
-      using ($2+utc_offset):(delta($3+$4)/1000)  title "T1"  fc "green"  \
-  ,'' using ($2+utc_offset):(delta($4)/1000)     title "T2"  fc "yellow"
+      using ($1+utc_offset):(delta($2+$3)/1000)  title "T1"  fc "green"  \
+  ,'' using ($1+utc_offset):(delta($3)/1000)     title "T2"  fc "yellow"
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #                                                                 FINALIZING

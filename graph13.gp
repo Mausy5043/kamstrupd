@@ -3,9 +3,9 @@
 # graph of current power usage
 
 # datafiles
-ifnamel = "/tmp/kamstrupd/mysql/kamyr.csv"
-ifnamem = "/tmp/kamstrupd/mysql/kammr.csv"
-ifnamer = "/tmp/kamstrupd/mysql/kamwr.csv"
+ifnamel = "/tmp/kamstrupd/mysql/kamy2.csv"
+ifnamem = "/tmp/kamstrupd/mysql/kamm2.csv"
+ifnamer = "/tmp/kamstrupd/mysql/kamw2.csv"
 set output "/tmp/kamstrupd/site/img/kamstrup13.png"
 
 # ******************************************************* General settings *****
@@ -33,7 +33,7 @@ max(x,y) = (x > y) ? x : y
 
 # ********************************************************* Statistics (R) *****
 # stats to be calculated here of column 2 (UX-epoch)
-stats ifnamer using 2 name "X" nooutput
+stats ifnamer using 1 name "X" nooutput
 
 Xr_min = X_min + utc_offset - epoch_compensate
 Xr_max = X_max + utc_offset - epoch_compensate
@@ -46,7 +46,7 @@ Xr_max = X_max + utc_offset - epoch_compensate
 
 # ********************************************************* Statistics (M) *****
 # stats to be calculated here of column 2 (UX-epoch)
-stats ifnamem using 2 name "X" nooutput
+stats ifnamem using 1 name "X" nooutput
 
 Xm_min = X_min + utc_offset - epoch_compensate
 Xm_max = X_max + utc_offset - epoch_compensate
@@ -59,7 +59,7 @@ Xm_max = X_max + utc_offset - epoch_compensate
 
 # ********************************************************* Statistics (L) *****
 # stats to be calculated here of column 2 (UX-epoch)
-stats ifnamel using 2 name "X" nooutput
+stats ifnamel using 1 name "X" nooutput
 Xl_min = X_min + utc_offset - epoch_compensate
 Xl_max = X_max + utc_offset - epoch_compensate
 
@@ -114,8 +114,8 @@ set style data boxes
 set style fill solid noborder
 
 plot ifnamel \
-      using ($2+utc_offset):(delta($3+$4)/1000)  title "T2"  fc "yellow"  \
-  ,'' using ($2+utc_offset):(delta($3)/1000)     title "T1"  fc "green"
+      using ($1+utc_offset):(delta($2+$3)/1000)  title "T2"  fc "yellow"  \
+  ,'' using ($1+utc_offset):(delta($2)/1000)     title "T1"  fc "green"
 
 old_x = NaN
 
@@ -147,8 +147,8 @@ set rmargin at screen MRPOS
 
 # ***** PLOT *****
 plot ifnamem \
-      using ($2+utc_offset):(delta($3+$4)/1000)  title "T2"  fc "yellow"  \
-  ,'' using ($2+utc_offset):(delta($3)/1000)     title "T1"  fc "green"
+      using ($1+utc_offset):(delta($2+$3)/1000)  title "T2"  fc "yellow"  \
+  ,'' using ($1+utc_offset):(delta($2)/1000)     title "T1"  fc "green"
 
 old_x = NaN
 
@@ -180,8 +180,8 @@ set rmargin at screen RMARG
 
 # ***** PLOT *****
 plot ifnamer \
-      using ($2+utc_offset):(delta($3+$4)/1000)  title "T2"  fc "yellow"  \
-  ,'' using ($2+utc_offset):(delta($3)/1000)     title "T1"  fc "green"
+      using ($1+utc_offset):(delta($2+$3)/1000)  title "T2"  fc "yellow"  \
+  ,'' using ($1+utc_offset):(delta($2)/1000)     title "T1"  fc "green"
 
 old_x = NaN
 
