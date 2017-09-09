@@ -34,6 +34,6 @@ pushd "$HOME/kamstrupd" >/dev/null
     GROUP BY YEAR(sample_time),              \
              WEEK(sample_time, 3)            \
    ;"                                        \
-  | sed 's/\t/;/g;s/\n//g' > "$datastore/kamy2.csv"
+  | sed 's/\t/;/g;s/\n//g' | sort -t ";" -k 1 > "$datastore/kamy2.csv"
 
 popd >/dev/null
