@@ -32,7 +32,7 @@ pushd "$HOME/kamstrupd" >/dev/null
     FROM kamstrup                            \
     WHERE (sample_time >=NOW() - $interval)  \
     GROUP BY YEAR(sample_time),              \
-             WEEK(sample_time, 1)            \
+             WEEK(sample_time, 3)            \
    ;"                                        \
   | sed 's/\t/;/g;s/\n//g' > "$datastore/kamy2.csv"
 
