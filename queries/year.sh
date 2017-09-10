@@ -13,7 +13,7 @@ fi
 pushd "$HOME/kamstrupd" >/dev/null
   #year (per week = 10080')
   # 7d*24h*60m = 10080m
-  interval="INTERVAL 370 DAY "
+  interval="INTERVAL 400 DAY "
   # time mysql -h sql --skip-column-names -e     \
   # "USE domotica;                          \
   # SELECT *                                \
