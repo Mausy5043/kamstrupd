@@ -9,7 +9,7 @@ UTCSECONDS=$(date -d "$UTC" +%s)
 UTCOFFSET=$((LOCALSECONDS - UTCSECONDS))
 
 pushd "$HOME/kamstrupd" >/dev/null
-  if [ $(wc -l < /tmp/kamstrupd/mysql/kamd.csv) -gt 5 ]; then
+  if [ $(wc -l < /tmp/kamstrupd/mysql/kamd2.csv) -gt 5 ]; then
     time gnuplot -e "utc_offset='${UTCOFFSET}'" ./graph11.gp &
     time gnuplot -e "utc_offset='${UTCOFFSET}'" ./graph12.gp &
     time gnuplot -e "utc_offset='${UTCOFFSET}'" ./graph13.gp &
