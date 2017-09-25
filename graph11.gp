@@ -96,7 +96,7 @@ set rmargin at screen LMPOS
 
 # ***** PLOT *****
 plot ifnamew \
-      using ($1+utc_offset):4 title " Vermogen [W]" with lines lw 0.1 fc rgb "#ccbb0000"
+      using ($1+utc_offset):4 title " Vermogen [W]" with lines lw 0.1 lc rgb "#ccbb0000"
       # with points pt 5 ps 0.2 fc rgb "#ccbb0000" \
 
 
@@ -128,7 +128,7 @@ set rmargin at screen MRPOS
 
 # ***** PLOT *****
 plot ifnamed \
-      using ($1+utc_offset):4 with lines lw 0.1 fc rgb "#ccbb0000"
+      using ($1+utc_offset):4 with lines lw 0.1 lc rgb "#ccbb0000"
       # with points pt 5 ps 0.2 fc rgb "#ccbb0000" \
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -159,7 +159,7 @@ set rmargin at screen RMARG
 
 # ***** PLOT *****
 plot ifnameh \
-      using ($1+utc_offset):4 with lines lw 0.1 fc rgb "#ccbb0000"
+      using ($1+utc_offset):4 with lines lw 0.1 lc rgb "#ccbb0000"
       # with points pt 5 ps 0.2 fc rgb "#ccbb0000" \
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
