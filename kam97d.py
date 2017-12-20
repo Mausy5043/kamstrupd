@@ -65,7 +65,7 @@ class MyDaemon(Daemon):
 
         do_sql_data(flock, iniconf, consql)
 
-        waitTime    = sampleTime - (time.time() - startTime) - (startTime % sampleTime)
+        waitTime    = sampleTime - (time.time() - startTime) # - (startTime % sampleTime)
         if (waitTime > 0):
           mf.syslog_trace("Waiting  : {0}s".format(waitTime), False, DEBUG)
           mf.syslog_trace("................................", False, DEBUG)
