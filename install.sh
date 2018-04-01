@@ -55,12 +55,12 @@ install_package "libmysqlclient-dev"
 sudo pip3 install mysqlclient
 
 commonlibversion=$(pip3 freeze |grep mausy5043 |cut -c 26-)
-if [ "$commonlibversion" != "$required_commonlibversion" ]; then
+if [ "${commonlibversion}" != "${required_commonlibversion}" ]; then
   echo "Install common python functions..."
   sudo pip3 uninstall -y mausy5043-common-python
-  pushd /tmp
-    git clone -b $commonlibbranch https://github.com/Mausy5043/mausy5043-common-python.git
-    pushd /tmp/mausy5043-common-python
+  pushd /tmp || exit 1
+    git clone -b "${commonlibbranch}" https://github.com/Mausy5043/mausy5043-common-python.git
+    pushd /tmp/mausy5043-common-python || exit 1
       sudo ./setup.py install
     popd
     sudo rm -rf mausy5043-common-python/
