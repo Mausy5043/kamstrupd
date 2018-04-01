@@ -53,10 +53,12 @@ install_package "mysql-client"
 # install_package "libmysqlclient-dev"  # not available in stretch
 install_package "libmariadbclient-dev"
 # install_package "python-mysqldb"      # only required by python 2
+echo; echo "*********************************************************"
 sudo pip3 install mysqlclient
 
 commonlibversion=$(pip3 freeze |grep mausy5043 |cut -c 26-)
 if [ "${commonlibversion}" != "${required_commonlibversion}" ]; then
+  echo; echo "*********************************************************"
   echo "Install common python functions..."
   sudo pip3 uninstall -y mausy5043-common-python
   pushd /tmp || exit 1
@@ -89,4 +91,5 @@ pushd "$HOME/kamstrupd"
   echo "@reboot               $ME    sleep 10; $HOME/kamstrupd/update.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
 popd
 
+echo; echo "*********************************************************"
 echo -n "Finished installation of KAMSTRUPd on "; date
