@@ -66,6 +66,19 @@ class MyDaemon(Daemon):
         mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
         raise
 
+class SqlDataFetcher(object):
+  """
+  SqlDataFetcher:
+  Manages retrieval of data from the MySQL server
+  """
+  def __init__(self, arg):
+    super(SqlDataFetcher, self).__init__()
+    self.arg = arg
+    self.h_dataisstale = True
+    self.w_dataisstale = True
+    self.m_dataisstale = True
+    self.y_dataisstale = True
+
 def do_mv_data(flock, homedir, script):
   # wait 4 seconds for processes to finish
   # unlock(flock)  # remove stale lock
