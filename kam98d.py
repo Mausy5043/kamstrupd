@@ -133,7 +133,8 @@ class Graph(object):
   def __init__(self, updatetime):
     super(Graph, self).__init__()
     self.home = os.environ['HOME']
-    self.updatetime = updatetime
+    self.updatetime = updatetime * 60
+    self.timer      = time.time() + rnd(60, self.updatetime)
     self.command = self.home + '/' + MYAPP + '/mkgraphs.sh'
 
   def make(self):
