@@ -20,11 +20,11 @@ IS_JOURNALD = os.path.isfile('/bin/journalctl')
 MYID        = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split('/')[-1])))
 MYAPP       = os.path.realpath(__file__).split('/')[-2]
 NODE        = os.uname()[1]
-SQL_UPDATE_HOUR   = 6   # in minutes (shouldn't be shorter than GRAPH_UPDATE)
+GRAPH_UPDATE      = 6   # in minutes
+SQL_UPDATE_HOUR   = GRAPH_UPDATE   # in minutes (shouldn't be shorter than GRAPH_UPDATE)
 SQL_UPDATE_DAY    = 20  # in minutes
 SQL_UPDATE_WEEK   = 4   # in hours
 SQL_UPDATE_YEAR   = 8   # in hours
-GRAPH_UPDATE      = 6   # in minutes
 
 # initialise logging
 syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
@@ -72,25 +72,25 @@ class SqlDataFetch(object):
   def __init__(self, h_time, d_time, w_time, y_time):
     super(SqlDataFetch, self).__init__()
     self.home           = os.environ['HOME']
-    self.h_dataisstale  = True
-    self.h_cmd          = self.home + '/' + MYAPP + '/queries/hour.sh'
-    self.h_updatetime   = h_time
-    self.h_timer        = []
-    self.d_dataisstale  = True
-    self.d_cmd          = self.home + '/' + MYAPP + '/queries/day.sh'
-    self.d_updatetime   = d_time
-    self.d_timer        = []
-    self.w_dataisstale  = True
-    self.w_cmd          = self.home + '/' + MYAPP + '/queries/week.sh'
-    self.w_updatetime   = w_time
-    self.w_timer        = []
-    self.y_dataisstale  = True
-    self.y_cmd          = self.home + '/' + MYAPP + '/queries/year.sh'
-    self.y_updatetime   = y_time
-    self.y_timer        = []
     self.sqlmnt         = rnd(0, 59)
     self.sqlhr          = rnd(0, 23)
     self.sqlhrm         = rnd(0, 59)
+    self.h_dataisstale  = True
+    self.h_cmd          = self.home + '/' + MYAPP + '/queries/hour.sh'
+    self.h_updatetime   = h_time * 60
+    self.h_timer        = time.time() + rnd(60, self.h_updatetime)
+    self.d_dataisstale  = True
+    self.d_cmd          = self.home + '/' + MYAPP + '/queries/day.sh'
+    self.d_updatetime   = d_time * 60
+    self.d_timer        = time.time() + rnd(60, self.d_updatetime)
+    self.w_dataisstale  = True
+    self.w_cmd          = self.home + '/' + MYAPP + '/queries/week.sh'
+    self.w_updatetime   = w_time * 3600
+    self.w_timer        = time.time() + rnd(60, self.w_updatetime)
+    self.y_dataisstale  = True
+    self.y_cmd          = self.home + '/' + MYAPP + '/queries/year.sh'
+    self.y_updatetime   = y_time * 3600
+    self.y_timer        = time.time() + rnd(60, self.y_updatetime)
 
   def get(self, cmnd):
     """
@@ -104,24 +104,30 @@ class SqlDataFetch(object):
     """
     Manage staleness of the data and get it when needed.
     """
-    minit = int(time.strftime('%M'))
-    nowur = int(time.strftime('%H'))
     t0 = time.time()
-    self.h_dataisstale = self.get(self.h_cmd)
-    t1 = time.time()
-    dt = t1 - t0
-    t0 = t1
-    self.d_dataisstale = self.get(self.d_cmd)
-    t1 = time.time()
-    dt = t1 - t0
-    t0 = t1
-    self.w_dataisstale = self.get(self.w_cmd)
-    t1 = time.time()
-    dt = t1 - t0
-    t0 = t1
-    self.y_dataisstale = self.get(self.y_cmd)
-    t1 = time.time()
-    dt = t1 - t0
+    if t0 >= self.h_timer:
+      self.h_dataisstale = self.get(self.h_cmd)
+      t1 = time.time()
+      self.h_timer = t1 + self.h_updatetime
+      dt = t1 - t0  # determine query duration
+      t0 = t1
+    if t0 >= self.d_timer:
+      self.d_dataisstale = self.get(self.d_cmd)
+      t1 = time.time()
+      self.h_timer = t1 + self.d_updatetime
+      dt = t1 - t0  # determine query duration
+      t0 = t1
+    if t0 >= self.w_timer:
+      self.w_dataisstale = self.get(self.w_cmd)
+      t1 = time.time()
+      self.h_timer = t1 + self.w_updatetime
+      dt = t1 - t0  # determine query duration
+      t0 = t1
+    if t0 >= self.y_timer:
+      self.y_dataisstale = self.get(self.y_cmd)
+      t1 = time.time()
+      self.h_timer = t1 + self.y_updatetime
+      dt = t1 - t0  # determine query duration
 
 class Graph(object):
   """docstring for Graph."""
@@ -135,6 +141,7 @@ class Graph(object):
     if ((int(time.strftime('%M')) % self.updatetime) == 0):
       mf.syslog_trace("...:  {0}".format(self.command), False, DEBUG)
       return subprocess.call(self.command)
+    return 1
 
 def do_stuff(flock, homedir, script):
   # wait 4 seconds for processes to finish
@@ -148,8 +155,8 @@ def do_stuff(flock, homedir, script):
   # Create the graphs based on the MySQL data every 3rd minute
   result = trendgraph.make()
   mf.syslog_trace("...:  {0}".format(result), False, DEBUG)
-
-  upload_page(script)
+  if (result == 0):
+    upload_page(script)
 
 def upload_page(script):
   try:
@@ -168,34 +175,6 @@ def upload_page(script):
     mf.syslog_trace("***ERROR***:    {0}".format(cmnd), syslog.LOG_ERR, DEBUG)
     time.sleep(17*60)             # wait 17 minutes for the router to restart.
     pass
-
-def getsqldata(homedir, minit, nowur, nu):
-  # minit = int(time.strftime('%M'))
-  # nowur = int(time.strftime('%H'))
-  # data of last hour is updated every <SQL_UPDATE_HOUR> minutes
-  if ((minit % SQL_UPDATE_HOUR) == 0) or nu:
-    cmnd = homedir + '/' + MYAPP + '/queries/hour.sh'
-    mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
-    cmnd = subprocess.call(cmnd)
-    mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
-  # data of the last day is updated every <SQL_UPDATE_DAY> minutes
-  if ((minit % SQL_UPDATE_DAY) == (SQLMNT % SQL_UPDATE_DAY)) or nu:
-    cmnd = homedir + '/' + MYAPP + '/queries/day.sh'
-    mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
-    cmnd = subprocess.call(cmnd)
-    mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
-  # data of the last week is updated every <SQL_UPDATE_WEEK> hours
-  if ((nowur % SQL_UPDATE_WEEK) == (SQLHR % SQL_UPDATE_WEEK) and (minit == SQLHRM)) or nu:
-    cmnd = homedir + '/' + MYAPP + '/queries/week.sh'
-    mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
-    cmnd = subprocess.call(cmnd)
-    mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
-  # data of the last year is updated at 01:xx
-  if (nowur == SQL_UPDATE_YEAR and minit == SQL_UPDATE_DAY) or nu:
-    cmnd = homedir + '/' + MYAPP + '/queries/year.sh'
-    mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
-    cmnd = subprocess.call(cmnd)
-    mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
 
 def write_lftp(script):
   with open(script, 'w') as f:
