@@ -106,25 +106,25 @@ class SqlDataFetch(object):
     if t0 >= self.h_timer:
       self.h_dataisstale = self.get(self.h_cmd)
       t1 = time.time()
-      self.h_timer = t1 + self.h_updatetime
+      self.h_timer = t1 + self.h_updatetime + rnd(-60, 60)
       # dt = t1 - t0  # determine query duration
       t0 = t1
     if t0 >= self.d_timer:
       self.d_dataisstale = self.get(self.d_cmd)
       t1 = time.time()
-      self.d_timer = t1 + self.d_updatetime
+      self.d_timer = t1 + self.d_updatetime + rnd(-60, 60)
       # dt = t1 - t0  # determine query duration
       t0 = t1
     if t0 >= self.w_timer:
       self.w_dataisstale = self.get(self.w_cmd)
       t1 = time.time()
-      self.w_timer = t1 + self.w_updatetime
+      self.w_timer = t1 + self.w_updatetime + rnd(-60, 60)
       # dt = t1 - t0  # determine query duration
       t0 = t1
     if t0 >= self.y_timer:
       self.y_dataisstale = self.get(self.y_cmd)
       t1 = time.time()
-      self.y_timer = t1 + self.y_updatetime
+      self.y_timer = t1 + self.y_updatetime + rnd(-60, 60)
       # dt = t1 - t0  # determine query duration
     return time.time() - ts
 
