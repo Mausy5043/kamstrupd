@@ -77,36 +77,38 @@ class SqlDataFetch(object):
     self.h_dataisstale = True
     self.h_cmd = self.home + '/' + MYAPP + '/queries/hour.sh'
     self.h_updatetime = h_time
-    self.h_
+    self.h_timer = []
     self.d_dataisstale = True
     self.d_cmd = self.home + '/' + MYAPP + '/queries/day.sh'
     self.d_updatetime = d_time
+    self.d_timer = []
     self.w_dataisstale = True
     self.w_cmd = self.home + '/' + MYAPP + '/queries/week.sh'
     self.w_updatetime = w_time
+    self.w_timer = []
     self.y_dataisstale = True
     self.y_cmd = self.home + '/' + MYAPP + '/queries/year.sh'
     self.y_updatetime = y_time
+    self.y_timer = []
 
-  def get(self, cmnd, stalestate):
+  def get(self, cmnd):
     """
-    Get the requested data provided it is stale.
+    Get the requested data.
     """
-    if stalestate:
-      mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
-      result = subprocess.call(cmnd)
-      mf.syslog_trace("...:  {0}".format(result), False, DEBUG)
-      if result == 0:
-        stalestate = False
-    return stalestate
+    mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
+    result = subprocess.call(cmnd)
+    return not (result == 0)  # return False if successful == data nolonger stale
 
   def fetch(self):
     """
-    Refresh stale data at defined intervals.
+    Manage staleness of the data and get it when needed.
     """
     minit = int(time.strftime('%M'))
     nowur = int(time.strftime('%H'))
-    self.h_dataisstale = self.get(self.h_cmd, self.h_dataisstale)
+    self.h_dataisstale = self.get(self.h_cmd)
+    self.d_dataisstale = self.get(self.d_cmd)
+    self.w_dataisstale = self.get(self.w_cmd)
+    self.y_dataisstale = self.get(self.y_cmd)
 
 class Graph(object):
   """docstring for Graph."""
@@ -121,7 +123,6 @@ class Graph(object):
       mf.syslog_trace("...:  {0}".format(self.command), False, DEBUG)
       return subprocess.call(self.command)
 
-
 def do_stuff(flock, homedir, script):
   # wait 4 seconds for processes to finish
   # unlock(flock)  # remove stale lock
@@ -135,6 +136,9 @@ def do_stuff(flock, homedir, script):
   result = trendgraph.make()
   mf.syslog_trace("...:  {0}".format(result), False, DEBUG)
 
+  upload_page(script)
+
+def upload_page(script):
   try:
     # Upload the webpage and graphs
     if os.path.isfile('/tmp/' + MYAPP + '/site/default.md'):
