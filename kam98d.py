@@ -20,9 +20,9 @@ IS_JOURNALD = os.path.isfile('/bin/journalctl')
 MYID        = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split('/')[-1])))
 MYAPP       = os.path.realpath(__file__).split('/')[-2]
 NODE        = os.uname()[1]
-GRAPH_UPDATE      = 6   # in minutes
+GRAPH_UPDATE      = 10   # in minutes
 SQL_UPDATE_HOUR   = GRAPH_UPDATE   # in minutes (shouldn't be shorter than GRAPH_UPDATE)
-SQL_UPDATE_DAY    = 20  # in minutes
+SQL_UPDATE_DAY    = 27  # in minutes
 SQL_UPDATE_WEEK   = 4   # in hours
 SQL_UPDATE_YEAR   = 8   # in hours
 
