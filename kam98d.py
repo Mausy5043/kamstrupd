@@ -33,7 +33,8 @@ GRAPH_UPDATE      = 6   # in minutes
 syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
 
 class MyDaemon(Daemon):
-  def run(self):
+  @staticmethod
+  def run():
     iniconf         = configparser.ConfigParser()
     inisection      = MYID
     home            = os.path.expanduser('~')
@@ -45,7 +46,6 @@ class MyDaemon(Daemon):
     reportTime      = iniconf.getint(inisection, "reporttime")
     samplesperCycle = iniconf.getint(inisection, "samplespercycle")
     flock           = iniconf.get(inisection, "lockfile")
-
     scriptname      = iniconf.get(inisection, "lftpscript")
 
     sampleTime      = reportTime/samplesperCycle         # time [s] between samples
@@ -54,7 +54,7 @@ class MyDaemon(Daemon):
       try:
         startTime   = time.time()
 
-        do_mv_data(flock, home, scriptname)
+        do_stuff(flock, home, scriptname)
 
         waitTime    = sampleTime - (time.time() - startTime) - (startTime % sampleTime)
         if (waitTime > 0):
@@ -66,35 +66,74 @@ class MyDaemon(Daemon):
         mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
         raise
 
-class SqlDataFetcher(object):
+class SqlDataFetch(object):
   """
-  SqlDataFetcher:
+  SqlDataFetch:
   Manages retrieval of data from the MySQL server
   """
-  def __init__(self, arg):
-    super(SqlDataFetcher, self).__init__()
-    self.arg = arg
+  def __init__(self, h_time, d_time, w_time, y_time):
+    super(SqlDataFetch, self).__init__()
+    self.home = os.environ['HOME']
     self.h_dataisstale = True
+    self.h_cmd = self.home + '/' + MYAPP + '/queries/hour.sh'
+    self.h_updatetime = h_time
+    self.h_
+    self.d_dataisstale = True
+    self.d_cmd = self.home + '/' + MYAPP + '/queries/day.sh'
+    self.d_updatetime = d_time
     self.w_dataisstale = True
-    self.m_dataisstale = True
+    self.w_cmd = self.home + '/' + MYAPP + '/queries/week.sh'
+    self.w_updatetime = w_time
     self.y_dataisstale = True
+    self.y_cmd = self.home + '/' + MYAPP + '/queries/year.sh'
+    self.y_updatetime = y_time
 
-def do_mv_data(flock, homedir, script):
+  def get(self, cmnd, stalestate):
+    """
+    Get the requested data provided it is stale.
+    """
+    if stalestate:
+      mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
+      result = subprocess.call(cmnd)
+      mf.syslog_trace("...:  {0}".format(result), False, DEBUG)
+      if result == 0:
+        stalestate = False
+    return stalestate
+
+  def fetch(self):
+    """
+    Refresh stale data at defined intervals.
+    """
+    minit = int(time.strftime('%M'))
+    nowur = int(time.strftime('%H'))
+    self.h_dataisstale = self.get(self.h_cmd, self.h_dataisstale)
+
+class Graph(object):
+  """docstring for Graph."""
+  def __init__(self, updatetime):
+    super(Graph, self).__init__()
+    self.home = os.environ['HOME']
+    self.updatetime = updatetime
+    self.command = self.home + '/' + MYAPP + '/mkgraphs.sh'
+
+  def make(self):
+    if ((int(time.strftime('%M')) % self.updatetime) == 0):
+      mf.syslog_trace("...:  {0}".format(self.command), False, DEBUG)
+      return subprocess.call(self.command)
+
+
+def do_stuff(flock, homedir, script):
   # wait 4 seconds for processes to finish
   # unlock(flock)  # remove stale lock
   time.sleep(4)
-  minit = int(time.strftime('%M'))
-  nowur = int(time.strftime('%H'))
 
   # Retrieve data from MySQL database
-  getsqldata(homedir, minit, nowur, False)
+  result = sqldata.fetch()
+  mf.syslog_trace("...:  {0}".format(result), False, DEBUG)
 
   # Create the graphs based on the MySQL data every 3rd minute
-  if ((minit % GRAPH_UPDATE) == 0):
-    cmnd = homedir + '/' + MYAPP + '/mkgraphs.sh'
-    mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
-    cmnd = subprocess.call(cmnd)
-    mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
+  result = trendgraph.make()
+  mf.syslog_trace("...:  {0}".format(result), False, DEBUG)
 
   try:
     # Upload the webpage and graphs
@@ -156,6 +195,8 @@ def write_lftp(script):
 
 if __name__ == "__main__":
   daemon = MyDaemon('/tmp/' + MYAPP + '/' + MYID + '.pid')
+  trendgraph = Graph(GRAPH_UPDATE)
+  sqldata = SqlDataFetch(SQL_UPDATE_HOUR, SQL_UPDATE_DAY, SQL_UPDATE_WEEK, SQL_UPDATE_YEAR)
   if len(sys.argv) == 2:
     if 'start' == sys.argv[1]:
       daemon.start()
