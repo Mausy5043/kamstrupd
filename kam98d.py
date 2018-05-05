@@ -104,7 +104,8 @@ class SqlDataFetch(object):
     """
     Manage staleness of the data and get it when needed.
     """
-    t0 = time.time()
+    ts = time.time()
+    t0 = ts
     if t0 >= self.h_timer:
       self.h_dataisstale = self.get(self.h_cmd)
       t1 = time.time()
@@ -128,6 +129,7 @@ class SqlDataFetch(object):
       t1 = time.time()
       self.h_timer = t1 + self.y_updatetime
       dt = t1 - t0  # determine query duration
+    return time.time() - ts
 
 class Graph(object):
   """docstring for Graph."""
