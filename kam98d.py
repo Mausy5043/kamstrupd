@@ -137,8 +137,11 @@ class Graph(object):
     self.command = self.home + '/' + MYAPP + '/mkgraphs.sh'
 
   def make(self):
-    if ((int(time.strftime('%M')) % self.updatetime) == 0):
+    t0 = time.time()
+    if t0 >= self.timer:
       mf.syslog_trace("...:  {0}".format(self.command), False, DEBUG)
+      t1 = time.time()
+      self.timer = t1 + self.updatetime + rnd(-60, 60)
       return subprocess.call(self.command)
     return 1
 
