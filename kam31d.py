@@ -37,7 +37,8 @@ port.port = "/dev/ttyUSB0"
 syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
 
 class MyDaemon(Daemon):
-  def run(self):
+  @staticmethod
+  def run():
     iniconf         = configparser.ConfigParser()
     inisection      = MYID
     home            = os.path.expanduser('~')

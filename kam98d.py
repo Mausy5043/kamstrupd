@@ -20,9 +20,6 @@ IS_JOURNALD = os.path.isfile('/bin/journalctl')
 MYID        = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split('/')[-1])))
 MYAPP       = os.path.realpath(__file__).split('/')[-2]
 NODE        = os.uname()[1]
-SQLMNT      = rnd(0, 59)
-SQLHR       = rnd(0, 23)
-SQLHRM      = rnd(0, 59)
 SQL_UPDATE_HOUR   = 6   # in minutes (shouldn't be shorter than GRAPH_UPDATE)
 SQL_UPDATE_DAY    = 20  # in minutes
 SQL_UPDATE_WEEK   = 4   # in hours
@@ -41,15 +38,16 @@ class MyDaemon(Daemon):
     s               = iniconf.read(home + '/' + MYAPP + '/config.ini')
     mf.syslog_trace("Config file   : {0}".format(s), False, DEBUG)
     mf.syslog_trace("Options       : {0}".format(iniconf.items(inisection)), False, DEBUG)
-    mf.syslog_trace("getsqlday.sh  runs every 30 minutes starting at minute {0}".format(SQLMNT), syslog.LOG_DEBUG, DEBUG)
-    mf.syslog_trace("getsqlweek.sh runs every 4th hour  starting  at hour   {0}:{1}".format(SQLHR, SQLHRM), syslog.LOG_DEBUG, DEBUG)
     reportTime      = iniconf.getint(inisection, "reporttime")
     samplesperCycle = iniconf.getint(inisection, "samplespercycle")
     flock           = iniconf.get(inisection, "lockfile")
     scriptname      = iniconf.get(inisection, "lftpscript")
 
     sampleTime      = reportTime/samplesperCycle         # time [s] between samples
-    getsqldata(home, 0, 0, True)
+    sqldata.get(sqldata.h_cmd)
+    sqldata.get(sqldata.d_cmd)
+    sqldata.get(sqldata.w_cmd)
+    sqldata.get(sqldata.y_cmd)
     while True:
       try:
         startTime   = time.time()
@@ -73,23 +71,26 @@ class SqlDataFetch(object):
   """
   def __init__(self, h_time, d_time, w_time, y_time):
     super(SqlDataFetch, self).__init__()
-    self.home = os.environ['HOME']
-    self.h_dataisstale = True
-    self.h_cmd = self.home + '/' + MYAPP + '/queries/hour.sh'
-    self.h_updatetime = h_time
-    self.h_timer = []
-    self.d_dataisstale = True
-    self.d_cmd = self.home + '/' + MYAPP + '/queries/day.sh'
-    self.d_updatetime = d_time
-    self.d_timer = []
-    self.w_dataisstale = True
-    self.w_cmd = self.home + '/' + MYAPP + '/queries/week.sh'
-    self.w_updatetime = w_time
-    self.w_timer = []
-    self.y_dataisstale = True
-    self.y_cmd = self.home + '/' + MYAPP + '/queries/year.sh'
-    self.y_updatetime = y_time
-    self.y_timer = []
+    self.home           = os.environ['HOME']
+    self.h_dataisstale  = True
+    self.h_cmd          = self.home + '/' + MYAPP + '/queries/hour.sh'
+    self.h_updatetime   = h_time
+    self.h_timer        = []
+    self.d_dataisstale  = True
+    self.d_cmd          = self.home + '/' + MYAPP + '/queries/day.sh'
+    self.d_updatetime   = d_time
+    self.d_timer        = []
+    self.w_dataisstale  = True
+    self.w_cmd          = self.home + '/' + MYAPP + '/queries/week.sh'
+    self.w_updatetime   = w_time
+    self.w_timer        = []
+    self.y_dataisstale  = True
+    self.y_cmd          = self.home + '/' + MYAPP + '/queries/year.sh'
+    self.y_updatetime   = y_time
+    self.y_timer        = []
+    self.sqlmnt         = rnd(0, 59)
+    self.sqlhr          = rnd(0, 23)
+    self.sqlhrm         = rnd(0, 59)
 
   def get(self, cmnd):
     """
@@ -105,10 +106,22 @@ class SqlDataFetch(object):
     """
     minit = int(time.strftime('%M'))
     nowur = int(time.strftime('%H'))
+    t0 = time.time()
     self.h_dataisstale = self.get(self.h_cmd)
+    t1 = time.time()
+    dt = t1 - t0
+    t0 = t1
     self.d_dataisstale = self.get(self.d_cmd)
+    t1 = time.time()
+    dt = t1 - t0
+    t0 = t1
     self.w_dataisstale = self.get(self.w_cmd)
+    t1 = time.time()
+    dt = t1 - t0
+    t0 = t1
     self.y_dataisstale = self.get(self.y_cmd)
+    t1 = time.time()
+    dt = t1 - t0
 
 class Graph(object):
   """docstring for Graph."""
