@@ -56,7 +56,7 @@ class MyDaemon(Daemon):
 
         waitTime    = sampleTime - (time.time() - startTime) - (startTime % sampleTime)
         if (waitTime > 0):
-          mf.syslog_trace("Waiting  : {0}s".format(waitTime), False, DEBUG)
+          mf.syslog_trace("waiting  ...: {0}s".format(waitTime), False, DEBUG)
           mf.syslog_trace("................................", False, DEBUG)
           time.sleep(waitTime)
       except Exception:
@@ -150,11 +150,11 @@ def do_stuff(flock, homedir, script):
 
   # Retrieve data from MySQL database
   result = sqldata.fetch()
-  mf.syslog_trace("...:  {0}".format(result), False, DEBUG)
+  mf.syslog_trace("...datafetch:  {0}".format(result), False, DEBUG)
 
   # Create the graphs based on the MySQL data every 3rd minute
   result = trendgraph.make()
-  mf.syslog_trace("...:  {0}".format(result), False, DEBUG)
+  mf.syslog_trace("...trendgrph:  {0}".format(result), False, DEBUG)
   if (result == 0):
     upload_page(script)
 
@@ -166,7 +166,7 @@ def upload_page(script):
       cmnd = ['lftp', '-f', script]
       mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
       cmnd = subprocess.check_output(cmnd, timeout=20)
-      mf.syslog_trace("...:  {0}".format(cmnd), False, DEBUG)
+      mf.syslog_trace("...uploadpag:  {0}".format(cmnd), False, DEBUG)
   except subprocess.TimeoutExpired:
     mf.syslog_trace("***TIMEOUT***:  {0}".format(cmnd), syslog.LOG_ERR, DEBUG)
     time.sleep(17*60)             # wait 17 minutes for the router to restart.
