@@ -26,7 +26,8 @@ NODE        = os.uname()[1]
 syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
 
 class MyDaemon(Daemon):
-  def run(self):
+  @staticmethod
+  def run():
     try:                 # Initialise MySQLdb
       consql    = mdb.connect(host='sql', db='domotica', read_default_file='~/.my.cnf')
       if consql.open:    # dB initialised succesfully -> get a cursor on the dB.
@@ -65,7 +66,7 @@ class MyDaemon(Daemon):
 
         do_sql_data(flock, iniconf, consql)
 
-        waitTime    = sampleTime - (time.time() - startTime) # - (startTime % sampleTime)
+        waitTime    = sampleTime - (time.time() - startTime)  # - (startTime % sampleTime)
         if (waitTime > 0):
           mf.syslog_trace("Waiting  : {0}s".format(waitTime), False, DEBUG)
           mf.syslog_trace("................................", False, DEBUG)
