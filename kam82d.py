@@ -82,7 +82,7 @@ def do_markdown(flock, fdata):
     f.write(uname[0] + ' ' + uname[1] + ' ' + uname[2] + ' ' + uname[3] + ' ' + uname[4] + ' ' + platform.platform() + '  \n')
 
     # branch
-    f.write('!!! kamstrupd   on: ' + kamstrupbranch + '\n')
+    f.write('!!! kamstrupd   on: ' + kamstrupbranch + '  \n')
     f.write('!!! ' + time.strftime("%Y.%m.%d %H:%M") + '\n\n')
 
   mf.unlock(flock)
