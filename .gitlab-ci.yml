@@ -2,8 +2,8 @@ image: debian:latest
 
 stages:
   - build
-  - lint
   - test
+  - lint
 
 before_script:
   - echo "vvv BEFORE vvv"
@@ -21,8 +21,12 @@ build_main:
   stage: build
   script:
     - echo "*** BUILD START ***"
-    - ls -al /
-    - tree -dL 2 /
+    - cd ..
+    - git clone https://gitlab.com/mausy5043-installer/mausy5043-common-python.git
+    - cd mausy5043-common-python
+    - ./setup.py install
+    - cd ../upsdiagd
+    - tree -dL 3 ../..
     - echo "*** BUILD COMPLETE ***"
 
 lint_pylama:
@@ -43,26 +47,3 @@ lint_shellcheck-queries:
   script:
     - apt-get install -qqy shellcheck >/dev/null
     - shellcheck --format=gcc --external-sources queries/*.sh
-
-test_daemon-start-re-stop:
-  stage: test
-  script:
-   - git fetch https://gitlab.com/mausy5043-installer/mausy5043-common-python.git
-   - mausy5043-common-python/setup.py install
-   - daemons/kam31d.py start
-   - daemons/kam31d.py restart
-   - ps aux; sleep 60
-   - daemons/kam31d.py stop
-   - cat /var/log/syslog
-
-#test_daemon-test:
-#  stage: test
-#  script:
-#  - tests/testd.py test & tail -f /var/log/syslog
-
-#test_smart:
-#  stage: test
-#  script:
-#  - tests/smartinfo.sh
-#  - tests/testsmart.py
-#  - cat /var/log/syslog

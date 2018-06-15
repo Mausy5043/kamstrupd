@@ -1,4 +1,4 @@
-# KAMSTRUPd
+# KAMSTRUPd [![pipeline status](https://gitlab.com/mausy5043-diagnostics/kamstrupd/badges/v2/pipeline.svg)](https://gitlab.com/mausy5043-diagnostics/kamstrupd/commits/v2)
 
 ## Installing
 
