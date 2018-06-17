@@ -156,6 +156,7 @@ class Graph(object):
       self.timer = t1 + self.updatetime + rnd(-60, 60)
     return result
 
+
 def do_stuff(flock, homedir, script):
   # wait 4 seconds for processes to finish
   # unlock(flock)  # remove stale lock
