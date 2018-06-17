@@ -11,8 +11,8 @@ pushd "$HOME/kamstrupd"
     # command the daemon to stop regardless if it is running or not.
     eval "./kam$daemon"d.py stop
     # kill off any rogue daemons by the same name (it happens sometimes)
-    if [   $(pgrep -fc "kam$daemon"d.py) -ne 0 ]; then
-      kill $(pgrep -f  "kam$daemon"d.py)
+    if [   "$(pgrep -fc "kam$daemon"d.py)" -ne 0 ]; then
+      kill "$(pgrep -f  "kam$daemon"d.py)"
     fi
     # log the activity
     logger -p user.err -t kamstrupd "  * Daemon $daemon stopped."
@@ -25,8 +25,8 @@ pushd "$HOME/kamstrupd"
     # command the daemon to stop regardless if it is running or not.
     eval "./kam$daemon"d.py stop
     # kill off any rogue daemons by the same name (it happens sometimes)
-    if [   $(pgrep -fc "kam$daemon"d.py) -ne 0 ]; then
-      kill $(pgrep -f  "kam$daemon"d.py)
+    if [   "$(pgrep -fc "kam$daemon"d.py)" -ne 0 ]; then
+      kill "$(pgrep -f  "kam$daemon"d.py)"
     fi
     # log the activity
     logger -p user.err -t kamstrupd "  * Daemon $daemon stopped."
