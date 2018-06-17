@@ -68,12 +68,12 @@ class MyDaemon(Daemon):
         mf.syslog_trace("Result   : {0}".format(result), False, DEBUG)
         # data.append(list(map(int, result)))
         data.append([int(d) for d in result])
-        if (len(data) > samples):
+        if len(data) > samples:
           data.pop(0)
         mf.syslog_trace("Data     : {0}".format(data), False, DEBUG)
 
         # report sample average
-        if (startTime % reportTime < sampleTime):
+        if startTime % reportTime < sampleTime:
           # somma       = list(map(sum, zip(*data)))
           somma = [sum(d) for d in zip(*data)]
           # not all entries should be float
@@ -87,7 +87,7 @@ class MyDaemon(Daemon):
             do_report(averages, flock, fdata)
 
         waitTime = sampleTime - (time.time() - startTime) - (startTime % sampleTime)
-        if (waitTime > 0):
+        if waitTime > 0:
           mf.syslog_trace("Waiting  : {0}s".format(waitTime), False, DEBUG)
           mf.syslog_trace("................................", False, DEBUG)
           # no need to wait for the next cycles
@@ -120,30 +120,30 @@ def do_work():
     for element in range(0, len(telegram)):
       line = re.split(r'[\(\*\)]', telegram[element])
       # ['1-0:1.8.1', '00175.402', 'kWh', '']  T1 in
-      if (line[0] == '1-0:1.8.1'):
+      if line[0] == '1-0:1.8.1':
         electra1in = int(float(line[1]) * 1000)
       # ['1-0:1.8.2', '00136.043', 'kWh', '']  T2 in
-      if (line[0] == '1-0:1.8.2'):
+      if line[0] == '1-0:1.8.2':
         electra2in = int(float(line[1]) * 1000)
       # ['1-0:2.8.1', '00000.000', 'kWh', '']  T1 out
-      if (line[0] == '1-0:2.8.1'):
+      if line[0] == '1-0:2.8.1':
         electra1out = int(float(line[1]) * 1000)
       # ['1-0:2.8.2', '00000.000', 'kWh', '']  T2 out
-      if (line[0] == '1-0:2.8.2'):
+      if line[0] == '1-0:2.8.2':
         electra2out = int(float(line[1]) * 1000)
       # ['0-0:96.14.0', '0002', '']  tarif 1 or 2
-      if (line[0] == '0-0:96.14.0'):
+      if line[0] == '0-0:96.14.0':
         tarif = int(line[1])
       # ['1-0:1.7.0', '0000.32', 'kW', '']  power in
-      if (line[0] == '1-0:1.7.0'):
+      if line[0] == '1-0:1.7.0':
         powerin = int(float(line[1]) * 1000)
       # ['1-0:2.7.0', '0000.00', 'kW', ''] power out
-      if (line[0] == '1-0:2.7.0'):
+      if line[0] == '1-0:2.7.0':
         powerout = int(float(line[1]) * 1000)
       # ['0-0:17.0.0', '999', 'A', '']
       # not recorded
       # ['0-0:96.3.10', '1', '']  powerusage (1) or powermanufacturing ()
-      if (line[0] == '0-0:96.3.10'):
+      if line[0] == '0-0:96.3.10':
         swits = int(line[1])
       # ['0-0:96.13.1', '', '']
       # not recorded
