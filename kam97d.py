@@ -25,6 +25,7 @@ NODE        = os.uname()[1]
 # initialise logging
 syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
 
+
 class MyDaemon(Daemon):
   @staticmethod
   def run():
@@ -80,6 +81,7 @@ class MyDaemon(Daemon):
           mf.syslog_trace(" *** Closed MySQL connection in run() ***", syslog.LOG_CRIT, DEBUG)
         raise
 
+
 def do_writesample(cnsql, cmd, sample):
   fail2write  = False
   dat         = (sample.split(', '))
@@ -116,6 +118,7 @@ def do_writesample(cnsql, cmd, sample):
       pass
 
   return fail2write
+
 
 def do_sql_data(flock, inicnfg, cnsql):
   mf.syslog_trace("============================", False, DEBUG)

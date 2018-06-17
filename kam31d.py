@@ -36,6 +36,7 @@ port.port = "/dev/ttyUSB0"
 # initialise logging
 syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
 
+
 class MyDaemon(Daemon):
   @staticmethod
   def run():
@@ -102,6 +103,7 @@ class MyDaemon(Daemon):
         mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
         raise
 
+
 def do_work():
   electra1in  = 0
   electra2in  = 0
@@ -116,7 +118,7 @@ def do_work():
 
   if status == 1:
     for element in range(0, len(telegram)):
-      line = re.split('[\(\*\)]', telegram[element])
+      line = re.split(r'[\(\*\)]', telegram[element])
       # ['1-0:1.8.1', '00175.402', 'kWh', '']  T1 in
       if (line[0] == '1-0:1.8.1'):
         electra1in = int(float(line[1]) * 1000)
@@ -149,6 +151,7 @@ def do_work():
       # not recorded
 
   return '{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}'.format(electra1in, electra2in, powerin, electra1out, electra2out, powerout, tarif, swits)
+
 
 def gettelegram():
   # flag used to exit the while-loop
@@ -186,6 +189,7 @@ def gettelegram():
   # abort == 2 means that a serial port read/write error occurred
   # abort == 3 no valid data after several attempts
   return telegram, abort
+
 
 def do_report(result, flock, fdata):
   # Get the time and date in human-readable form and UN*X-epoch...
