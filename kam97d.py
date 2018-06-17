@@ -4,16 +4,17 @@
 
 import configparser
 import glob
-import MySQLdb as mdb
-import MySQLdb.constants.CR as mdbcr
 import os
 import sys
 import syslog
 import time
 import traceback
 
-from mausy5043libs.libdaemon3 import Daemon
+import MySQLdb as mdb
+import MySQLdb.constants.CR as mdbcr
+
 import mausy5043funcs.fileops3 as mf
+from mausy5043libs.libdaemon3 import Daemon
 
 # constants
 DEBUG       = False

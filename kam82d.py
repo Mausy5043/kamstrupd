@@ -11,8 +11,8 @@ import syslog
 import time
 import traceback
 
-from mausy5043libs.libdaemon3 import Daemon
 import mausy5043funcs.fileops3 as mf
+from mausy5043libs.libdaemon3 import Daemon
 
 # constants
 DEBUG       = False
