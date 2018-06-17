@@ -43,8 +43,7 @@ class MyDaemon(Daemon):
     samplesperCycle = iniconf.getint(inisection, "samplespercycle")
     flock           = iniconf.get(inisection, "lockfile")
     scriptname      = iniconf.get(inisection, "lftpscript")
-
-    sampleTime      = reportTime/samplesperCycle         # time [s] between samples
+    sampleTime      = reportTime / samplesperCycle         # time [s] between samples
     sqldata.get(sqldata.h_cmd)
     sqldata.get(sqldata.d_cmd)
     sqldata.get(sqldata.w_cmd)
@@ -184,11 +183,11 @@ def upload_page(script):
       mf.syslog_trace("...uploadpag:  {0}".format(cmnd), False, DEBUG)
   except subprocess.TimeoutExpired:
     mf.syslog_trace("***TIMEOUT***:  {0}".format(cmnd), syslog.LOG_ERR, DEBUG)
-    time.sleep(17*60)             # wait 17 minutes for the router to restart.
+    time.sleep(17 * 60)             # wait 17 minutes for the router to restart.
     pass
   except subprocess.CalledProcessError:
     mf.syslog_trace("***ERROR***:    {0}".format(cmnd), syslog.LOG_ERR, DEBUG)
-    time.sleep(17*60)             # wait 17 minutes for the router to restart.
+    time.sleep(17 * 60)             # wait 17 minutes for the router to restart.
     pass
 
 

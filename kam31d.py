@@ -53,10 +53,9 @@ class MyDaemon(Daemon):
     fdata           = iniconf.get(inisection, "resultfile")
 
     samples         = samplesperCycle * cycles           # total number of samples averaged
-    sampleTime      = reportTime/samplesperCycle         # time [s] between samples
+    sampleTime      = reportTime / samplesperCycle         # time [s] between samples
 
     data            = []                                 # array for holding sampledata
-    # raw             = [0] * 8                            # array for holding previous
 
     port.open()
     serial.XON
@@ -71,7 +70,7 @@ class MyDaemon(Daemon):
         data.append([int(d) for d in result])
         if (len(data) > samples):
           data.pop(0)
-        mf.syslog_trace("Data     : {0}".format(data),   False, DEBUG)
+        mf.syslog_trace("Data     : {0}".format(data), False, DEBUG)
 
         # report sample average
         if (startTime % reportTime < sampleTime):
@@ -83,11 +82,11 @@ class MyDaemon(Daemon):
           averages = data[-1]
           averages[2]  = int(somma[2] / len(data))  # avg powerin
           averages[5]  = int(somma[5] / len(data))  # avg powerout
-          mf.syslog_trace("Averages : {0}".format(averages),  False, DEBUG)
+          mf.syslog_trace("Averages : {0}".format(averages), False, DEBUG)
           if averages[0] > 0:
             do_report(averages, flock, fdata)
 
-        waitTime    = sampleTime - (time.time() - startTime) - (startTime % sampleTime)
+        waitTime = sampleTime - (time.time() - startTime) - (startTime % sampleTime)
         if (waitTime > 0):
           mf.syslog_trace("Waiting  : {0}s".format(waitTime), False, DEBUG)
           mf.syslog_trace("................................", False, DEBUG)
@@ -105,6 +104,7 @@ class MyDaemon(Daemon):
 
 
 def do_work():
+  """Push the results out to a file."""
   electra1in  = 0
   electra2in  = 0
   powerin     = 0
@@ -154,6 +154,7 @@ def do_work():
 
 
 def gettelegram():
+  """Fetch a telegram from the serialport."""
   # flag used to exit the while-loop
   abort = 0
   # countdown counter used to prevent infinite loops
@@ -192,6 +193,7 @@ def gettelegram():
 
 
 def do_report(result, flock, fdata):
+  """Push the results out to a file."""
   # Get the time and date in human-readable form and UN*X-epoch...
   outDate  = time.strftime('%Y-%m-%dT%H:%M:%S')
   outEpoch = int(time.strftime('%s'))

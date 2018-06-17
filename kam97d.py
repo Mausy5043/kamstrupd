@@ -53,13 +53,9 @@ class MyDaemon(Daemon):
     mf.syslog_trace("Config file   : {0}".format(s), False, DEBUG)
     mf.syslog_trace("Options       : {0}".format(iniconf.items(inisection)), False, DEBUG)
     reportTime      = iniconf.getint(inisection, "reporttime")
-    # cycles          = iniconf.getint(inisection, "cycles")
     samplesperCycle = iniconf.getint(inisection, "samplespercycle")
     flock           = iniconf.get(inisection, "lockfile")
-
-    # samples         = samplesperCycle * cycles              # total number of samples averaged
-    sampleTime      = reportTime/samplesperCycle         # time [s] between samples
-    # cycleTime       = samples * sampleTime                # time [s] per cycle
+    sampleTime      = reportTime / samplesperCycle         # time [s] between samples
 
     while True:
       try:
@@ -93,7 +89,7 @@ def do_writesample(cnsql, cmd, sample):
     cursql.close()
   except mdb.IntegrityError:
     mf.syslog_trace(" ***** MySQL ERROR *****", syslog.LOG_ERR, DEBUG)
-    mf.syslog_trace(" *** DB error : {0}".format(sys.exc_info()[1]), syslog.LOG_ERR,  DEBUG)
+    mf.syslog_trace(" *** DB error : {0}".format(sys.exc_info()[1]), syslog.LOG_ERR, DEBUG)
     if cursql:
       cursql.close()
       mf.syslog_trace(" *I* Closed MySQL connection in do_writesample()", syslog.LOG_ERR, DEBUG)
@@ -103,7 +99,7 @@ def do_writesample(cnsql, cmd, sample):
     pass
   except mdb.OperationalError as e:
     mf.syslog_trace(" ***** MySQL ERROR *****", syslog.LOG_ERR, DEBUG)
-    mf.syslog_trace(" *** DB error : {0}".format(sys.exc_info()[1]), syslog.LOG_ERR,  DEBUG)
+    mf.syslog_trace(" *** DB error : {0}".format(sys.exc_info()[1]), syslog.LOG_ERR, DEBUG)
     fail2write = True
     if cursql:
       cursql.close()
@@ -112,7 +108,7 @@ def do_writesample(cnsql, cmd, sample):
       mf.syslog_trace(" *** Not added to MySQLdb: {0}".format(dat), syslog.LOG_ERR, DEBUG)
       mf.syslog_trace(" ***** MySQL ERROR *****", syslog.LOG_ERR, DEBUG)
     if e.args[0] in (mdbcr.SERVER_GONE_ERROR, mdbcr.SERVER_LOST):
-      time.sleep(17*60)             # wait 17 minutes for the server to return.
+      time.sleep(17 * 60)             # wait 17 minutes for the server to return.
       raise
     else:
       pass

@@ -26,6 +26,7 @@ syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
 
 
 class MyDaemon(Daemon):
+  """Definition of daemon."""
   @staticmethod
   def run():
     iniconf         = configparser.ConfigParser()
@@ -39,10 +40,7 @@ class MyDaemon(Daemon):
     samplesperCycle = iniconf.getint(inisection, "samplespercycle")
     flock           = iniconf.get(inisection, "lockfile")
     fdata           = iniconf.get(inisection, "markdown")
-
-    # samples         = samplesperCycle * cycles          # total number of samples averaged
-    sampleTime      = reportTime/samplesperCycle        # time [s] between samples
-    # cycleTime       = samples * sampleTime              # time [s] per cycle
+    sampleTime      = reportTime / samplesperCycle        # time [s] between samples
 
     while True:
       try:
@@ -62,6 +60,7 @@ class MyDaemon(Daemon):
 
 
 def do_markdown(flock, fdata):
+  """Create a MarkDown file."""
   home              = os.path.expanduser('~')
   uname             = os.uname()
 

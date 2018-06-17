@@ -45,7 +45,6 @@ lint_shellcheck-main:
     - apt-get install -qqy shellcheck >/dev/null
     - shellcheck --format=gcc --external-sources *.sh
 
-
 lint_shellcheck-queries:
   stage: lint
   script:
