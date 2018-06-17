@@ -108,7 +108,7 @@ def do_writesample(cnsql, cmd, sample):
       mf.syslog_trace(" *** Not added to MySQLdb: {0}".format(dat), syslog.LOG_ERR, DEBUG)
       mf.syslog_trace(" ***** MySQL ERROR *****", syslog.LOG_ERR, DEBUG)
     if e.args[0] in (mdbcr.SERVER_GONE_ERROR, mdbcr.SERVER_LOST):
-      time.sleep(17 * 60)             # wait 17 minutes for the server to return.
+      time.sleep(17 * 60)            # wait 17 minutes for the server to return.
       raise
     else:
       pass
