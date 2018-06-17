@@ -6,11 +6,12 @@
 import configparser
 import os
 import re
-import serial
 import sys
 import syslog
 import time
 import traceback
+
+import serial
 
 import mausy5043funcs.fileops3 as mf
 from mausy5043libs.libdaemon3 import Daemon
