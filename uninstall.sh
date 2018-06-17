@@ -16,13 +16,13 @@ pushd "$HOME/kamstrupd"
 
   echo "  Stopping all diagnostic daemons"
   for daemon in $kamlist; do
-    echo "Stopping "$daemon
-    eval "./kam"$daemon"d.py stop"
+    echo "Stopping ${daemon}"
+    eval "./kam${daemon}d.py stop"
   done
   echo "  Stopping all service daemons"
   for daemon in $srvclist; do
-    echo "Stopping "$daemon
-    eval "./kam"$daemon"d.py stop"
+    echo "Stopping ${daemon}"
+    eval "./kam${daemon}d.py stop"
   done
 popd
 
