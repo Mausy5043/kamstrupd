@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# daemon82d.py creates an MD-file.
+"""creates an MD-file."""
 
 import configparser
 import os
@@ -21,25 +21,16 @@ MYID        = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split(
 MYAPP       = os.path.realpath(__file__).split('/')[-2]
 NODE        = os.uname()[1]
 
-# initialise logging
-syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
-
 
 class MyDaemon(Daemon):
-  """Definition of daemon."""
+  """Override Daemon-class run() function."""
   @staticmethod
   def run():
     iniconf         = configparser.ConfigParser()
-    inisection      = MYID
-    home            = os.path.expanduser('~')
-    s               = iniconf.read(home + '/' + MYAPP + '/config.ini')
-    mf.syslog_trace("Config file   : {0}".format(s), False, DEBUG)
-    mf.syslog_trace("Options       : {0}".format(iniconf.items(inisection)), False, DEBUG)
-    reportTime      = iniconf.getint(inisection, "reporttime")
-    # cycles          = iniconf.getint(inisection, "cycles")
-    samplesperCycle = iniconf.getint(inisection, "samplespercycle")
-    flock           = iniconf.get(inisection, "lockfile")
-    fdata           = iniconf.get(inisection, "markdown")
+    reportTime      = iniconf.getint(MYID, "reporttime")
+    samplesperCycle = iniconf.getint(MYID, "samplespercycle")
+    flock           = iniconf.get(MYID, "lockfile")
+    fdata           = iniconf.get(MYID, "markdown")
     sampleTime      = reportTime / samplesperCycle        # time [s] between samples
 
     while True:
@@ -49,7 +40,7 @@ class MyDaemon(Daemon):
         do_markdown(flock, fdata)
 
         waitTime    = sampleTime - (time.time() - startTime) - (startTime % sampleTime)
-        if (waitTime > 0):
+        if waitTime > 0:
           mf.syslog_trace("Waiting  : {0}s".format(waitTime), False, DEBUG)
           mf.syslog_trace("................................", False, DEBUG)
           time.sleep(waitTime)
@@ -61,15 +52,14 @@ class MyDaemon(Daemon):
 
 def do_markdown(flock, fdata):
   """Create a MarkDown file."""
-  home              = os.path.expanduser('~')
   uname             = os.uname()
 
-  fi = home + "/.kamstrupd.branch"
+  fi = os.environ['HOME'] + "/.kamstrupd.branch"
   with open(fi, 'r') as f:
     kamstrupbranch  = f.read().strip('\n')
 
   mf.lock(flock)
-  shutil.copyfile(home + '/' + MYAPP + '/default.md', fdata)
+  shutil.copyfile(os.environ['HOME'] + '/' + MYAPP + '/default.md', fdata)
 
   with open(fdata, 'a') as f:
     mf.syslog_trace("writing {0}".format(fdata), False, DEBUG)
@@ -91,6 +81,7 @@ def do_markdown(flock, fdata):
 
 if __name__ == "__main__":
   daemon = MyDaemon('/tmp/' + MYAPP + '/' + MYID + '.pid')
+  syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)  # initialise logging
   if len(sys.argv) == 2:
     if 'start' == sys.argv[1]:
       daemon.start()

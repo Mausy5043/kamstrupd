@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-# Communicates with the smart electricity meter [KAMSTRUP].
-# This is all singular data, no averaging needed.
+"""Communicates with the smart electricity meter [KAMSTRUP]."""
 
 import configparser
 import os
@@ -23,39 +22,17 @@ MYID        = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split(
 MYAPP       = os.path.realpath(__file__).split('/')[-2]
 NODE        = os.uname()[1]
 
-port = serial.Serial()
-port.baudrate = 9600
-port.bytesize = serial.SEVENBITS
-port.parity = serial.PARITY_EVEN
-port.stopbits = serial.STOPBITS_ONE
-port.xonxoff = 1
-port.rtscts = 0
-port.dsrdtr = 0
-port.timeout = 15
-port.port = "/dev/ttyUSB0"
-
-# initialise logging
-syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
-
 
 class MyDaemon(Daemon):
+  """Override Daemon-class run() function."""
   @staticmethod
   def run():
     iniconf         = configparser.ConfigParser()
-    inisection      = MYID
-    home            = os.path.expanduser('~')
-    s               = iniconf.read(home + '/' + MYAPP + '/config.ini')
-    mf.syslog_trace("Config file   : {0}".format(s), False, DEBUG)
-    mf.syslog_trace("Options       : {0}".format(iniconf.items(inisection)), False, DEBUG)
-    reportTime      = iniconf.getint(inisection, "reporttime")
-    cycles          = iniconf.getint(inisection, "cycles")
-    samplesperCycle = iniconf.getint(inisection, "samplespercycle")
-    flock           = iniconf.get(inisection, "lockfile")
-    fdata           = iniconf.get(inisection, "resultfile")
-
-    samples         = samplesperCycle * cycles           # total number of samples averaged
-    sampleTime      = reportTime / samplesperCycle         # time [s] between samples
-
+    report_time     = iniconf.getint(MYID, "reporttime")
+    flock           = iniconf.get(MYID, "lockfile")
+    fdata           = iniconf.get(MYID, "resultfile")
+    samples         = iniconf.getint(MYID, "samplespercycle") * iniconf.getint(MYID, "cycles")           # total number of samples averaged
+    sampleTime      = report_time / iniconf.getint(MYID, "samplespercycle")       # time [s] between samples
     data            = []                                 # array for holding sampledata
 
     port.open()
@@ -74,7 +51,7 @@ class MyDaemon(Daemon):
         mf.syslog_trace("Data     : {0}".format(data), False, DEBUG)
 
         # report sample average
-        if startTime % reportTime < sampleTime:
+        if startTime % report_time < sampleTime:
           # somma       = list(map(sum, zip(*data)))
           somma = [sum(d) for d in zip(*data)]
           # not all entries should be float
@@ -210,6 +187,21 @@ def do_report(result, flock, fdata):
 
 if __name__ == "__main__":
   daemon = MyDaemon('/tmp/' + MYAPP + '/' + MYID + '.pid')
+
+  port = serial.Serial()
+  port.baudrate = 9600
+  port.bytesize = serial.SEVENBITS
+  port.parity = serial.PARITY_EVEN
+  port.stopbits = serial.STOPBITS_ONE
+  port.xonxoff = 1
+  port.rtscts = 0
+  port.dsrdtr = 0
+  port.timeout = 15
+  port.port = "/dev/ttyUSB0"
+
+  # initialise logging
+  syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
+
   if len(sys.argv) == 2:
     if 'start' == sys.argv[1]:
       daemon.start()

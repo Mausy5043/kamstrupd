@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# daemon97.py pushes data to the MySQL-server.
+"""Pushes data to the MySQL-server."""
 
 import configparser
 import glob
@@ -23,11 +23,9 @@ MYID        = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split(
 MYAPP       = os.path.realpath(__file__).split('/')[-2]
 NODE        = os.uname()[1]
 
-# initialise logging
-syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
-
 
 class MyDaemon(Daemon):
+  """Override Daemon-class run() function."""
   @staticmethod
   def run():
     try:                 # Initialise MySQLdb
@@ -48,15 +46,8 @@ class MyDaemon(Daemon):
       raise
 
     iniconf         = configparser.ConfigParser()
-    inisection      = MYID
-    home            = os.path.expanduser('~')
-    s               = iniconf.read(home + '/' + MYAPP + '/config.ini')
-    mf.syslog_trace("Config file   : {0}".format(s), False, DEBUG)
-    mf.syslog_trace("Options       : {0}".format(iniconf.items(inisection)), False, DEBUG)
-    reportTime      = iniconf.getint(inisection, "reporttime")
-    samplesperCycle = iniconf.getint(inisection, "samplespercycle")
-    flock           = iniconf.get(inisection, "lockfile")
-    sampleTime      = reportTime / samplesperCycle         # time [s] between samples
+    flock           = iniconf.get(MYID, "lockfile")
+    sampleTime      = iniconf.getint(MYID, "reporttime") / iniconf.getint(MYID, "samplespercycle")
 
     while True:
       try:
@@ -65,7 +56,7 @@ class MyDaemon(Daemon):
         do_sql_data(flock, iniconf, consql)
 
         waitTime    = sampleTime - (time.time() - startTime)  # - (startTime % sampleTime)
-        if (waitTime > 0):
+        if waitTime > 0:
           mf.syslog_trace("Waiting  : {0}s".format(waitTime), False, DEBUG)
           mf.syslog_trace("................................", False, DEBUG)
           time.sleep(waitTime)
@@ -170,6 +161,7 @@ def do_sql_data(flock, inicnfg, cnsql):
 
 if __name__ == "__main__":
   daemon = MyDaemon('/tmp/' + MYAPP + '/' + MYID + '.pid')
+  syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)  # initialise logging
   if len(sys.argv) == 2:
     if 'start' == sys.argv[1]:
       daemon.start()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# daemon98.py file post-processor.
+"""Data post-processor."""
 
 import configparser
 import os
@@ -27,38 +27,29 @@ SQL_UPDATE_DAY    = 27  # in minutes
 SQL_UPDATE_WEEK   = 4   # in hours
 SQL_UPDATE_YEAR   = 8   # in hours
 
-# initialise logging
-syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
-
 
 class MyDaemon(Daemon):
+  """Override Daemon-class run() function."""
   @staticmethod
   def run():
     iniconf         = configparser.ConfigParser()
-    inisection      = MYID
-    home            = os.path.expanduser('~')
-    s               = iniconf.read(home + '/' + MYAPP + '/config.ini')
-    mf.syslog_trace("Config file   : {0}".format(s), False, DEBUG)
-    mf.syslog_trace("Options       : {0}".format(iniconf.items(inisection)), False, DEBUG)
-    reportTime      = iniconf.getint(inisection, "reporttime")
-    samplesperCycle = iniconf.getint(inisection, "samplespercycle")
-    flock           = iniconf.get(inisection, "lockfile")
-    scriptname      = iniconf.get(inisection, "lftpscript")
-    sampleTime      = reportTime / samplesperCycle         # time [s] between samples
+    flock           = iniconf.get(MYID, "lockfile")
+    scriptname      = iniconf.get(MYID, "lftpscript")
+    sampleTime      = iniconf.getint(MYID, "reporttime") / iniconf.getint(MYID, "samplespercycle")
     sqldata.get(sqldata.h_cmd)
     sqldata.get(sqldata.d_cmd)
     sqldata.get(sqldata.w_cmd)
     sqldata.get(sqldata.y_cmd)
-    if (trendgraph.draw(trendgraph.command) == 0):
+    if trendgraph.draw(trendgraph.command) == 0:
       upload_page(scriptname)
     while True:
       try:
         startTime   = time.time()
 
-        do_stuff(flock, home, scriptname)
+        do_stuff(flock, scriptname)
 
         waitTime    = sampleTime - (time.time() - startTime) - (startTime % sampleTime)
-        if (waitTime > 0):
+        if waitTime > 0:
           mf.syslog_trace("waiting  ...: {0}s".format(waitTime), False, DEBUG)
           mf.syslog_trace("................................", False, DEBUG)
           time.sleep(waitTime)
@@ -157,7 +148,7 @@ class Graph(object):
     return result
 
 
-def do_stuff(flock, homedir, script):
+def do_stuff(flock, script):
   # wait 4 seconds for processes to finish
   # unlock(flock)  # remove stale lock
   time.sleep(4)
@@ -169,7 +160,7 @@ def do_stuff(flock, homedir, script):
   # Create the graphs based on the MySQL data every 3rd minute
   result = trendgraph.make()
   mf.syslog_trace("...trendgrph:  {0}".format(result), False, DEBUG)
-  if (result == 0):
+  if result == 0:
     upload_page(script)
 
 
@@ -209,6 +200,7 @@ if __name__ == "__main__":
   daemon = MyDaemon('/tmp/' + MYAPP + '/' + MYID + '.pid')
   trendgraph = Graph(GRAPH_UPDATE)
   sqldata = SqlDataFetch(SQL_UPDATE_HOUR, SQL_UPDATE_DAY, SQL_UPDATE_WEEK, SQL_UPDATE_YEAR)
+  syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)  # initialise logging
   if len(sys.argv) == 2:
     if 'start' == sys.argv[1]:
       daemon.start()
