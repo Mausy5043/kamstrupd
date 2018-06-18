@@ -18,7 +18,8 @@ from mausy5043libs.libdaemon3 import Daemon
 # constants
 DEBUG       = False
 IS_JOURNALD = os.path.isfile('/bin/journalctl')
-MYID        = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split('/')[-1])))
+MYID        = "".join(list(filter(str.isdigit,
+                                  os.path.realpath(__file__).split('/')[-1])))
 MYAPP       = os.path.realpath(__file__).split('/')[-2]
 NODE        = os.uname()[1]
 
@@ -27,31 +28,32 @@ class MyDaemon(Daemon):
   """Override Daemon-class run() function."""
   @staticmethod
   def run():
-    iniconf         = configparser.ConfigParser()
-    report_time     = iniconf.getint(MYID, "reporttime")
-    flock           = iniconf.get(MYID, "lockfile")
-    fdata           = iniconf.get(MYID, "resultfile")
-    samples         = iniconf.getint(MYID, "samplespercycle") * iniconf.getint(MYID, "cycles")           # total number of samples averaged
-    sampleTime      = report_time / iniconf.getint(MYID, "samplespercycle")       # time [s] between samples
-    data            = []                                 # array for holding sampledata
+    iniconf = configparser.ConfigParser()
+    report_time = iniconf.getint(MYID, "reporttime")
+    flock = iniconf.get(MYID, "lockfile")
+    fdata = iniconf.get(MYID, "resultfile")
+    samples_averaged = (iniconf.getint(MYID, "samplespercycle")
+                        * iniconf.getint(MYID, "cycles"))
+    sample_time = report_time / iniconf.getint(MYID, "samplespercycle")
+    data = []
 
     port.open()
     serial.XON
     while True:
       try:
-        startTime     = time.time()
+        start_time     = time.time()
 
         result        = do_work()
         result        = result.split(',')
         mf.syslog_trace("Result   : {0}".format(result), False, DEBUG)
         # data.append(list(map(int, result)))
         data.append([int(d) for d in result])
-        if len(data) > samples:
+        if len(data) > samples_averaged:
           data.pop(0)
         mf.syslog_trace("Data     : {0}".format(data), False, DEBUG)
 
         # report sample average
-        if startTime % report_time < sampleTime:
+        if start_time % report_time < sample_time:
           # somma       = list(map(sum, zip(*data)))
           somma = [sum(d) for d in zip(*data)]
           # not all entries should be float
@@ -64,16 +66,18 @@ class MyDaemon(Daemon):
           if averages[0] > 0:
             do_report(averages, flock, fdata)
 
-        waitTime = sampleTime - (time.time() - startTime) - (startTime % sampleTime)
-        if waitTime > 0:
-          mf.syslog_trace("Waiting  : {0}s".format(waitTime), False, DEBUG)
+        pause_time = (sample_time
+                      - (time.time() - start_time)
+                      - (start_time % sample_time))
+        if pause_time > 0:
+          mf.syslog_trace("Waiting  : {0}s".format(pause_time), False, DEBUG)
           mf.syslog_trace("................................", False, DEBUG)
           # no need to wait for the next cycles
           # the meter will pace the meaurements
           # any required waiting will be inside gettelegram()
-          # time.sleep(waitTime)
+          # time.sleep(pause_time)
         else:
-          mf.syslog_trace("Behind   : {0}s".format(waitTime), False, DEBUG)
+          mf.syslog_trace("Behind   : {0}s".format(pause_time), False, DEBUG)
           mf.syslog_trace("................................", False, DEBUG)
       except Exception:
         mf.syslog_trace("Unexpected error in run()", syslog.LOG_CRIT, DEBUG)
