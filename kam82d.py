@@ -83,13 +83,13 @@ if __name__ == "__main__":
   daemon = MyDaemon('/tmp/' + MYAPP + '/' + MYID + '.pid')
   syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)  # initialise logging
   if len(sys.argv) == 2:
-    if 'start' == sys.argv[1]:
+    if sys.argv[1] == 'start':
       daemon.start()
-    elif 'stop' == sys.argv[1]:
+    elif sys.argv[1] == 'stop':
       daemon.stop()
-    elif 'restart' == sys.argv[1]:
+    elif sys.argv[1] == 'restart':
       daemon.restart()
-    elif 'foreground' == sys.argv[1]:
+    elif sys.argv[1] == 'debug':
       # assist with debugging.
       print("Debug-mode started. Use <Ctrl>+C to stop.")
       DEBUG = True
@@ -100,5 +100,5 @@ if __name__ == "__main__":
       sys.exit(2)
     sys.exit(0)
   else:
-    print("usage: {0!s} start|stop|restart|foreground".format(sys.argv[0]))
+    print("usage: {0!s} start|stop|restart|debug".format(sys.argv[0]))
     sys.exit(2)
