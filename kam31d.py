@@ -38,7 +38,7 @@ class MyDaemon(Daemon):
     data = []
 
     port.open()
-    serial.XON
+    serial.XON  # pylint: disable=W0104
     while True:
       try:
         start_time     = time.time()
@@ -132,7 +132,14 @@ def do_work():
       # ['0-0:96.13.0', '', '']
       # not recorded
 
-  return '{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}'.format(electra1in, electra2in, powerin, electra1out, electra2out, powerout, tarif, swits)
+  return '{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}'.format(electra1in,
+                                                         electra2in,
+                                                         powerin,
+                                                         electra1out,
+                                                         electra2out,
+                                                         powerout,
+                                                         tarif,
+                                                         swits)
 
 
 def gettelegram():
@@ -177,15 +184,13 @@ def gettelegram():
 def do_report(result, flock, fdata):
   """Push the results out to a file."""
   # Get the time and date in human-readable form and UN*X-epoch...
-  outDate  = time.strftime('%Y-%m-%dT%H:%M:%S')
-  outEpoch = int(time.strftime('%s'))
-  # round to current minute to ease database JOINs
-  # outEpoch = outEpoch - (outEpoch % 60)
+  OutDate  = time.strftime('%Y-%m-%dT%H:%M:%S')
+  OutEpoch = int(time.strftime('%s'))
   result   = ', '.join(map(str, result))
   mf.lock(flock)
-  mf.syslog_trace("   @: {0}s".format(outDate), False, DEBUG)
-  with open(fdata, 'a') as f:
-    f.write('{0}, {1}, {2}\n'.format(outDate, outEpoch, result))
+  mf.syslog_trace("   @: {0}s".format(OutDate), False, DEBUG)
+  with open(fdata, 'a') as fo:
+    fo.write('{0}, {1}, {2}\n'.format(OutDate, OutEpoch, result))
   mf.unlock(flock)
 
 
