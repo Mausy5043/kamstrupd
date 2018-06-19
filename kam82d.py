@@ -17,7 +17,8 @@ from mausy5043libs.libdaemon3 import Daemon
 # constants
 DEBUG       = False
 IS_JOURNALD = os.path.isfile('/bin/journalctl')
-MYID        = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split('/')[-1])))
+MYID        = "".join(list(filter(str.isdigit,
+                                  os.path.realpath(__file__).split('/')[-1])))
 MYAPP       = os.path.realpath(__file__).split('/')[-2]
 NODE        = os.uname()[1]
 
@@ -36,15 +37,15 @@ class MyDaemon(Daemon):
 
     while True:
       try:
-        startTime   = time.time()
+        start_time   = time.time()
 
         do_markdown(flock, fdata)
 
-        waitTime    = sampleTime - (time.time() - startTime) - (startTime % sampleTime)
-        if waitTime > 0:
-          mf.syslog_trace("Waiting  : {0}s".format(waitTime), False, DEBUG)
+        pause_time    = sampleTime - (time.time() - start_time) - (start_time % sampleTime)
+        if pause_time > 0:
+          mf.syslog_trace("Waiting  : {0}s".format(pause_time), False, DEBUG)
           mf.syslog_trace("................................", False, DEBUG)
-          time.sleep(waitTime)
+          time.sleep(pause_time)
       except Exception:
         mf.syslog_trace("Unexpected error in run()", syslog.LOG_CRIT, DEBUG)
         mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
@@ -84,13 +85,13 @@ if __name__ == "__main__":
   daemon = MyDaemon('/tmp/' + MYAPP + '/' + MYID + '.pid')
   syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)  # initialise logging
   if len(sys.argv) == 2:
-    if 'start' == sys.argv[1]:
+    if sys.argv[1] == 'start':
       daemon.start()
-    elif 'stop' == sys.argv[1]:
+    elif sys.argv[1] == 'stop':
       daemon.stop()
-    elif 'restart' == sys.argv[1]:
+    elif sys.argv[1] == 'restart':
       daemon.restart()
-    elif 'foreground' == sys.argv[1]:
+    elif sys.argv[1] == 'debug':
       # assist with debugging.
       print("Debug-mode started. Use <Ctrl>+C to stop.")
       DEBUG = True
@@ -101,5 +102,5 @@ if __name__ == "__main__":
       sys.exit(2)
     sys.exit(0)
   else:
-    print("usage: {0!s} start|stop|restart|foreground".format(sys.argv[0]))
+    print("usage: {0!s} start|stop|restart|debug".format(sys.argv[0]))
     sys.exit(2)

@@ -18,7 +18,8 @@ from mausy5043libs.libdaemon3 import Daemon
 # constants
 DEBUG       = False
 IS_JOURNALD = os.path.isfile('/bin/journalctl')
-MYID        = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split('/')[-1])))
+MYID        = "".join(list(filter(str.isdigit,
+                                  os.path.realpath(__file__).split('/')[-1])))
 MYAPP       = os.path.realpath(__file__).split('/')[-2]
 NODE        = os.uname()[1]
 
@@ -29,30 +30,31 @@ class MyDaemon(Daemon):
   def run():
     iniconf         = configparser.ConfigParser()
     iniconf.read(os.environ['HOME'] + '/' + MYAPP + '/config.ini')
-    report_time     = iniconf.getint(MYID, "reporttime")
-    flock           = iniconf.get(MYID, "lockfile")
-    fdata           = iniconf.get(MYID, "resultfile")
-    samples         = iniconf.getint(MYID, "samplespercycle") * iniconf.getint(MYID, "cycles")           # total number of samples averaged
-    sampleTime      = report_time / iniconf.getint(MYID, "samplespercycle")       # time [s] between samples
-    data            = []                                 # array for holding sampledata
+    report_time = iniconf.getint(MYID, "reporttime")
+    flock = iniconf.get(MYID, "lockfile")
+    fdata = iniconf.get(MYID, "resultfile")
+    samples_averaged = (iniconf.getint(MYID, "samplespercycle")
+                        * iniconf.getint(MYID, "cycles"))
+    sample_time = report_time / iniconf.getint(MYID, "samplespercycle")
+    data = []
 
     port.open()
-    serial.XON
+    serial.XON  # pylint: disable=W0104
     while True:
       try:
-        startTime     = time.time()
+        start_time     = time.time()
 
         result        = do_work()
         result        = result.split(',')
         mf.syslog_trace("Result   : {0}".format(result), False, DEBUG)
         # data.append(list(map(int, result)))
         data.append([int(d) for d in result])
-        if len(data) > samples:
+        if len(data) > samples_averaged:
           data.pop(0)
         mf.syslog_trace("Data     : {0}".format(data), False, DEBUG)
 
         # report sample average
-        if startTime % report_time < sampleTime:
+        if start_time % report_time < sample_time:
           # somma       = list(map(sum, zip(*data)))
           somma = [sum(d) for d in zip(*data)]
           # not all entries should be float
@@ -65,16 +67,18 @@ class MyDaemon(Daemon):
           if averages[0] > 0:
             do_report(averages, flock, fdata)
 
-        waitTime = sampleTime - (time.time() - startTime) - (startTime % sampleTime)
-        if waitTime > 0:
-          mf.syslog_trace("Waiting  : {0}s".format(waitTime), False, DEBUG)
+        pause_time = (sample_time
+                      - (time.time() - start_time)
+                      - (start_time % sample_time))
+        if pause_time > 0:
+          mf.syslog_trace("Waiting  : {0}s".format(pause_time), False, DEBUG)
           mf.syslog_trace("................................", False, DEBUG)
           # no need to wait for the next cycles
           # the meter will pace the meaurements
           # any required waiting will be inside gettelegram()
-          # time.sleep(waitTime)
+          # time.sleep(pause_time)
         else:
-          mf.syslog_trace("Behind   : {0}s".format(waitTime), False, DEBUG)
+          mf.syslog_trace("Behind   : {0}s".format(pause_time), False, DEBUG)
           mf.syslog_trace("................................", False, DEBUG)
       except Exception:
         mf.syslog_trace("Unexpected error in run()", syslog.LOG_CRIT, DEBUG)
@@ -129,7 +133,14 @@ def do_work():
       # ['0-0:96.13.0', '', '']
       # not recorded
 
-  return '{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}'.format(electra1in, electra2in, powerin, electra1out, electra2out, powerout, tarif, swits)
+  return '{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}'.format(electra1in,
+                                                         electra2in,
+                                                         powerin,
+                                                         electra1out,
+                                                         electra2out,
+                                                         powerout,
+                                                         tarif,
+                                                         swits)
 
 
 def gettelegram():
@@ -174,15 +185,13 @@ def gettelegram():
 def do_report(result, flock, fdata):
   """Push the results out to a file."""
   # Get the time and date in human-readable form and UN*X-epoch...
-  outDate  = time.strftime('%Y-%m-%dT%H:%M:%S')
-  outEpoch = int(time.strftime('%s'))
-  # round to current minute to ease database JOINs
-  # outEpoch = outEpoch - (outEpoch % 60)
+  OutDate  = time.strftime('%Y-%m-%dT%H:%M:%S')
+  OutEpoch = int(time.strftime('%s'))
   result   = ', '.join(map(str, result))
   mf.lock(flock)
-  mf.syslog_trace("   @: {0}s".format(outDate), False, DEBUG)
-  with open(fdata, 'a') as f:
-    f.write('{0}, {1}, {2}\n'.format(outDate, outEpoch, result))
+  mf.syslog_trace("   @: {0}s".format(OutDate), False, DEBUG)
+  with open(fdata, 'a') as fo:
+    fo.write('{0}, {1}, {2}\n'.format(OutDate, OutEpoch, result))
   mf.unlock(flock)
 
 
@@ -204,13 +213,13 @@ if __name__ == "__main__":
   syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
 
   if len(sys.argv) == 2:
-    if 'start' == sys.argv[1]:
+    if sys.argv[1] == 'start':
       daemon.start()
-    elif 'stop' == sys.argv[1]:
+    elif sys.argv[1] == 'stop':
       daemon.stop()
-    elif 'restart' == sys.argv[1]:
+    elif sys.argv[1] == 'restart':
       daemon.restart()
-    elif 'foreground' == sys.argv[1]:
+    elif sys.argv[1] == 'debug':
       # assist with debugging.
       print("Debug-mode started. Use <Ctrl>+C to stop.")
       DEBUG = True
@@ -221,5 +230,5 @@ if __name__ == "__main__":
       sys.exit(2)
     sys.exit(0)
   else:
-    print("usage: {0!s} start|stop|restart|foreground".format(sys.argv[0]))
+    print("usage: {0!s} start|stop|restart|debug".format(sys.argv[0]))
     sys.exit(2)
