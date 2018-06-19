@@ -46,6 +46,7 @@ class MyDaemon(Daemon):
       raise
 
     iniconf         = configparser.ConfigParser()
+    iniconf.read(os.environ['HOME'] + '/' + MYAPP + '/config.ini')
     flock           = iniconf.get(MYID, "lockfile")
     sampleTime      = iniconf.getint(MYID, "reporttime") / iniconf.getint(MYID, "samplespercycle")
 

@@ -27,6 +27,7 @@ class MyDaemon(Daemon):
   @staticmethod
   def run():
     iniconf         = configparser.ConfigParser()
+    iniconf.read(os.environ['HOME'] + '/' + MYAPP + '/config.ini')
     reportTime      = iniconf.getint(MYID, "reporttime")
     samplesperCycle = iniconf.getint(MYID, "samplespercycle")
     flock           = iniconf.get(MYID, "lockfile")

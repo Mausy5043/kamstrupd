@@ -33,6 +33,7 @@ class MyDaemon(Daemon):
   @staticmethod
   def run():
     iniconf         = configparser.ConfigParser()
+    iniconf.read(os.environ['HOME'] + '/' + MYAPP + '/config.ini')
     flock           = iniconf.get(MYID, "lockfile")
     scriptname      = iniconf.get(MYID, "lftpscript")
     sampleTime      = iniconf.getint(MYID, "reporttime") / iniconf.getint(MYID, "samplespercycle")
