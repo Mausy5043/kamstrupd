@@ -18,34 +18,33 @@ from mausy5043libs.libdaemon3 import Daemon
 # constants
 DEBUG       = False
 IS_JOURNALD = os.path.isfile('/bin/journalctl')
-MYID        = "".join(list(filter(str.isdigit,
-                                  os.path.realpath(__file__).split('/')[-1])))
+MYID        = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split('/')[-1])))
 MYAPP       = os.path.realpath(__file__).split('/')[-2]
 NODE        = os.uname()[1]
 
 
 class MyDaemon(Daemon):
   """Override Daemon-class run() function."""
+
   @staticmethod
   def run():
-    iniconf         = configparser.ConfigParser()
+    """Execute main loop."""
+    iniconf = configparser.ConfigParser()
     iniconf.read(os.environ['HOME'] + '/' + MYAPP + '/config.ini')
-    report_time = iniconf.getint(MYID, "reporttime")
-    flock = iniconf.get(MYID, "lockfile")
-    fdata = iniconf.get(MYID, "resultfile")
-    samples_averaged = (iniconf.getint(MYID, "samplespercycle")
-                        * iniconf.getint(MYID, "cycles"))
-    sample_time = report_time / iniconf.getint(MYID, "samplespercycle")
+    report_time      = iniconf.getint(MYID, "reporttime")
+    flock            = iniconf.get(MYID,    "lockfile")
+    fdata            = iniconf.get(MYID,    "resultfile")
+    samples_averaged = iniconf.getint(MYID, "samplespercycle") * iniconf.getint(MYID, "cycles")
+    sample_time      = report_time / iniconf.getint(MYID, "samplespercycle")
     data = []
 
     port.open()
     serial.XON  # pylint: disable=W0104
     while True:
       try:
-        start_time     = time.time()
-
-        result        = do_work()
-        result        = result.split(',')
+        start_time = time.time()
+        result = do_work()
+        result = result.split(',')
         mf.syslog_trace("Result   : {0}".format(result), False, DEBUG)
         # data.append(list(map(int, result)))
         data.append([int(d) for d in result])
@@ -61,8 +60,8 @@ class MyDaemon(Daemon):
           # ['3088596', '3030401', '270', '0', '0', '0', '1', '1']
           # averages    = [format(sm / len(data), '.2f') for sm in somma]
           averages = data[-1]
-          averages[2]  = int(somma[2] / len(data))  # avg powerin
-          averages[5]  = int(somma[5] / len(data))  # avg powerout
+          averages[2] = int(somma[2] / len(data))  # avg powerin
+          averages[5] = int(somma[5] / len(data))  # avg powerout
           mf.syslog_trace("Averages : {0}".format(averages), False, DEBUG)
           if averages[0] > 0:
             do_report(averages, flock, fdata)
@@ -100,8 +99,8 @@ def do_work():
   telegram, status = gettelegram()
 
   if status == 1:
-    for element in range(0, len(telegram)):
-      line = re.split(r'[\(\*\)]', telegram[element])
+    for element in telegram:
+      line = re.split(r'[\(\*\)]', element)
       # ['1-0:1.8.1', '00175.402', 'kWh', '']  T1 in
       if line[0] == '1-0:1.8.1':
         electra1in = int(float(line[1]) * 1000)
@@ -133,14 +132,9 @@ def do_work():
       # ['0-0:96.13.0', '', '']
       # not recorded
 
-  return '{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}'.format(electra1in,
-                                                         electra2in,
-                                                         powerin,
-                                                         electra1out,
-                                                         electra2out,
-                                                         powerout,
-                                                         tarif,
-                                                         swits)
+  return '{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}'.format(electra1in,  electra2in,  powerin,
+                                                         electra1out, electra2out, powerout,
+                                                         tarif, swits)
 
 
 def gettelegram():
@@ -162,7 +156,7 @@ def gettelegram():
         abort = 1
       if line != "":
         telegram.append(line)
-    except Exception:
+    except serial.SerialException:
       mf.syslog_trace("*** Serialport read error:", syslog.LOG_CRIT, DEBUG)
       mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
       abort = 2
@@ -185,29 +179,29 @@ def gettelegram():
 def do_report(result, flock, fdata):
   """Push the results out to a file."""
   # Get the time and date in human-readable form and UN*X-epoch...
-  OutDate  = time.strftime('%Y-%m-%dT%H:%M:%S')
-  OutEpoch = int(time.strftime('%s'))
-  result   = ', '.join(map(str, result))
+  out_date  = time.strftime('%Y-%m-%dT%H:%M:%S')
+  out_epoch = int(time.strftime('%s'))
+  result = ', '.join(map(str, result))
   mf.lock(flock)
-  mf.syslog_trace("   @: {0}s".format(OutDate), False, DEBUG)
-  with open(fdata, 'a') as fo:
-    fo.write('{0}, {1}, {2}\n'.format(OutDate, OutEpoch, result))
+  mf.syslog_trace("   @: {0}s".format(out_date), False, DEBUG)
+  with open(fdata, 'a') as fdata_handle:
+    fdata_handle.write('{0}, {1}, {2}\n'.format(out_date, out_epoch, result))
   mf.unlock(flock)
 
 
 if __name__ == "__main__":
-  daemon = MyDaemon('/tmp/' + MYAPP + '/' + MYID + '.pid')
+  daemon = MyDaemon('/tmp/' + MYAPP + '/' + MYID + '.pid')  # pylint: disable=C0103
 
-  port = serial.Serial()
+  port = serial.Serial()                                    # pylint: disable=C0103
   port.baudrate = 9600
   port.bytesize = serial.SEVENBITS
-  port.parity = serial.PARITY_EVEN
+  port.parity   = serial.PARITY_EVEN
   port.stopbits = serial.STOPBITS_ONE
-  port.xonxoff = 1
-  port.rtscts = 0
-  port.dsrdtr = 0
-  port.timeout = 15
-  port.port = "/dev/ttyUSB0"
+  port.xonxoff  = 1
+  port.rtscts   = 0
+  port.dsrdtr   = 0
+  port.timeout  = 15
+  port.port     = "/dev/ttyUSB0"
 
   # initialise logging
   syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
