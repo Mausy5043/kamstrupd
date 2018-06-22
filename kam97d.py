@@ -19,22 +19,23 @@ from mausy5043libs.libdaemon3 import Daemon
 # constants
 DEBUG       = False
 IS_JOURNALD = os.path.isfile('/bin/journalctl')
-MYID        = "".join(list(filter(str.isdigit,
-                                  os.path.realpath(__file__).split('/')[-1])))
+MYID        = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split('/')[-1])))
 MYAPP       = os.path.realpath(__file__).split('/')[-2]
 NODE        = os.uname()[1]
 
 
 class MyDaemon(Daemon):
   """Override Daemon-class run() function."""
+
   @staticmethod
   def run():
+    """Execute main loop."""
     try:                 # Initialise MySQLdb
-      consql    = mdb.connect(host='sql', db='domotica', read_default_file='~/.my.cnf')
+      consql = mdb.connect(host='sql', db='domotica', read_default_file='~/.my.cnf')
       if consql.open:    # dB initialised succesfully -> get a cursor on the dB.
-        cursql  = consql.cursor()
+        cursql = consql.cursor()
         cursql.execute("SELECT VERSION()")
-        versql  = cursql.fetchone()
+        versql = cursql.fetchone()
         cursql.close()
         logtext = "{0} : {1}".format("Attached to MySQL server", versql)
         syslog.syslog(syslog.LOG_INFO, logtext)
@@ -46,18 +47,18 @@ class MyDaemon(Daemon):
         mf.syslog_trace(" ** Closed MySQL connection in run() **", syslog.LOG_CRIT, DEBUG)
       raise
 
-    iniconf         = configparser.ConfigParser()
+    iniconf = configparser.ConfigParser()
     iniconf.read(os.environ['HOME'] + '/' + MYAPP + '/config.ini')
-    flock           = iniconf.get(MYID, "lockfile")
-    sampleTime      = iniconf.getint(MYID, "reporttime") / iniconf.getint(MYID, "samplespercycle")
+    flock       = iniconf.get(MYID,    "lockfile")
+    sample_time = iniconf.getint(MYID, "reporttime") / iniconf.getint(MYID, "samplespercycle")
 
     while True:
       try:
-        start_time   = time.time()
+        start_time = time.time()
 
         do_sql_data(flock, iniconf, consql)
 
-        pause_time    = sampleTime - (time.time() - start_time)  # - (start_time % sampleTime)
+        pause_time = sample_time - (time.time() - start_time)  # - (start_time % sample_time)
         if pause_time > 0:
           mf.syslog_trace("Waiting  : {0}s".format(pause_time), False, DEBUG)
           mf.syslog_trace("................................", False, DEBUG)
@@ -73,10 +74,11 @@ class MyDaemon(Daemon):
 
 
 def do_writesample(cnsql, cmd, sample):
-  fail2write  = False
-  dat         = (sample.split(', '))
+  """Commit sample data to the SQL database."""
+  fail2write = False
+  dat = (sample.split(', '))
   try:
-    cursql    = cnsql.cursor()
+    cursql = cnsql.cursor()
     mf.syslog_trace("   Data: {0}".format(dat), False, DEBUG)
     cursql.execute(cmd, dat)
     cnsql.commit()
@@ -90,8 +92,8 @@ def do_writesample(cnsql, cmd, sample):
       mf.syslog_trace(" *** Execution of MySQL command {0} FAILED!".format(cmd), syslog.LOG_ERR, DEBUG)
       mf.syslog_trace(" *** Not added to MySQLdb: {0}".format(dat), syslog.LOG_ERR, DEBUG)
       mf.syslog_trace(" ***** MySQL ERROR *****", syslog.LOG_ERR, DEBUG)
-    pass
-  except mdb.OperationalError as e:
+
+  except mdb.OperationalError as mdb_error:
     mf.syslog_trace(" ***** MySQL ERROR *****", syslog.LOG_ERR, DEBUG)
     mf.syslog_trace(" *** DB error : {0}".format(sys.exc_info()[1]), syslog.LOG_ERR, DEBUG)
     fail2write = True
@@ -101,16 +103,15 @@ def do_writesample(cnsql, cmd, sample):
       mf.syslog_trace(" *** Execution of MySQL command {0} FAILED!".format(cmd), syslog.LOG_ERR, DEBUG)
       mf.syslog_trace(" *** Not added to MySQLdb: {0}".format(dat), syslog.LOG_ERR, DEBUG)
       mf.syslog_trace(" ***** MySQL ERROR *****", syslog.LOG_ERR, DEBUG)
-    if e.args[0] in (mdbcr.SERVER_GONE_ERROR, mdbcr.SERVER_LOST):
+    if mdb_error.args[0] in (mdbcr.SERVER_GONE_ERROR, mdbcr.SERVER_LOST):
       time.sleep(17 * 60)            # wait 17 minutes for the server to return.
       raise
-    else:
-      pass
 
   return fail2write
 
 
 def do_sql_data(flock, inicnfg, cnsql):
+  """Prepare data for pushing to the database."""
   mf.syslog_trace("============================", False, DEBUG)
   mf.syslog_trace("Pushing data to MySQL-server", False, DEBUG)
   mf.syslog_trace("============================", False, DEBUG)
@@ -119,11 +120,11 @@ def do_sql_data(flock, inicnfg, cnsql):
   mf.lock(flock)
   # wait for all other processes to release their locks.
   count_internal_locks = 2
-  while (count_internal_locks > 1):
+  while count_internal_locks > 1:
     time.sleep(1)
-    count_internal_locks = 0
-    for fname in glob.glob(r'/tmp/' + MYAPP + '/*.lock'):
-      count_internal_locks += 1
+    count_internal_locks = len(glob.glob(r'/tmp/' + MYAPP + '/*.lock'))
+    # for fname in glob.glob(r'/tmp/' + MYAPP + '/*.lock'):
+    #  count_internal_locks += 1
     mf.syslog_trace("{0} internal locks exist".format(count_internal_locks), False, DEBUG)
   # endwhile
 
@@ -140,30 +141,30 @@ def do_sql_data(flock, inicnfg, cnsql):
 
         data = mf.cat(ifile).splitlines()
         if data:
-          for entry in range(0, len(data)):
-            errsql = do_writesample(cnsql, sqlcmd, data[entry])
+          for entry in data:
+            errsql = do_writesample(cnsql, sqlcmd, entry)
           # endfor
         # endif
-      except configparser.NoOptionError as e:  # no sqlcmd
-        mf.syslog_trace("*1* {0}".format(e.__str__), False, DEBUG)
-    except configparser.NoOptionError as e:  # no ifile
-      mf.syslog_trace("*2* {0}".format(e.__str__), False, DEBUG)
+      except configparser.NoOptionError as cp_error:  # no sqlcmd
+        mf.syslog_trace("*1* {0}".format(cp_error.__str__), False, DEBUG)
+    except configparser.NoOptionError as cp_error:  # no ifile
+      mf.syslog_trace("*2* {0}".format(cp_error.__str__), False, DEBUG)
 
     try:
       if not errsql:                     # SQL-job was successful or non-existing
         if os.path.isfile(ifile):        # IF resultfile exists
           mf.syslog_trace("Deleting {0}".format(ifile), False, DEBUG)
           os.remove(ifile)
-    except configparser.NoOptionError as e:  # no ofile
-      mf.syslog_trace("*3* {0}".format(e.__str__), False, DEBUG)
+    except configparser.NoOptionError as cp_error:  # no ofile
+      mf.syslog_trace("*3* {0}".format(cp_error.__str__), False, DEBUG)
 
   # endfor
   mf.unlock(flock)
 
 
 if __name__ == "__main__":
-  daemon = MyDaemon('/tmp/' + MYAPP + '/' + MYID + '.pid')
-  syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)  # initialise logging
+  daemon = MyDaemon('/tmp/' + MYAPP + '/' + MYID + '.pid')  # pylint: disable=C0103
+  syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)   # initialise logging
   if len(sys.argv) == 2:
     if sys.argv[1] == 'start':
       daemon.start()
