@@ -12,8 +12,8 @@ import traceback
 
 import mausy5043funcs.fileops3 as mf
 from mausy5043libs.libdaemon3 import Daemon
-from mausy5043libs.libsqldata3 import SqlDataFetch
 from mausy5043libs.libgraph3 import Graph
+from mausy5043libs.libsqldata3 import SqlDataFetch
 
 # constants
 DEBUG       = False
@@ -37,16 +37,16 @@ class MyDaemon(Daemon):
     iniconf = configparser.ConfigParser()
     iniconf.read(os.environ['HOME'] + '/' + MYAPP + '/config.ini')
     # flock           = iniconf.get(MYID, "lockfile")
-    scriptname      = iniconf.get(MYID, "lftpscript")
+    script_name     = iniconf.get(MYID, "lftpscript")
     sample_time     = iniconf.getint(MYID, "reporttime") / iniconf.getint(MYID, "samplespercycle")
     sqldata.fetch()
     if trendgraph.make() == 0:
-      upload_page(scriptname)
+      upload_page(script_name)
     while True:
       try:
         start_time   = time.time()
 
-        do_stuff(scriptname)
+        do_stuff(script_name)
 
         pause_time    = sample_time - (time.time() - start_time) - (start_time % sample_time)
         if pause_time > 0:
