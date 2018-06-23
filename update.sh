@@ -22,7 +22,7 @@ if [ ! -d /tmp/kamstrupd/mysql ]; then
   chmod -R 755 /tmp/kamstrupd
 fi
 
-pushd "$HOME/kamstrupd"
+pushd "$HOME/kamstrupd" || exit
   source ./includes
   git fetch origin
   # Check which files have changed
