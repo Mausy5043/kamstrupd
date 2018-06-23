@@ -4,7 +4,7 @@
 # a `*boot` repo.
 
 # The hostname is in /etc/hostname prior to running `install.sh` here!
-HOSTNAME=$(cat /etc/hostname)
+HOSTNAME=$(hostname)
 
 echo -n "Started UNinstalling kamstrupd on "; date
 

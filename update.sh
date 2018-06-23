@@ -4,8 +4,8 @@
 # * It synchronises the local copy of kamstrupd with the current GitLab branch
 # * It checks the state of and (re-)starts daemons if they are not (yet) running.
 
-HOSTNAME=$(cat /etc/hostname)
-branch=$(cat "$HOME/.kamstrupd.branch")
+HOSTNAME="$(hostname)"
+branch="$(< ""$HOME/.kamstrupd.branch")"
 
 # Wait for the daemons to finish their job. Prevents stale locks when restarting.
 #echo "Waiting 30s..."
@@ -78,7 +78,7 @@ pushd "$HOME/kamstrupd"
   # Check if daemons are running
   for daemon in $kamlist; do
     if [ -e "/tmp/kamstrupd/$daemon.pid" ]; then
-      if ! kill -0 "$(cat "/tmp/kamstrupd/$daemon.pid")"  > /dev/null 2>&1; then
+      if ! kill -0 "$(< "/tmp/kamstrupd/$daemon.pid")"  > /dev/null 2>&1; then
         logger -p user.err -t kamstrupd "  * Stale daemon $daemon pid-file found."
         rm "/tmp/kamstrupd/$daemon.pid"
           echo "  * Start DIAG $daemon"
@@ -94,7 +94,7 @@ pushd "$HOME/kamstrupd"
   # Check if SVC daemons are running
   for daemon in $srvclist; do
     if [ -e "/tmp/kamstrupd/$daemon.pid" ]; then
-      if ! kill -0 "$(cat "/tmp/kamstrupd/$daemon.pid")"  > /dev/null 2>&1; then
+      if ! kill -0 "$(< "/tmp/kamstrupd/$daemon.pid")"  > /dev/null 2>&1; then
         logger -p user.err -t kamstrupd "  * Stale daemon $daemon pid-file found."
         rm "/tmp/kamstrupd/$daemon.pid"
           echo "  * Start kam$daemon"
