@@ -54,7 +54,8 @@ install_package "mysql-client"
 install_package "libmariadbclient-dev"
 # install_package "python-mysqldb"      # only required by python 2
 echo; echo "*********************************************************"
-sudo pip3 install mysqlclient
+python3 -m pip install --upgrade pip setuptools wheel
+sudo pip3 install -r requirements.txt
 
 commonlibversion=$(pip3 freeze |grep mausy5043 |cut -c 26-)
 if [ "${commonlibversion}" != "${required_commonlibversion}" ]; then
