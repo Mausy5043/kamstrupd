@@ -20,7 +20,7 @@ pushd "$HOME/kamstrupd" >/dev/null
   # ;"                                        \
   # | sed 's/\t/;/g;s/\n//g' > "$datastore/kamh.csv"
 
-  time mysql -h sql --skip-column-names -e       \
+  time mysql --defaults-file=.my.kam.cnf -h sql --skip-column-names -e       \
   "USE domotica;                             \
    SELECT MIN(sample_epoch),                 \
           MAX(T1in),                         \

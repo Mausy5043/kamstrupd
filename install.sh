@@ -28,6 +28,16 @@ install_package()
   fi
 }
 
+getfilefromserver() {
+file="${1}"
+mode="${2}"
+
+#if [ ! -f "$HOME/${file}" ]; then
+  cp -rvf  "$HOME/bin/.config/home/${file}" "$HOME/"
+  chmod    "${mode}" "$HOME/${file}"
+#fi
+}
+
 sudo apt-get update
 # install_package "git"  # already installed by `mod-rasbian-netinst`
 # LFTP package
@@ -56,6 +66,8 @@ install_package "libmariadbclient-dev"
 echo; echo "*********************************************************"
 python3 -m pip install --upgrade pip setuptools wheel
 sudo pip3 install -r requirements.txt
+
+getfilefromserver ".my.kam.cnf" "0740"
 
 commonlibversion=$(pip3 freeze |grep mausy5043 |cut -c 26-)
 if [ "${commonlibversion}" != "${required_commonlibversion}" ]; then
