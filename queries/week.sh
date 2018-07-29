@@ -22,7 +22,7 @@ pushd "$HOME/kamstrupd" >/dev/null
   # | sed 's/\t/;/g;s/\n//g'                \
   # | awk 'NR % 60 == 0' > "$datastore/kamwr.csv"
 
-  time mysql --defaults-file=.my.kam.cnf -h sql --skip-column-names -e       \
+  time mysql --defaults-file="~/.my.kam.cnf" -h sql --skip-column-names -e       \
   "USE domotica;                             \
    SELECT MIN(sample_epoch),                 \
           MAX(T1in),                         \
@@ -46,7 +46,7 @@ pushd "$HOME/kamstrupd" >/dev/null
   # | sed 's/\t/;/g;s/\n//g'                \
   # | awk 'NR % 1440 == 0' > "$datastore/kammr.csv"
 
-  time mysql --defaults-file=.my.kam.cnf -h sql --skip-column-names -e       \
+  time mysql --defaults-file="~/.my.kam.cnf" -h sql --skip-column-names -e       \
   "USE domotica;                             \
    SELECT MIN(sample_epoch),                 \
           MAX(T1in),                         \
