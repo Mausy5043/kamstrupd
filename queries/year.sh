@@ -13,7 +13,7 @@ fi
 pushd "$HOME/kamstrupd" >/dev/null
   #year (per week = 10080')
   # 7d*24h*60m = 10080m
-  interval="INTERVAL 400 DAY "
+  interval="INTERVAL 740 DAY "
   # time mysql -h sql --skip-column-names -e     \
   # "USE domotica;                          \
   # SELECT *                                \
@@ -32,7 +32,7 @@ pushd "$HOME/kamstrupd" >/dev/null
     FROM kamstrup                            \
     WHERE (sample_time >=NOW() - $interval)  \
     GROUP BY YEAR(sample_time),              \
-             WEEK(sample_time, 3)            \
+             MONTH(sample_time)            \
    ;"                                        \
   | sed 's/\t/;/g;s/\n//g' | sort -t ";" -k 1 > "$datastore/kamy2.csv"
 
