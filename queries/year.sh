@@ -14,7 +14,7 @@ pushd "$HOME/kamstrupd" >/dev/null
   #year (per week = 10080')
   # 7d*24h*60m = 10080m
   interval="INTERVAL 740 DAY "
-  # time mysql -h sql --skip-column-names -e     \
+  # time mysql -h boson --skip-column-names -e     \
   # "USE domotica;                          \
   # SELECT *                                \
   # FROM kamstrup                           \
@@ -23,7 +23,7 @@ pushd "$HOME/kamstrupd" >/dev/null
   # | sed 's/\t/;/g;s/\n//g'                \
   # | awk 'NR % 10080 == 0' > "$datastore/kamyr.csv"
 
-  time mysql --defaults-file="~/.my.kam.cnf" -h sql --skip-column-names -e       \
+  time mysql --defaults-file="~/.my.kam.cnf" -h boson --skip-column-names -e       \
   "USE domotica;                             \
    SELECT MIN(sample_epoch),                 \
           MAX(T1in),                         \
