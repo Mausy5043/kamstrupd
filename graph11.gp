@@ -55,6 +55,8 @@ Xw_max = X_max + utc_offset - epoch_compensate
 stats ifnamew using 4 name "Yw" nooutput
 
 Ymax = max(max(Yd_max, Yh_max), Yw_max) +1
+# limit yrange to =< 1500
+Ymax = min(1500, Ymax)
 Ymin = min(min(Yd_min, Yh_min), Yw_min) -1
 
 set multiplot layout 1, 3 title "Actueel vermogen ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
