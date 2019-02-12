@@ -32,7 +32,8 @@ pushd "$HOME/kamstrupd" >/dev/null
     FROM kamstrup                            \
     WHERE (sample_time >=NOW() - $interval)  \
     GROUP BY YEAR(sample_time),              \
-             MONTH(sample_time)            \
+             MONTH(sample_time)              \
+    ORDER BY sample_epoch                    \
    ;"                                        \
   | sed 's/\t/;/g;s/\n//g' | sort -t ";" -k 1 > "$datastore/kamy2.csv"
 
