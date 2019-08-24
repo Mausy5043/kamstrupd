@@ -93,6 +93,9 @@ pushd "$HOME/kamstrupd" || exit 1
     echo "v4" > "$HOME/.kamstrupd.branch"
   fi
 
+  # Recover the database from the server
+  scripts/kamfile.sh --install
+
   # Create the /etc/cron.d directory if it doesn't exist
   sudo mkdir -p /etc/cron.d
   # Set up some cronjobs
@@ -102,13 +105,6 @@ pushd "$HOME/kamstrupd" || exit 1
   echo "@reboot               $ME    sleep 10; $HOME/kamstrupd/update.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
 popd || exit
 
-# Recover the database from the server
-mkdir -p "${HOME}/.sqlite3"
-if [ ! -e "${HOME}/.sqlite3/electriciteit.sqlite3" ]; then
-  if [ -e "/mnt/data/electriciteit.sqlite3" ]; then
-    mv /mnt/data/electriciteit.sqlite3 "${HOME}/.sqlite3/"
-  fi
-fi
 
 echo; echo "*********************************************************"
 echo -n "Finished installation of KAMSTRUPd on "; date
