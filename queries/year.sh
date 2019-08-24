@@ -10,7 +10,7 @@ fi
 
 # host=$(hostname)
 
-pushd "$HOME/kamstrupd" >/dev/null
+pushd "$HOME/kamstrupd" >/dev/null || exit 1
   #year (per week = 10080')
   # 7d*24h*60m = 10080m
   interval="INTERVAL 740 DAY "
@@ -37,4 +37,4 @@ pushd "$HOME/kamstrupd" >/dev/null
    ;"                                        \
   | sed 's/\t/;/g;s/\n//g' | sort -t ";" -k 1 > "$datastore/kamy2.csv"
 
-popd >/dev/null
+popd >/dev/null || exit
