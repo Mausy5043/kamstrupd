@@ -5,7 +5,7 @@
 # * It checks the state of and (re-)starts daemons if they are not (yet) running.
 
 HOSTNAME="$(hostname)"
-branch="$(< "$HOME/.kamstrupd.branch")"
+branch="$(< "${HOME}/.kamstrupd.branch")"
 
 # Wait for the daemons to finish their job. Prevents stale locks when restarting.
 #echo "Waiting 30s..."
@@ -22,7 +22,7 @@ if [ ! -d /tmp/kamstrupd/mysql ]; then
   chmod -R 755 /tmp/kamstrupd
 fi
 
-pushd "$HOME/kamstrupd" || exit 1
+pushd "${HOME}/kamstrupd" || exit 1
   # shellcheck disable=SC1091
   source ./includes
   git fetch origin
