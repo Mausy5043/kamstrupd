@@ -22,7 +22,8 @@ if [ ! -d /tmp/kamstrupd/mysql ]; then
   chmod -R 755 /tmp/kamstrupd
 fi
 
-pushd "$HOME/kamstrupd" || exit
+pushd "$HOME/kamstrupd" || exit 1
+  # shellcheck disable=SC1091
   source ./includes
   git fetch origin
   # Check which files have changed
@@ -63,47 +64,51 @@ pushd "$HOME/kamstrupd" || exit
     if [[ "$fname" == "config.ini" ]]; then
       echo "  ! Configuration file changed"
       echo "  o Restarting all kam daemons"
-      for daemon in $kamlist; do
-        echo "  +- Restart kam$daemon"
-        eval "./kam$daemon"d.py restart
+      # shellcheck disable=SC2154
+      for daemon in ${kamlist}; do
+        echo "  +- Restart kam${daemon}"
+        eval "./kam${daemon}d.py restart"
       done
       echo "  o Restarting all service daemons"
-      for daemon in $srvclist; do
-        echo "  +- Restart kam$daemon"
-        eval "./kam$daemon"d.py restart
+      # shellcheck disable=SC2154
+      for daemon in ${srvclist}; do
+        echo "  +- Restart kam${daemon}"
+        eval "./kam${daemon}d.py restart"
       done
     fi
   done
 
   # Check if daemons are running
-  for daemon in $kamlist; do
-    if [ -e "/tmp/kamstrupd/$daemon.pid" ]; then
-      if ! kill -0 "$(< "/tmp/kamstrupd/$daemon.pid")"  > /dev/null 2>&1; then
-        logger -p user.err -t kamstrupd "  * Stale daemon $daemon pid-file found."
-        rm "/tmp/kamstrupd/$daemon.pid"
-          echo "  * Start DIAG $daemon"
-        eval "./kam$daemon"d.py start
+  # shellcheck disable=SC2154
+  for daemon in ${kamlist}; do
+    if [ -e "/tmp/kamstrupd/${daemon}.pid" ]; then
+      if ! kill -0 "$(< "/tmp/kamstrupd/${daemon}.pid")"  > /dev/null 2>&1; then
+        logger -p user.err -t kamstrupd "  * Stale daemon ${daemon} pid-file found."
+        rm "/tmp/kamstrupd/${daemon}.pid"
+          echo "  * Start DIAG ${daemon}"
+        eval "./kam${daemon}d.py start"
       fi
     else
-      logger -p user.warn -t kamstrupd "Found kam$daemon not running."
-        echo "  * Start kam$daemon"
-      eval "./kam$daemon"d.py start
+      logger -p user.warn -t kamstrupd "Found kam${daemon} not running."
+        echo "  * Start kam${daemon}"
+      eval "./kam${daemon}d.py start"
     fi
   done
 
   # Check if SVC daemons are running
-  for daemon in $srvclist; do
-    if [ -e "/tmp/kamstrupd/$daemon.pid" ]; then
-      if ! kill -0 "$(< "/tmp/kamstrupd/$daemon.pid")"  > /dev/null 2>&1; then
-        logger -p user.err -t kamstrupd "  * Stale daemon $daemon pid-file found."
-        rm "/tmp/kamstrupd/$daemon.pid"
-          echo "  * Start kam$daemon"
-        eval "./kam$daemon"d.py start
+  # shellcheck disable=SC2154
+  for daemon in ${srvclist}; do
+    if [ -e "/tmp/kamstrupd/${daemon}.pid" ]; then
+      if ! kill -0 "$(< "/tmp/kamstrupd/${daemon}.pid")"  > /dev/null 2>&1; then
+        logger -p user.err -t kamstrupd "  * Stale daemon ${daemon} pid-file found."
+        rm "/tmp/kamstrupd/${daemon}.pid"
+          echo "  * Start kam${daemon}"
+        eval "./kam${daemon}d.py start"
       fi
     else
-      logger -p user.warn -t kamstrupd "Found kam$daemon not running."
-        echo "  * Start kam$daemon"
-      eval "./kam$daemon"d.py start
+      logger -p user.warn -t kamstrupd "Found kam${daemon} not running."
+        echo "  * Start kam${daemon}"
+      eval "./kam${daemon}d.py start"
     fi
   done
-popd
+popd || exit
