@@ -19,7 +19,7 @@ from mausy5043libs.libdaemon3 import Daemon
 DEBUG       = False
 IS_JOURNALD = os.path.isfile('/bin/journalctl')
 MYID        = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split('/')[-1])))
-MYAPP       = os.path.realpath(__file__).split('/')[-2]
+MYAPP       = os.path.realpath(__file__).split('/')[-3]
 NODE        = os.uname()[1]
 
 
