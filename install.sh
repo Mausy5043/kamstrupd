@@ -9,7 +9,7 @@ commonlibbranch="v0_6"
 
 echo -n "Started installing KAMSTRUPd on "; date
 minit=$(echo $RANDOM/555 |bc)
-echo "MINIT = $minit"
+echo "MINIT = ${minit}"
 
 install_package()
 {
@@ -32,9 +32,9 @@ getfilefromserver() {
 file="${1}"
 mode="${2}"
 
-#if [ ! -f "$HOME/${file}" ]; then
-  cp -rvf  "$HOME/bin/.config/home/${file}" "$HOME/"
-  chmod    "${mode}" "$HOME/${file}"
+#if [ ! -f "${HOME}/${file}" ]; then
+  cp -rvf  "${HOME}/bin/.config/home/${file}" "${HOME}/"
+  chmod    "${mode}" "${HOME}/${file}"
 #fi
 }
 
@@ -85,12 +85,12 @@ if [ "${commonlibversion}" != "${required_commonlibversion}" ]; then
   echo
 fi
 
-pushd "$HOME/kamstrupd" || exit 1
+pushd "${HOME}/kamstrupd" || exit 1
   # To suppress git detecting changes by chmod:
   git config core.fileMode false
   # set the branch
-  if [ ! -e "$HOME/.kamstrupd.branch" ]; then
-    echo "v4" > "$HOME/.kamstrupd.branch"
+  if [ ! -e "${HOME}/.kamstrupd.branch" ]; then
+    echo "v4" > "${HOME}/.kamstrupd.branch"
   fi
 
   # Recover the database from the server
@@ -100,9 +100,9 @@ pushd "$HOME/kamstrupd" || exit 1
   sudo mkdir -p /etc/cron.d
   # Set up some cronjobs
   echo "# m h dom mon dow user  command" | sudo tee /etc/cron.d/kamstrupd
-  echo "#$minit  * *   *   *   $ME    $HOME/kamstrupd/update.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
+  echo "#${minit}  * *   *   *   ${ME}    ${HOME}/kamstrupd/update.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
   # @reboot we allow for 10s for the network to come up:
-  echo "@reboot               $ME    sleep 10; $HOME/kamstrupd/update.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
+  echo "@reboot               ${ME}    sleep 10; ${HOME}/kamstrupd/update.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
 popd || exit
 
 
