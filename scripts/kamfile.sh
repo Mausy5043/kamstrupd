@@ -12,7 +12,7 @@ install_database_file() {
 
 backup_database_file() {
     if [ -e "${HOME}/.sqlite3/${DBFILE}" ]; then
-        cp "${HOME}/.sqlite3/${DBFILE}" /mnt/data/
+        sqlite3 .backup "${HOME}/.sqlite3/${DBFILE}" "/mnt/data/${DBFILE}"
     fi
 }
 
