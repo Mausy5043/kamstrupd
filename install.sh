@@ -58,11 +58,9 @@ install_package "python3-serial"
 install_package "gnuplot"
 install_package "gnuplot-nox"
 
-# MySQL support (python3)
-install_package "mysql-client"
-# install_package "libmysqlclient-dev"  # not available in stretch
-install_package "libmariadbclient-dev"
-# install_package "python-mysqldb"      # only required by python 2
+# SQLite3 support (incl python3)
+install_package "sqlite3"
+
 echo; echo "*********************************************************"
 python3 -m pip install --upgrade pip setuptools wheel
 sudo pip3 install -r requirements.txt
