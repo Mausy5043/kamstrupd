@@ -8,7 +8,7 @@ UTC=$(date -u -d "$LOCAL" +"%Y-%m-%d %H:%M:%S")  #remove timezone reference
 UTCSECONDS=$(date -d "$UTC" +%s)
 UTCOFFSET=$((LOCALSECONDS - UTCSECONDS))
 
-pushd "$HOME/kamstrupd" >/dev/null
+pushd "$HOME/kamstrupd" >/dev/null || exit 1
   if [ "$(wc -l < /tmp/kamstrupd/mysql/kamd2.csv)" -gt 5 ]; then
     time timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'" ./graph11.gp &
     time timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'" ./graph12.gp &
@@ -17,4 +17,4 @@ pushd "$HOME/kamstrupd" >/dev/null
 
   wait
 
-popd >/dev/null
+popd >/dev/null || exit
