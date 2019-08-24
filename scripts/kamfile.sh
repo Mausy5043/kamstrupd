@@ -1,5 +1,39 @@
 #!/usr/bin/env bash
 
+DBFILE="electriciteit.sqlite3"
+
+install_database_file() {
+    mkdir -p "${HOME}/.sqlite3"
+    recover_database_file
+    if [ ! -e "${HOME}/.sqlite3/${DBFILE}" ]; then
+        create_database_file "idf"
+    fi
+}
+
+backup_database_file() {
+    if [ -e "${HOME}/.sqlite3/${DBFILE}" ]; then
+        cp "${HOME}/.sqlite3/${DBFILE}" /mnt/data/
+    fi
+}
+
+recover_database_file() {
+    if [ -e "/mnt/data/${DBFILE}" ]; then
+        cp "/mnt/data/${DBFILE}" "${HOME}/.sqlite3/"
+    fi
+}
+
+create_database_file() {
+# WARNING!!
+# Calling this function from the wild will overwrite an existing database!
+#
+if [[ "${1}" == "idf" ]]; then
+    sqlite3 "${DBFILE}" < table31.sqlite3
+else
+    echo "Unsupported functionality. Use the 'install_database_file' function instead!"
+    exit 1
+fi
+}
+
 # check commandline parameters
 for i in "$@"
 do
@@ -24,24 +58,3 @@ do
         ;;
   esac
 done
-
-install_database_file() {
-    mkdir -p "${HOME}/.sqlite3"
-    if [ ! -e "${HOME}/.sqlite3/electriciteit.sqlite3" ]; then
-      if [ -e "/mnt/data/electriciteit.sqlite3" ]; then
-        mv /mnt/data/electriciteit.sqlite3 "${HOME}/.sqlite3/"
-      fi
-    else
-      echo ""
-    fi
-}
-
-backup_database_file() {
-#...
-
-}
-
-
-recover_database_file() {
-#...
-}
