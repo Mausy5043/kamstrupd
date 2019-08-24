@@ -8,6 +8,9 @@ HOSTNAME=$(hostname)
 
 echo -n "Started UNinstalling kamstrupd on "; date
 
+# allow user to abort
+sleep 10
+
 pushd "$HOME/kamstrupd" || exit 1
   # shellcheck disable=SC1091
  source ./includes
