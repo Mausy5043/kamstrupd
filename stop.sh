@@ -3,7 +3,7 @@
 # Use stop.sh to stop all daemons in one go
 # You can use update.sh to get everything started kam.
 
-pushd "$HOME/kamstrupd" || exit 1
+pushd "${HOME}/kamstrupd" || exit 1
   # shellcheck disable=SC1091
   source ./includes
 
