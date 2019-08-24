@@ -76,16 +76,16 @@ if [ "${commonlibversion}" != "${required_commonlibversion}" ]; then
     git clone -b "${commonlibbranch}" https://gitlab.com/mausy5043-installer/mausy5043-common-python.git
     pushd /tmp/mausy5043-common-python || exit 1
       sudo ./setup.py install
-    popd
+    popd || exit
     sudo rm -rf mausy5043-common-python/
-  popd
+  popd || exit
   echo
   echo -n "Installed: "
   pip3 freeze | grep mausy5043
   echo
 fi
 
-pushd "$HOME/kamstrupd"
+pushd "$HOME/kamstrupd" || exit 1
   # To suppress git detecting changes by chmod:
   git config core.fileMode false
   # set the branch
@@ -100,7 +100,7 @@ pushd "$HOME/kamstrupd"
   echo "#$minit  * *   *   *   $ME    $HOME/kamstrupd/update.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
   # @reboot we allow for 10s for the network to come up:
   echo "@reboot               $ME    sleep 10; $HOME/kamstrupd/update.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
-popd
+popd || exit
 
 echo; echo "*********************************************************"
 echo -n "Finished installation of KAMSTRUPd on "; date
