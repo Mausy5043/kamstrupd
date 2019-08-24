@@ -124,8 +124,7 @@ def do_work():
       # ['1-0:2.7.0', '0000.00', 'kW', ''] power out
       if line[0] == '1-0:2.7.0':
         powerout = int(float(line[1]) * 1000)
-      # ['0-0:17.0.0', '999', 'A', '']
-      # not recorded
+      # ['0-0:17.0.0', '999', 'A', ''] unknown; not recorded
       # ['0-0:96.3.10', '1', '']  powerusage (1) or powermanufacturing ()
       if line[0] == '0-0:96.3.10':
         swits = int(line[1])
