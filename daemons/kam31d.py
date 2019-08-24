@@ -47,12 +47,12 @@ class MyDaemon(Daemon):
         start_time = time.time()
         result = do_work()
         result = result.split(',')
-        mf.syslog_trace("Result   : {0}".format(result), False, DEBUG)
+        mf.syslog_trace(f"Result   : {result}", False, DEBUG)
         # data.append(list(map(int, result)))
         data.append([int(d) for d in result])
         if len(data) > samples_averaged:
           data.pop(0)
-        mf.syslog_trace("Data     : {0}".format(data), False, DEBUG)
+        mf.syslog_trace(f"Data     : {data}", False, DEBUG)
 
         # report sample average
         if start_time % report_time < sample_time:
@@ -64,7 +64,7 @@ class MyDaemon(Daemon):
           averages = data[-1]
           averages[2] = int(somma[2] / len(data))  # avg powerin
           averages[5] = int(somma[5] / len(data))  # avg powerout
-          mf.syslog_trace("Averages : {0}".format(averages), False, DEBUG)
+          mf.syslog_trace(f"Averages : {averages}", False, DEBUG)
           if averages[0] > 0:
             do_report(averages, flock, fdata)
 
@@ -72,14 +72,14 @@ class MyDaemon(Daemon):
                       - (time.time() - start_time)
                       - (start_time % sample_time))
         if pause_time > 0:
-          mf.syslog_trace("Waiting  : {0}s".format(pause_time), False, DEBUG)
+          mf.syslog_trace(f"Waiting  : {pause_time}s", False, DEBUG)
           mf.syslog_trace("................................", False, DEBUG)
           # no need to wait for the next cycles
           # the meter will pace the meaurements
           # any required waiting will be inside gettelegram()
           # time.sleep(pause_time)
         else:
-          mf.syslog_trace("Behind   : {0}s".format(pause_time), False, DEBUG)
+          mf.syslog_trace(f"Behind   : {pause_time}s", False, DEBUG)
           mf.syslog_trace("................................", False, DEBUG)
       except Exception:
         mf.syslog_trace("Unexpected error in run()", syslog.LOG_CRIT, DEBUG)
@@ -184,9 +184,9 @@ def do_report(result, flock, fdata):
   out_epoch = int(time.strftime('%s'))
   result = ', '.join(map(str, result))
   mf.lock(flock)
-  mf.syslog_trace("   @: {0}s".format(out_date), False, DEBUG)
+  mf.syslog_trace(f"   @: {out_date}s", False, DEBUG)
   with open(fdata, 'a') as fdata_handle:
-    fdata_handle.write('{0}, {1}, {2}\n'.format(out_date, out_epoch, result))
+    fdata_handle.write(f'{out_date}, {out_epoch}, {result}\n')
   mf.unlock(flock)
 
 
