@@ -25,6 +25,8 @@ NODE        = os.uname()[1]
 class MyDaemon(Daemon):
   """Override Daemon-class run() function."""
 
+  # pylint: disable=too-few-public-methods
+
   @staticmethod
   def run():
     """Execute main loop."""

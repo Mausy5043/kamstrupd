@@ -31,6 +31,8 @@ SQL_UPDATE_YEAR = 8   # in hours
 class MyDaemon(Daemon):
   """Override Daemon-class run() function."""
 
+  # pylint: disable=too-few-public-methods
+
   @staticmethod
   def run():
     """Execute main loop."""

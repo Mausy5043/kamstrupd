@@ -27,6 +27,8 @@ NODE        = os.uname()[1]
 class MyDaemon(Daemon):
   """Override Daemon-class run() function."""
 
+  # pylint: disable=too-few-public-methods
+
   @staticmethod
   def run():
     """Execute main loop."""
@@ -89,7 +91,10 @@ def do_writesample(cnsql, cmd, sample):
     if cursql:
       cursql.close()
       mf.syslog_trace(" *I* Closed MySQL connection in do_writesample()", syslog.LOG_ERR, DEBUG)
-      mf.syslog_trace(" *** Execution of MySQL command {0} FAILED!".format(cmd), syslog.LOG_ERR, DEBUG)
+      mf.syslog_trace(" *** Execution of MySQL command {0} FAILED!".format(cmd),
+                      syslog.LOG_ERR,
+                      DEBUG
+                     )
       mf.syslog_trace(" *** Not added to MySQLdb: {0}".format(dat), syslog.LOG_ERR, DEBUG)
       mf.syslog_trace(" ***** MySQL ERROR *****", syslog.LOG_ERR, DEBUG)
   except mdb.OperationalError as mdb_error:
@@ -99,7 +104,10 @@ def do_writesample(cnsql, cmd, sample):
     if cursql:
       cursql.close()
       mf.syslog_trace(" *O* Closed MySQL connection in do_writesample()", syslog.LOG_ERR, DEBUG)
-      mf.syslog_trace(" *** Execution of MySQL command {0} FAILED!".format(cmd), syslog.LOG_ERR, DEBUG)
+      mf.syslog_trace(" *** Execution of MySQL command {0} FAILED!".format(cmd),
+                      syslog.LOG_ERR,
+                      DEBUG
+                     )
       mf.syslog_trace(" *** Not added to MySQLdb: {0}".format(dat), syslog.LOG_ERR, DEBUG)
       mf.syslog_trace(" ***** MySQL ERROR *****", syslog.LOG_ERR, DEBUG)
     if mdb_error.args[0] in (mdbcr.SERVER_GONE_ERROR, mdbcr.SERVER_LOST):
