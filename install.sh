@@ -90,7 +90,7 @@ pushd "$HOME/kamstrupd" || exit 1
   git config core.fileMode false
   # set the branch
   if [ ! -e "$HOME/.kamstrupd.branch" ]; then
-    echo "v3" > "$HOME/.kamstrupd.branch"
+    echo "v4" > "$HOME/.kamstrupd.branch"
   fi
 
   # Create the /etc/cron.d directory if it doesn't exist
