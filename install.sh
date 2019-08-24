@@ -4,8 +4,8 @@
 # a `*boot` repo.
 
 ME=$(whoami)
-required_commonlibversion="0.5.4"
-commonlibbranch="v0_5"
+required_commonlibversion="0.6.0"
+commonlibbranch="v0_6"
 
 echo -n "Started installing KAMSTRUPd on "; date
 minit=$(echo $RANDOM/555 |bc)
