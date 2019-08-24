@@ -23,15 +23,15 @@ recover_database_file() {
 }
 
 create_database_file() {
-# WARNING!!
-# Calling this function from the wild will overwrite an existing database!
-#
-if [[ "${1}" == "idf" ]]; then
-    sqlite3 "${HOME}/.sqlite3/${DBFILE}" < table31.sqlite3.sql
-else
-    echo "Unsupported functionality. Use the 'install_database_file' function instead!"
-    exit 1
-fi
+    # WARNING!!
+    # Calling this function from the wild will overwrite an existing database!
+    #
+    if [[ "${1}" == "idf" ]]; then
+        sqlite3 "${HOME}/.sqlite3/${DBFILE}" < table31.sqlite3.sql
+    else
+        echo "Unsupported functionality. Use the 'install_database_file' function instead!"
+        exit 1
+    fi
 }
 
 # check commandline parameters
