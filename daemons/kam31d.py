@@ -41,21 +41,7 @@ class MyDaemon(Daemon):
     sample_time      = report_time / iniconf.getint(MYID, "samplespercycle")
     data = []
 
-    try:
-      conn = create_db_connection(fdatabase)
-      cursor = conn.cursor()
-      cursor.execute("SELECT sqlite_version();")
-      versql = cursor.fetchone()
-      cursor.close()
-      conn.commit()
-      conn.close()
-      syslog.syslog(syslog.LOG_INFO, f"Attached to MySQL server: {versql}")
-    except sqlite3.Error:
-      mf.syslog_trace("Unexpected SQLite3 error in run(init)", syslog.LOG_CRIT, DEBUG)
-      mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
-      if consql.open:    # attempt to close connection to MySQLdb
-        consql.close()
-      raise
+    test_db_connection(fdatabase)
 
     port.open()
     serial.XON  # pylint: disable=W0104
@@ -238,6 +224,25 @@ def create_db_connection(database_file):
     raise
 
   return None
+
+
+def test_db_connection(fdatabase):
+  ''' test & log database engine coonnection
+  '''
+  try:
+    conn = create_db_connection(fdatabase)
+    cursor = conn.cursor()
+    cursor.execute("SELECT sqlite_version();")
+    versql = cursor.fetchone()
+    cursor.close()
+    conn.commit()
+    conn.close()
+    syslog.syslog(syslog.LOG_INFO, f"Attached to SQLite3 server: {versql}")
+  except sqlite3.Error:
+    mf.syslog_trace("Unexpected SQLite3 error during test.", syslog.LOG_CRIT, DEBUG)
+    mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+    raise
+
 
 if __name__ == "__main__":
   daemon = MyDaemon('/tmp/' + MYAPP + '/' + MYID + '.pid')  # pylint: disable=C0103
