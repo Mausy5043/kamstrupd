@@ -65,12 +65,12 @@ pushd "${HOME}/kamstrupd" || exit 1
         logger -p user.err -t kamstrupd "  * Stale daemon ${daemon} pid-file found."
         rm "/tmp/kamstrupd/${daemon}.pid"
         echo "  * Start kam${daemon}"
-        eval "./kam${daemon}d.py start"
+        eval "./daemons/kam${daemon}d.py start"
       fi
     else
       logger -p user.warn -t kamstrupd "Found kam${daemon} not running."
       echo "  * Start kam${daemon}"
-      eval "./kam${daemon}d.py start"
+      eval "./daemons/kam${daemon}d.py start"
     fi
   done
 

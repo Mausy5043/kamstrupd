@@ -22,7 +22,7 @@ pushd "${HOME}/kamstrupd" || exit 1
   # shellcheck disable=SC2154
   for daemon in ${runlist}; do
     echo "Stopping kam${daemon}"
-    eval "./kam${daemon}d.py stop"
+    eval "./daemons/kam${daemon}d.py stop"
   done
 popd || exit
 
