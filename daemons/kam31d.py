@@ -5,6 +5,7 @@
 import configparser
 import os
 import re
+import sqlite3
 import sys
 import syslog
 import time
@@ -36,6 +37,8 @@ class MyDaemon(Daemon):
     report_time      = iniconf.getint(MYID, "reporttime")
     flock            = iniconf.get(MYID,    "lockfile")
     fdata            = iniconf.get(MYID,    "resultfile")
+    fdatabase        = os.environ['HOME'] + '/' + iniconf.getint(MYID, "databasefile")
+    sqlcmd           = iniconf.get(MYID,    "sqlcmd")
     samples_averaged = iniconf.getint(MYID, "samplespercycle") * iniconf.getint(MYID, "cycles")
     sample_time      = report_time / iniconf.getint(MYID, "samplespercycle")
     data = []
@@ -67,6 +70,7 @@ class MyDaemon(Daemon):
           mf.syslog_trace(f"Averages : {averages}", False, DEBUG)
           if averages[0] > 0:
             do_report(averages, flock, fdata)
+            do_add_to_database(averages, fdatabase, sqlcmd)
 
         pause_time = (sample_time
                       - (time.time() - start_time)
