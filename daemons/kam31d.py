@@ -37,7 +37,7 @@ class MyDaemon(Daemon):
     report_time      = iniconf.getint(MYID, "reporttime")
     flock            = iniconf.get(MYID,    "lockfile")
     fdata            = iniconf.get(MYID,    "resultfile")
-    fdatabase        = os.environ['HOME'] + '/' + iniconf.getint(MYID, "databasefile")
+    fdatabase        = os.environ['HOME'] + '/' + iniconf.get(MYID, "databasefile")
     sqlcmd           = iniconf.get(MYID,    "sqlcmd")
     samples_averaged = iniconf.getint(MYID, "samplespercycle") * iniconf.getint(MYID, "cycles")
     sample_time      = report_time / iniconf.getint(MYID, "samplespercycle")
@@ -203,7 +203,7 @@ def do_add_to_database(result, fdatabase, sql_cmd):
             result[0], result[1], result[2],
             result[3], result[4], result[5],
             result[6], result[7])
-  mf.syslog_trace(f"   @: {out_date}s", False, DEBUG)
+  mf.syslog_trace(f"   @: {out_date}", False, DEBUG)
   conn = create_db_connection(fdatabase)
   cursor = conn.cursor()
   cursor.execute(sql_cmd, results)
@@ -217,8 +217,9 @@ def create_db_connection(database_file):
   param database_file: database file
   :return: Connection object or None
   """
+  mf.syslog_trace(f"Connecting to: {database_file}", False, DEBUG)
   try:
-    consql = create_db_connection(database_file)
+    consql = sqlite3.connect(database_file)
     #if consql:    # dB initialised succesfully -> get a cursor on the dB and run a test.
     #  cursql = consql.cursor()
     #  cursql.execute("SELECT sqlite_version()")
