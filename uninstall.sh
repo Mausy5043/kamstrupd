@@ -32,4 +32,7 @@ pushd "${HOME}/kamstrupd" || exit 1
   done
 popd || exit
 
+# rescue the database
+scripts/kamfile.sh --backup
+
 echo -n "Finished UNinstallation of kamstrupd on "; date
