@@ -69,7 +69,7 @@ class MyDaemon(Daemon):
         data.append([int(d) for d in result])
         if len(data) > samples_averaged:
           data.pop(0)
-        mf.syslog_trace(f"Data     : {data}", False, DEBUG)
+        # mf.syslog_trace(f"Data     : {data}", False, DEBUG)
 
         # report sample average
         if start_time % report_time < sample_time:
@@ -83,7 +83,6 @@ class MyDaemon(Daemon):
           averages[5] = int(somma[5] / len(data))  # avg powerout
           mf.syslog_trace(f"Averages : {averages}", False, DEBUG)
           if averages[0] > 0:
-            do_report(averages, flock, fdata)
             do_add_to_database(averages, fdatabase, sqlcmd)
 
         pause_time = (sample_time
@@ -193,19 +192,6 @@ def gettelegram():
   # abort == 2 means that a serial port read/write error occurred
   # abort == 3 no valid data after several attempts
   return telegram, abort
-
-
-def do_report(result, flock, fdata):
-  """Push the results out to a file."""
-  # Get the time and date in human-readable form and UN*X-epoch...
-  out_date  = time.strftime('%Y-%m-%dT%H:%M:%S')
-  out_epoch = int(time.strftime('%s'))
-  result = ', '.join(map(str, result))
-  mf.lock(flock)
-  mf.syslog_trace(f"   @: {out_date}s", False, DEBUG)
-  with open(fdata, 'a') as fdata_handle:
-    fdata_handle.write(f'{out_date}, {out_epoch}, {result}\n')
-  mf.unlock(flock)
 
 
 def do_add_to_database(result, fdatabase, sql_cmd):
