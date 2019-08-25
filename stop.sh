@@ -9,24 +9,9 @@ pushd "${HOME}/kamstrupd" || exit 1
 
   # Check if DIAG daemons are running
   # shellcheck disable=SC2154
-  for daemon in ${kamlist}; do
+  for daemon in ${runlist}; do
     # command the daemon to stop regardless if it is running or not.
-    eval "./kam${daemon}d.py stop"
-    # kill off any rogue daemons by the same name (it happens sometimes)
-    if [   "$(pgrep -fc "kam${daemon}d.py")" -ne 0 ]; then
-      kill "$(pgrep -f  "kam${daemon}d.py")"
-    fi
-    # log the activity
-    logger -p user.err -t kamstrupd "  * Daemon ${daemon} stopped."
-    # force rm the .pid file
-    rm -f "/tmp/kamstrupd/${daemon}.pid"
-  done
-
-  # Check if SVC daemons are running
-  # shellcheck disable=SC2154
-  for daemon in ${srvclist}; do
-    # command the daemon to stop regardless if it is running or not.
-    eval "./kam${daemon}d.py stop"
+    eval "./daemons/kam${daemon}d.py stop"
     # kill off any rogue daemons by the same name (it happens sometimes)
     if [   "$(pgrep -fc "kam${daemon}d.py")" -ne 0 ]; then
       kill "$(pgrep -f  "kam${daemon}d.py")"

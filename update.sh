@@ -42,58 +42,36 @@ pushd "${HOME}/kamstrupd" || exit 1
     # Detect changes
     if [[ "${f5l4}" == "kamd.py" ]]; then
       echo "  ! Domotica daemon changed"
-      eval "./${fname} stop"
+      eval "./daemons/${fname} stop"
     fi
 
     #CONFIG.INI changed
     if [[ "${fname}" == "config.ini" ]]; then
       echo "  ! Configuration file changed"
-      echo "  o Restarting all kam daemons"
+      echo "  o Restarting all daemons"
       # shellcheck disable=SC2154
-      for daemon in ${kamlist}; do
+      for daemon in ${runlist}; do
         echo "  +- Restart kam${daemon}"
-        eval "./kam${daemon}d.py restart"
-      done
-      echo "  o Restarting all service daemons"
-      # shellcheck disable=SC2154
-      for daemon in ${srvclist}; do
-        echo "  +- Restart kam${daemon}"
-        eval "./kam${daemon}d.py restart"
+        eval "./daemons/kam${daemon}d.py restart"
       done
     fi
   done
 
   # Check if daemons are running
   # shellcheck disable=SC2154
-  for daemon in ${kamlist}; do
+  for daemon in ${runlist}; do
     if [ -e "/tmp/kamstrupd/${daemon}.pid" ]; then
       if ! kill -0 "$(< "/tmp/kamstrupd/${daemon}.pid")"  > /dev/null 2>&1; then
         logger -p user.err -t kamstrupd "  * Stale daemon ${daemon} pid-file found."
         rm "/tmp/kamstrupd/${daemon}.pid"
-          echo "  * Start DIAG ${daemon}"
+        echo "  * Start kam${daemon}"
         eval "./kam${daemon}d.py start"
       fi
     else
       logger -p user.warn -t kamstrupd "Found kam${daemon} not running."
-        echo "  * Start kam${daemon}"
+      echo "  * Start kam${daemon}"
       eval "./kam${daemon}d.py start"
     fi
   done
 
-  # Check if SVC daemons are running
-  # shellcheck disable=SC2154
-  for daemon in ${srvclist}; do
-    if [ -e "/tmp/kamstrupd/${daemon}.pid" ]; then
-      if ! kill -0 "$(< "/tmp/kamstrupd/${daemon}.pid")"  > /dev/null 2>&1; then
-        logger -p user.err -t kamstrupd "  * Stale daemon ${daemon} pid-file found."
-        rm "/tmp/kamstrupd/${daemon}.pid"
-          echo "  * Start kam${daemon}"
-        eval "./kam${daemon}d.py start"
-      fi
-    else
-      logger -p user.warn -t kamstrupd "Found kam${daemon} not running."
-        echo "  * Start kam${daemon}"
-      eval "./kam${daemon}d.py start"
-    fi
-  done
 popd || exit

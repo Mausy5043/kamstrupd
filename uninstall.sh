@@ -18,16 +18,10 @@ pushd "${HOME}/kamstrupd" || exit 1
   # prevent restarts of daemons while the script is still running
   sudo rm /etc/cron.d/kamstrupd
 
-  echo "  Stopping all diagnostic daemons"
+  echo "  Stopping all daemons"
   # shellcheck disable=SC2154
-  for daemon in ${kamlist}; do
-    echo "Stopping ${daemon}"
-    eval "./kam${daemon}d.py stop"
-  done
-  echo "  Stopping all service daemons"
-  # shellcheck disable=SC2154
-  for daemon in ${srvclist}; do
-    echo "Stopping ${daemon}"
+  for daemon in ${runlist}; do
+    echo "Stopping kam${daemon}"
     eval "./kam${daemon}d.py stop"
   done
 popd || exit
