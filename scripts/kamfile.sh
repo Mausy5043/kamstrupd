@@ -27,7 +27,7 @@ create_database_file() {
     # Calling this function from the wild will overwrite an existing database!
     #
     if [[ "${1}" == "idf" ]]; then
-        sqlite3 "${HOME}/.sqlite3/${DBFILE}" < table31.sqlite3.sql
+        sqlite3 "${HOME}/.sqlite3/${DBFILE}" < scripts/table31.sqlite3.sql
     else
         echo "Unsupported functionality. Use the 'install_database_file' function instead!"
         exit 1
