@@ -35,13 +35,27 @@ class MyDaemon(Daemon):
     iniconf = configparser.ConfigParser()
     iniconf.read(os.environ['HOME'] + '/' + MYAPP + '/config.ini')
     report_time      = iniconf.getint(MYID, "reporttime")
-    flock            = iniconf.get(MYID,    "lockfile")
-    fdata            = iniconf.get(MYID,    "resultfile")
     fdatabase        = os.environ['HOME'] + '/' + iniconf.get(MYID, "databasefile")
     sqlcmd           = iniconf.get(MYID,    "sqlcmd")
     samples_averaged = iniconf.getint(MYID, "samplespercycle") * iniconf.getint(MYID, "cycles")
     sample_time      = report_time / iniconf.getint(MYID, "samplespercycle")
     data = []
+
+    try:
+      conn = create_db_connection(fdatabase)
+      cursor = conn.cursor()
+      cursor.execute("SELECT sqlite_version();")
+      versql = cursor.fetchone()
+      cursor.close()
+      conn.commit()
+      conn.close()
+      syslog.syslog(syslog.LOG_INFO, f"Attached to MySQL server: {versql}")
+    except sqlite3.Error:
+      mf.syslog_trace("Unexpected SQLite3 error in run(init)", syslog.LOG_CRIT, DEBUG)
+      mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+      if consql.open:    # attempt to close connection to MySQLdb
+        consql.close()
+      raise
 
     port.open()
     serial.XON  # pylint: disable=W0104
