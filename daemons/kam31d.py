@@ -208,6 +208,7 @@ def do_add_to_database(result, fdatabase, sql_cmd):
   cursor = conn.cursor()
   cursor.execute(sql_cmd, results)
   cursor.close()
+  conn.commit()
   conn.close()
 
 
