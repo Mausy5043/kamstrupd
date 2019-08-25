@@ -3,6 +3,7 @@
 """Communicates with the smart electricity meter [KAMSTRUP]."""
 
 import configparser
+import datetime as dt
 import os
 import re
 import sqlite3
@@ -183,13 +184,14 @@ def gettelegram():
 def do_add_to_database(result, fdatabase, sql_cmd):
   """Commit the results to the database."""
   # Get the time and date in human-readable form and UN*X-epoch...
-  out_date  = time.strftime('%Y-%m-%dT%H:%M:%S')
+  out_date  = dt.datetime.now()  # time.strftime('%Y-%m-%dT%H:%M:%S')
   out_epoch = int(time.strftime('%s'))
   results = (out_date, out_epoch,
             result[0], result[1], result[2],
             result[3], result[4], result[5],
             result[6], result[7])
   mf.syslog_trace(f"   @: {out_date}", False, DEBUG)
+  mf.syslog_trace(f"    : {results}", False, DEBUG)
   conn = create_db_connection(fdatabase)
   cursor = conn.cursor()
   cursor.execute(sql_cmd, results)
