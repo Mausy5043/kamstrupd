@@ -190,6 +190,49 @@ def do_report(result, flock, fdata):
   mf.unlock(flock)
 
 
+def do_add_to_database(result, fdatabase, sql_cmd):
+  """Commit the results to the database."""
+  # Get the time and date in human-readable form and UN*X-epoch...
+  out_date  = time.strftime('%Y-%m-%dT%H:%M:%S')
+  out_epoch = int(time.strftime('%s'))
+  results = (out_date, out_epoch,
+            result[0], result[1], result[2],
+            result[3], result[4], result[5],
+            result[6], result[7])
+  mf.syslog_trace(f"   @: {out_date}s", False, DEBUG)
+  conn = create_db_connection(fdatabase)
+  cursor = conn.cursor()
+  cursor.execute(sql_cmd, results)
+  cursor.close()
+  conn.close()
+
+
+def create_db_connection(database_file):
+  """ Create a database connection to the SQLite3 database
+      specified by database_file
+  param database_file: database file
+  :return: Connection object or None
+  """
+  try:
+    consql = create_db_connection(database_file)
+    #if consql:    # dB initialised succesfully -> get a cursor on the dB and run a test.
+    #  cursql = consql.cursor()
+    #  cursql.execute("SELECT sqlite_version()")
+    #  versql = cursql.fetchone()
+    #  cursql.close()
+    #  logtext = f"Attached to SQLite3 server : {versql}"
+    #  syslog.syslog(syslog.LOG_INFO, logtext)
+    return consql
+  except sqlite3.Error:
+    mf.syslog_trace("Unexpected SQLite3 error when connecting to server.", syslog.LOG_CRIT, DEBUG)
+    mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+    if consql:    # attempt to close connection to SQLite3 server
+      consql.close()
+      mf.syslog_trace(" ** Closed SQLite3 connection. **", syslog.LOG_CRIT, DEBUG)
+    raise
+
+  return None
+
 if __name__ == "__main__":
   daemon = MyDaemon('/tmp/' + MYAPP + '/' + MYID + '.pid')  # pylint: disable=C0103
 
