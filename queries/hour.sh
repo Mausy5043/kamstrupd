@@ -1,37 +1,27 @@
 #!/bin/bash
 
-# Pull data from MySQL server.
+# query hourly totals for a period of two days (48 hours)
 
-datastore="/tmp/kamstrupd/mysql"
-
+# create a place to store the data
+datastore="/tmp/kamstrupd/data"
 if [ ! -d "$datastore" ]; then
   mkdir -p "$datastore"
 fi
 
-interval="INTERVAL 70 MINUTE "
-# host=$(hostname)
+interval="48 hour"
+divisor="3600"
 
 pushd "$HOME/kamstrupd" >/dev/null || exit 1
-  # time mysql -h boson --skip-column-names -e       \
-  # "USE domotica;                            \
-  #  SELECT *                                  \
-  #   FROM kamstrup                             \
-  #   WHERE (sample_time >=NOW() - $interval)   \
-  # ;"                                        \
-  # | sed 's/\t/;/g;s/\n//g' > "$datastore/kamh.csv"
+  # totals per hour for T1in, T2in, T1out, T2out
+  sqlite3 "${HOME}.sqlite3/electriciteit.sqlite3" \
+     ".separator '. '"
+     "SELECT strftime('%H',sample_time), \
+             MAX(T1in)-MIN(T1in), \
+             MAX(T2in)-MIN(T2in), \
+             MAX(T1out)-MIN(T1out), \
+             MAX(T2out)-MIN(T2out) \
+      FROM kamstrup \
+      WHERE (sample_time >= datetime('now', ${interval})) \
+      GROUP BY ((sample_epoch - (sample_epoch%${divisor})) / ${divisor});"
 
-  time mysql --defaults-file="~/.my.kam.cnf" -h boson --skip-column-names -e       \
-  "USE domotica;                             \
-   SELECT MIN(sample_epoch),                 \
-          MAX(T1in),                         \
-          MAX(T2in),                         \
-          AVG(powerin)                       \
-    FROM kamstrup                            \
-    WHERE (sample_time >=NOW() - $interval)  \
-    GROUP BY (sample_epoch DIV 60)           \
-   ;"                                        \
-  | sed 's/\t/;/g;s/\n//g' > "$datastore/kamh2.csv"
-
-  #http://www.sitepoint.com/understanding-sql-joins-mysql-database/
-  #mysql -h boson.lan --skip-column-names -e "USE domotica; SELECT ds18.sample_time, ds18.sample_epoch, ds18.temperature, wind.speed FROM ds18 INNER JOIN wind ON ds18.sample_epoch = wind.sample_epoch WHERE (ds18.sample_time) >=NOW() - INTERVAL 1 MINUTE;" | sed 's/\t/;/g;s/\n//g' > $datastore/sql2c.csv
 popd >/dev/null || exit
