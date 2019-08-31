@@ -21,7 +21,8 @@ pushd "$HOME/kamstrupd" >/dev/null || exit 1
              MAX(T1out)-MIN(T1out), \
              MAX(T2out)-MIN(T2out) \
       FROM kamstrup \
-      WHERE (sample_time >= datetime('now', ${interval})) \
-      GROUP BY ((sample_epoch - (sample_epoch%${divisor})) / ${divisor});"
+      WHERE (sample_time >= datetime('now', '${interval}')) \
+      GROUP BY ((sample_epoch - (sample_epoch % ${divisor})) / ${divisor}) \
+      ;"
 
 popd >/dev/null || exit
