@@ -8,7 +8,7 @@ if [ ! -d "$datastore" ]; then
   mkdir -p "$datastore"
 fi
 
-interval="48 hour"
+interval="-48 hour"
 divisor="3600"
 
 pushd "$HOME/kamstrupd" >/dev/null || exit 1
