@@ -101,9 +101,9 @@ pushd "${HOME}/kamstrupd" || exit 1
   # Set up some cronjobs
   echo "# m h dom mon dow user  command" | sudo tee /etc/cron.d/kamstrupd
   echo "${minit}  * *   *   *   ${ME}    ${HOME}/kamstrupd/scripts/kamfile.sh --backup 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
-  echo "*/10  * *   *   *   ${ME}    ${HOME}/kamstrupd/queries/pastday.sh --backup 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
+  echo "*/10  * *   *   *   ${ME}    sleep 61; ${HOME}/kamstrupd/queries/pastday.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
   # @reboot we allow for 10s for the network to come up:
-  echo "@reboot               ${ME}    sleep 10; ${HOME}/kamstrupd/update.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
+  echo "@reboot             ${ME}    sleep 10; ${HOME}/kamstrupd/update.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
 popd || exit
 
 
