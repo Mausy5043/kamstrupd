@@ -4,8 +4,8 @@
 
 # create a place to store the data
 datastore="/tmp/kamstrupd/data"
-if [ ! -d "$datastore" ]; then
-  mkdir -p "$datastore"
+if [ ! -d "${datastore}" ]; then
+  mkdir -p "${datastore}"
 fi
 
 interval="-48 hour"
@@ -23,6 +23,6 @@ pushd "$HOME/kamstrupd" >/dev/null || exit 1
       FROM kamstrup \
       WHERE (sample_time >= datetime('now', '${interval}')) \
       GROUP BY ((sample_epoch - (sample_epoch % ${divisor})) / ${divisor}) \
-      ;"
+      ;" > "${datastore}/pastday.csv"
 
 popd >/dev/null || exit
