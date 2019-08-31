@@ -14,7 +14,7 @@ divisor="3600"
 pushd "$HOME/kamstrupd" >/dev/null || exit 1
   # totals per hour for T1in, T2in, T1out, T2out
   sqlite3 "${HOME}.sqlite3/electriciteit.sqlite3" \
-     ".separator '. '"
+     ".separator '. '" \
      "SELECT strftime('%H',sample_time), \
              MAX(T1in)-MIN(T1in), \
              MAX(T2in)-MIN(T2in), \
