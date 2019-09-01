@@ -15,5 +15,11 @@ if [ ! -d "${datastore}" ]; then
   mkdir -p "${datastore}"
 fi
 
+# create a place to store the website files for uploading
+site="/tmp/kamstrupd/site"
+if [ ! -d "${site}/img" ]; then
+  mkdir -p "${site}/img"
+fi
+
 # shellcheck disable=SC2034
 kamdata=$(mktemp "${datastore}/dataXXXXXX.csv")
