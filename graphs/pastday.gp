@@ -32,7 +32,7 @@ set multiplot layout 2,1
 set title "Verbruik recent ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
 
 # ***************************************************************** X-axis *****
-set xlabel "uur"             # X-axis label
+set xlabel "uur"
 
 # ***************************************************************** Y-axis *****
 set ylabel "Verbruik [Wh]"
@@ -45,12 +45,12 @@ set key reverse Left
 # ***************************************************************** Output *****
 set style data histograms
 set style histogram rowstacked
-set boxwidth 1 relative
-set style fill solid 1.0 noborder
+set style fill solid noborder
 set boxwidth 0.75
 
 # ****************************************************************** PLOT ******
-plot kamdata using 2:xtic(1) title "T1" fc "yellow", '' using 3 title "T2" fc "green"
+plot kamdata using 2:xtic(1) title "T1" lc "green" \
+        , '' using 3         title "T2" lc "yellow"
 
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -64,4 +64,5 @@ set title "Productie recent ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offs
 set ylabel "Productie [Wh]"
 
 # ****************************************************************** PLOT ******
-plot kamdata using 4:xtic(1) title "T1" fc "yellow", '' using 5 title "T2" fc "green"
+plot kamdata using 4:xtic(1) title "T1" lc "green" \
+        , '' using 5         title "T2" lc "yellow"
