@@ -22,13 +22,13 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
       FROM kamstrup \
       WHERE (sample_time >= datetime('now', '${interval}')) \
       GROUP BY ((sample_epoch - (sample_epoch % ${divisor})) / ${divisor}) \
-      ;" > "${datafile}"
+      ;" > "${kamdata}"
 
-  if [ "$(wc -l < "${datafile}")" -gt 5 ]; then
-    timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; datafile='${datafile}'" ./graphs/pastday.gp
+  if [ "$(wc -l < "${kamdata}")" -gt 5 ]; then
+    timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}'" ./graphs/pastday.gp
   fi
 
 popd >/dev/null || exit
 
 # drop datafile
-rm "${datafile}"
+rm "${kamdata}"

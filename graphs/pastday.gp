@@ -3,7 +3,7 @@
 # graph of current power usage
 
 # datafiles
-print datafile
+print kamdata
 set output "/tmp/kamstrupd/kam_pastday.png"
 
 # ******************************************************* General settings *****
