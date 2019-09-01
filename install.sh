@@ -103,6 +103,7 @@ pushd "${HOME}/kamstrupd" || exit 1
   echo "${minit}  * *   *   *   ${ME}    sleep 80; ${HOME}/kamstrupd/scripts/kamfile.sh --backup 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
   echo "*/10  * *   *   *   ${ME}    sleep 61; ${HOME}/kamstrupd/scripts/pastday.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
   echo "01  * *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/pastmonth.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
+  echo "03  01 *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/pastyear.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
   # @reboot we allow for 10s for the network to come up:
   echo "@reboot             ${ME}    sleep 10; ${HOME}/kamstrupd/update.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
 popd || exit
