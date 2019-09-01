@@ -13,7 +13,7 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
 
   #shellcheck disable=SC2154
   sqlite3 "${HOME}/.sqlite3/electriciteit.sqlite3" \
-     ".separator '. '" \
+     ".separator '; '" \
      "SELECT strftime('%H',sample_time), \
              MAX(T1in)-MIN(T1in), \
              MAX(T2in)-MIN(T2in), \
