@@ -33,6 +33,7 @@ set title "Verbruik afgelopen jaar ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+u
 
 # ***************************************************************** X-axis *****
 set xlabel "jaar-maand"
+set xtics rotate by -60
 
 # ***************************************************************** Y-axis *****
 set ylabel "Verbruik [Wh]"
