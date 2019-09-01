@@ -24,6 +24,7 @@ NODE        = os.uname()[1]
 
 def get_cli_params():
     """Check for presence of a CLI parameter."""
+    print(sys.argv)
     if len(sys.argv) != 2:
         sys.exit(0)
     # 1 parameter required = filename to be processed
