@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 copy_default_page() {
-    cp ./web/default.md /tmp/kamstrup/site
+    cp ./web/default.md /tmp/kamstrupd/site
 }
 
 make_script() {
@@ -15,11 +15,11 @@ make_script() {
       echo "cd 05.stream/;"
       echo "set cmd:fail-exit no;"
       echo "mirror --reverse --delete --verbose=3 -c /tmp/kamstrup/site/ . ;"
-    } > /tmp/kamstrup/script.lftp
+    } > /tmp/kamstrupd/script.lftp
 }
 
 exec_script() {
-    lftp -f /tmp/kamstrup/script.lftp
+    lftp -f /tmp/kamstrupd/script.lftp
 }
 
 # check commandline parameters
