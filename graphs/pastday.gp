@@ -3,7 +3,7 @@
 # graph of current power usage and production
 
 
-set output "/tmp/kamstrupd/kam_pastday.png"
+set output "/tmp/kamstrupd/site/img/kam_pastday.png"
 
 # ******************************************************* General settings *****
 set terminal png enhanced font "Vera,9" size 1280,640
