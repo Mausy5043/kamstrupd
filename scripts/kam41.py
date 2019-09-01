@@ -24,7 +24,6 @@ NODE        = os.uname()[1]
 
 def get_cli_params():
     """Check for presence of a CLI parameter."""
-    print(sys.argv)
     if len(sys.argv) != 2:
         sys.exit(0)
     # 1 parameter required = filename to be processed
@@ -52,11 +51,13 @@ def write_file(file_to_write_to, lines_to_write):
     """
     with open(file_to_write_to, 'w') as output_file:
         for line in lines_to_write:
-            output_file.write(f'{line}\n')
+            write_line = "; ".join(line)
+            output_file.write(f'{write_line}\n')
 
 
 def order_lines(lines_to_order):
     """
+    Order the lines as desired.
     """
     return lines_to_order
 
