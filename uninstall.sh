@@ -24,9 +24,9 @@ pushd "${HOME}/kamstrupd" || exit 1
     echo "Stopping kam${daemon}"
     eval "./daemons/kam${daemon}d.py stop"
   done
+
+  ./scripts/kamfile.sh --backup
 popd || exit
 
-# rescue the database
-scripts/kamfile.sh --backup
 
 echo -n "Finished UNinstallation of kamstrupd on "; date
