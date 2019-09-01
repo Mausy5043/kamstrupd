@@ -4,15 +4,11 @@
 
 # datafiles
 print datafile
-
-ifnameh = "/tmp/kamstrupd/mysql/kamh2.csv"
-ifnamed = "/tmp/kamstrupd/mysql/kamd2.csv"
-ifnamew = "/tmp/kamstrupd/mysql/kamw2.csv"
-set output "/tmp/kamstrupd/site/img/kamstrup11.png"
+set output "/tmp/kamstrupd/kam_pastday.png"
 
 # ******************************************************* General settings *****
 set terminal png enhanced font "Vera,9" size 1280,320
-set datafile separator ';'
+set datafile separator ','
 set datafile missing "NaN"    # Ignore missing values
 set grid front
 tz_offset = utc_offset / 3600 # GNUplot only works with UTC. Need to compensate
@@ -99,9 +95,10 @@ set lmargin at screen LMARG
 set rmargin at screen LMPOS
 
 # ***** PLOT *****
-plot ifnamew \
-      using ($1+utc_offset):4 title " Vermogen [W]" with lines lw 0.1 lc rgb "#ccbb0000"
-      # with points pt 5 ps 0.2 fc rgb "#ccbb0000" \
+plot datafile using 1:2
+#plot ifnamew \
+#      using ($1+utc_offset):4 title " Vermogen [W]" with lines lw 0.1 lc rgb "#ccbb0000"
+#      # with points pt 5 ps 0.2 fc rgb "#ccbb0000" \
 
 
 
@@ -131,9 +128,9 @@ set lmargin at screen LMPOS+0.001
 set rmargin at screen MRPOS
 
 # ***** PLOT *****
-plot ifnamed \
-      using ($1+utc_offset):4 with lines lw 0.1 lc rgb "#ccbb0000"
-      # with points pt 5 ps 0.2 fc rgb "#ccbb0000" \
+#plot ifnamed \
+#      using ($1+utc_offset):4 with lines lw 0.1 lc rgb "#ccbb0000"
+#      # with points pt 5 ps 0.2 fc rgb "#ccbb0000" \
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -162,9 +159,9 @@ set lmargin at screen MRPOS+0.001
 set rmargin at screen RMARG
 
 # ***** PLOT *****
-plot ifnameh \
-      using ($1+utc_offset):4 with lines lw 0.1 lc rgb "#ccbb0000"
-      # with points pt 5 ps 0.2 fc rgb "#ccbb0000" \
+#plot ifnameh \
+#      using ($1+utc_offset):4 with lines lw 0.1 lc rgb "#ccbb0000"
+#      # with points pt 5 ps 0.2 fc rgb "#ccbb0000" \
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #                                                                 FINALIZING
