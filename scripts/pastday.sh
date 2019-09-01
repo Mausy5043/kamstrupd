@@ -2,17 +2,16 @@
 
 # query hourly totals for a period of two days (48 hours)
 
-# create a place to store the data
-datastore="/tmp/kamstrupd/data"
-if [ ! -d "${datastore}" ]; then
-  mkdir -p "${datastore}"
-fi
 
 interval="-48 hour"
 divisor="3600"
 
-pushd "$HOME/kamstrupd" >/dev/null || exit 1
+pushd "${HOME}/kamstrupd" >/dev/null || exit 1
+  #shellcheck disable=SC1091
+  source ./scripts/environment.sh
   # totals per hour for T1in, T2in, T1out, T2out
+
+  #shellcheck disable=SC2154
   sqlite3 "${HOME}/.sqlite3/electriciteit.sqlite3" \
      ".separator '. '" \
      "SELECT strftime('%H',sample_time), \
@@ -23,6 +22,10 @@ pushd "$HOME/kamstrupd" >/dev/null || exit 1
       FROM kamstrup \
       WHERE (sample_time >= datetime('now', '${interval}')) \
       GROUP BY ((sample_epoch - (sample_epoch % ${divisor})) / ${divisor}) \
-      ;" > "${datastore}/pastday.csv"
+      ;" > "${datafile}"
+
+  if [ "$(wc -l < "${datafile}")" -gt 5 ]; then
+    timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; datafile='${datafile}'" ./graphs/pastday.gp
+  fi
 
 popd >/dev/null || exit
