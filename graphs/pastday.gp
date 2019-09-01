@@ -1,9 +1,6 @@
 #!/usr/bin/env gnuplot
 
-# graph of current power usage
-
-# datafiles
-print kamdata
+# graph of current power usage and production
 set output "/tmp/kamstrupd/kam_pastday.png"
 
 # ******************************************************* General settings *****
@@ -59,6 +56,12 @@ set key samplen 1
 set key reverse Left
 
 # ***************************************************************** Output *****
+set style data histograms
+set style histogram rowstacked
+set boxwidth 1 relative
+set style fill solid 1.0 border -1
+set boxwidth 0.75
+
 # set arrow from graph 0,graph 0 to graph 0,graph 1 nohead lc rgb "red" front
 # set arrow from graph 1,graph 0 to graph 1,graph 1 nohead lc rgb "green" front
 #set object 1 rect from screen 0,0 to screen 1,1 behind
@@ -70,7 +73,7 @@ set key reverse Left
 #set rmargin at screen LMPOS
 
 # ***** PLOT *****
-plot kamdata using 1:2
+plot kamdata using 2:xtic(1) title "T1", '' 3 title "T2"
 #plot ifnamew \
 #      using ($1+utc_offset):4 title " Vermogen [W]" with lines lw 0.1 lc rgb "#ccbb0000"
 #      # with points pt 5 ps 0.2 fc rgb "#ccbb0000" \
