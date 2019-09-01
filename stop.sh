@@ -21,6 +21,8 @@ pushd "${HOME}/kamstrupd" || exit 1
     # force rm the .pid file
     rm -f "/tmp/kamstrupd/${daemon}.pid"
   done
+
+  ./scripts/kamfile.sh --backup
 popd || exit
 
 echo
