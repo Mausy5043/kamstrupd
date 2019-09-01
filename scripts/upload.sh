@@ -14,7 +14,7 @@ make_script() {
       echo "open hendrixnet.nl;"
       echo "cd 05.stream/;"
       echo "set cmd:fail-exit no;"
-      echo "mirror --reverse --delete --verbose=3 -c /tmp/kamstrup/site/ . ;"
+      echo "mirror --reverse --delete --verbose=3 -c /tmp/kamstrupd/site/ . ;"
     } > /tmp/kamstrupd/script.lftp
 }
 
