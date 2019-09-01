@@ -35,6 +35,10 @@ do
         make_script
         exec_script
         ;;
+    -w|--week)
+        make_script
+        exec_script
+        ;;
     *)
         # unknown option
         echo "** Unknown option **"
