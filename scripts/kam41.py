@@ -55,9 +55,19 @@ def write_file(file_to_write_to, lines_to_write):
             output_file.write(f'{line}\n')
 
 
+def order_lines(lines_to_order):
+    """
+    """
+    return lines_to_order
+
+
 if __name__ == "__main__":
   # initialise logging
   syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
-  ifile = get_cli_params()
-  lines = read_file(ifile)
-  print(lines.split(', '))
+  IFILE = get_cli_params()
+  FILE_LINES = read_file(IFILE)
+  SPLIT_FILE_LINES = []
+  for line in FILE_LINES:
+    SPLIT_FILE_LINES.append(line.split('; '))
+  ORDERED_LINES = order_lines(SPLIT_FILE_LINES)
+  write_file(IFILE, ORDERED_LINES)
