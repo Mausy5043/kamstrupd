@@ -3,7 +3,7 @@
 # graph of current power usage and production
 
 
-set output "/tmp/kamstrupd/site/img/kam_vs_year.png"
+set output "/tmp/kamstrupd/site/img/kam_pastyear.png"
 
 # ******************************************************* General settings *****
 set terminal png enhanced font "Vera,9" size 1280,640
@@ -32,11 +32,11 @@ set multiplot layout 2,1
 set title "Verbruik afgelopen jaar ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
 
 # ***************************************************************** X-axis *****
-set xlabel "jaar"
+set xlabel "jaar-maand"
 set xtics rotate by -60
 
 # ***************************************************************** Y-axis *****
-set ylabel "Verbruik [kWh]"
+set ylabel "Verbruik [Wh]"
 
 # ***************************************************************** Legend *****
 set key inside top left horizontal box
@@ -62,7 +62,7 @@ plot kamdata using 2:xtic(1) title "T1" lc "green" \
 set title "Productie afgelopen jaar ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
 
 # ***************************************************************** Y-axis *****
-set ylabel "Productie [kWh]"
+set ylabel "Productie [Wh]"
 
 # ****************************************************************** PLOT ******
 plot kamdata using 4:xtic(1) title "T1" lc "green" \

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# query monthly totals for a period of n years
+# query yearly totals for a period of n years
 
 
 interval="-5 year"
@@ -14,17 +14,15 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   sqlite3 "${HOME}/.sqlite3/electriciteit.sqlite3" \
      ".separator '; '" \
      "SELECT strftime('%Y',sample_time) as sol, \
-             MAX(T1in)-MIN(T1in), \
-             MAX(T2in)-MIN(T2in), \
-             MAX(T1out)-MIN(T1out), \
-             MAX(T2out)-MIN(T2out) \
+             (MAX(T1in)-MIN(T1in))/1000, \
+             (MAX(T2in)-MIN(T2in))/1000, \
+             (MAX(T1out)-MIN(T1out))/1000, \
+             (MAX(T2out)-MIN(T2out))/1000 \
       FROM kamstrup \
       WHERE (sample_time >= datetime('now', '${interval}')) \
       GROUP BY sol \
       ORDER BY sol ASC \
       ;" > "${kamdata}"
-
-  sed -i '1d' "${kamdata}"
 
   if [ "$(wc -l < "${kamdata}")" -gt 5 ]; then
     timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}'" ./graphs/vsyear.gp

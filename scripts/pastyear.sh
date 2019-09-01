@@ -17,7 +17,9 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
              MAX(T1in)-MIN(T1in), \
              MAX(T2in)-MIN(T2in), \
              MAX(T1out)-MIN(T1out), \
-             MAX(T2out)-MIN(T2out) \
+             MAX(T2out)-MIN(T2out), \
+             strftime('%Y',sample_time), \
+             strftime('%m',sample_time) \
       FROM kamstrup \
       WHERE (sample_time >= datetime('now', '${interval}')) \
       GROUP BY moon \
@@ -28,6 +30,12 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
 
   if [ "$(wc -l < "${kamdata}")" -gt 5 ]; then
     timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}'" ./graphs/pastyear.gp
+  fi
+
+  ./scripts/kam41.py "${kamdata}"
+
+  if [ "$(wc -l < "${kamdata}")" -gt 5 ]; then
+    timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}'" ./graphs/vsmonth.gp
   fi
 
   ./scripts/upload.sh --upload
