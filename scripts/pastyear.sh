@@ -3,7 +3,7 @@
 # query monthly totals for a period of n years
 
 
-interval="-1830 day"
+interval="-61 month"
 
 pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   #shellcheck disable=SC1091
@@ -23,6 +23,8 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
       GROUP BY moon \
       ORDER BY moon ASC \
       ;" > "${kamdata}"
+
+  sed -i '1d' "${kamdata}"
 
   if [ "$(wc -l < "${kamdata}")" -gt 5 ]; then
     timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}'" ./graphs/pastyear.gp

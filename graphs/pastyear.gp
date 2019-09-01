@@ -32,7 +32,7 @@ set multiplot layout 2,1
 set title "Verbruik afgelopen jaar ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
 
 # ***************************************************************** X-axis *****
-set xlabel "dag"
+set xlabel "jaar-maand"
 
 # ***************************************************************** Y-axis *****
 set ylabel "Verbruik [Wh]"
