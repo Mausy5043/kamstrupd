@@ -59,7 +59,12 @@ def order_lines(lines_to_order):
     """
     Order the lines as desired.
     """
-    return lines_to_order
+    ordered_lines = lines_to_order[0]
+    this_year = ordered_lines[5]
+    this month = ordered_lines[6]
+    ordered_lines = lines_to_order.sort(key = 6)
+    ordered_lines = ordered_lines.sort(key = 5)
+    return ordered_lines
 
 
 if __name__ == "__main__":
