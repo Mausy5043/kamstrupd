@@ -1,10 +1,9 @@
 #!/bin/bash
 
-# query hourly totals for a period of two days (48 hours)
+# query monthly totals for a period of n years
 
 
-interval="-192 hour"
-divisor="86400"
+interval="-1830 day"
 
 pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   #shellcheck disable=SC1091
@@ -14,14 +13,15 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   #shellcheck disable=SC2154
   sqlite3 "${HOME}/.sqlite3/electriciteit.sqlite3" \
      ".separator '; '" \
-     "SELECT strftime('%d',sample_time), \
+     "SELECT strftime('%Y-%m',sample_time) as moon, \
              MAX(T1in)-MIN(T1in), \
              MAX(T2in)-MIN(T2in), \
              MAX(T1out)-MIN(T1out), \
              MAX(T2out)-MIN(T2out) \
       FROM kamstrup \
       WHERE (sample_time >= datetime('now', '${interval}')) \
-      GROUP BY ((sample_epoch - (sample_epoch % ${divisor})) / ${divisor}) \
+      GROUP BY moon \
+      ORDER BY moon ASC \
       ;" > "${kamdata}"
 
   if [ "$(wc -l < "${kamdata}")" -gt 5 ]; then
