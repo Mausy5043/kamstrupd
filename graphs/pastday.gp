@@ -4,7 +4,7 @@
 set output "/tmp/kamstrupd/kam_pastday.png"
 
 # ******************************************************* General settings *****
-set terminal png enhanced font "Vera,9" size 1280,320
+set terminal png enhanced font "Vera,9" size 1280,640
 set datafile separator ';'
 set datafile missing "NaN"    # Ignore missing values
 set grid front
@@ -28,7 +28,7 @@ Xh_min = X_min
 Xh_max = X_max
 
 
-
+set multiplot layout 2,1
 set title "Verbruik recent ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
 
 
@@ -59,7 +59,7 @@ set key reverse Left
 set style data histograms
 set style histogram rowstacked
 set boxwidth 1 relative
-set style fill solid 1.0 border -1
+set style fill solid 1.0 noborder
 set boxwidth 0.75
 
 # set arrow from graph 0,graph 0 to graph 0,graph 1 nohead lc rgb "red" front
@@ -73,7 +73,15 @@ set boxwidth 0.75
 #set rmargin at screen LMPOS
 
 # ***** PLOT *****
-plot kamdata using 2:xtic(1) title "T1", '' 3 title "T2"
+plot kamdata using 2:xtic(1) title "T1", '' using 3 title "T2"
 #plot ifnamew \
 #      using ($1+utc_offset):4 title " Vermogen [W]" with lines lw 0.1 lc rgb "#ccbb0000"
 #      # with points pt 5 ps 0.2 fc rgb "#ccbb0000" \
+
+
+
+set title "Productie recent ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
+set ylabel "Productie [Wh]"
+set yrange [ 0 : 10 ]
+
+plot kamdata using 4:xtic(1) title "T1", '' using 5 title "T2"
