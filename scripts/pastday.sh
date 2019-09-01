@@ -28,6 +28,8 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
     timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}'" ./graphs/pastday.gp
   fi
 
+  ./scripts/upload.sh --day
+
 popd >/dev/null || exit
 
 # drop datafile
