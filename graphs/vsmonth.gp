@@ -3,7 +3,7 @@
 # graph of current power usage and production
 
 
-set output "/tmp/kamstrupd/site/img/kam_pastyear.png"
+set output "/tmp/kamstrupd/site/img/kam_vs_month.png"
 
 # ******************************************************* General settings *****
 set terminal png enhanced font "Vera,9" size 1280,640
@@ -29,7 +29,7 @@ set multiplot layout 2,1
 #                                                         TOP PLOT: Usage
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-set title "Verbruik afgelopen jaar ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
+set title "Maandverbruik afgelopen jaren ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
 
 # ***************************************************************** X-axis *****
 set xlabel "jaar-maand"
@@ -59,7 +59,7 @@ plot kamdata using 2:xtic(1) title "T1" lc "green" \
 #                                                         BTM PLOT: Production
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-set title "Productie afgelopen jaar ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
+set title "Maandproductie afgelopen jaren ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
 
 # ***************************************************************** Y-axis *****
 set ylabel "Productie [Wh]"

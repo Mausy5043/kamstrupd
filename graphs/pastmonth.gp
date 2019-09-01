@@ -29,7 +29,7 @@ set multiplot layout 2,1
 #                                                         TOP PLOT: Usage
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-set title "Verbruik afgelopen maand ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
+set title "Verbruik per dag afgelopen maand ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
 
 # ***************************************************************** X-axis *****
 set xlabel "dag"
@@ -58,7 +58,7 @@ plot kamdata using 2:xtic(1) title "T1" lc "green" \
 #                                                         BTM PLOT: Production
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-set title "Productie afgelopen maand ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
+set title "Productie per dag afgelopen maand ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
 
 # ***************************************************************** Y-axis *****
 set ylabel "Productie [Wh]"
