@@ -70,7 +70,7 @@ set key reverse Left
 #set rmargin at screen LMPOS
 
 # ***** PLOT *****
-plot datafile using 1:2
+plot kamdata using 1:2
 #plot ifnamew \
 #      using ($1+utc_offset):4 title " Vermogen [W]" with lines lw 0.1 lc rgb "#ccbb0000"
 #      # with points pt 5 ps 0.2 fc rgb "#ccbb0000" \
