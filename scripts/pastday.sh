@@ -29,3 +29,6 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   fi
 
 popd >/dev/null || exit
+
+# drop datafile
+rm "${datafile}"
