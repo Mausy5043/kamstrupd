@@ -31,11 +31,7 @@ do
         make_script
         exec_script
         ;;
-    -d|--day)
-        make_script
-        exec_script
-        ;;
-    -w|--week)
+    -u|--upload)
         make_script
         exec_script
         ;;
@@ -44,7 +40,7 @@ do
         echo "** Unknown option **"
         echo
         echo "Syntax:"
-        echo "upload.sh [-a|--all] [-d|--day]"
+        echo "upload.sh [-a|--all] [-u|--upload]"
         echo
         exit 1
         ;;
