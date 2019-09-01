@@ -12,12 +12,14 @@ install_database_file() {
 
 backup_database_file() {
     if [ -e "${HOME}/.sqlite3/${DBFILE}" ]; then
+        echo "Standby while making a backup..."
         sqlite3 "${HOME}/.sqlite3/${DBFILE}" ".backup /mnt/data/${DBFILE}"
     fi
 }
 
 recover_database_file() {
     if [ -e "/mnt/data/${DBFILE}" ]; then
+        echo "Standby while recovering from backup..."
         cp "/mnt/data/${DBFILE}" "${HOME}/.sqlite3/"
     fi
 }
