@@ -10,4 +10,4 @@ A Raspberry Pi reads the measurement data via the serialport of the meter.
 ![A GNUplot image should be here: kamstrup12.png](img/kam_pastmonth.png)
 ![A GNUplot image should be here: kamstrup13.png](img/kam_pastyear.png)
 
-Electricity production is achieved using LG ___ panels and SolarEdge ____ optimizers & inverters.
+Electricity production is achieved using LG XxX  panels and SolarEdge xXx optimizers & inverters.
