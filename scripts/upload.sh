@@ -19,7 +19,7 @@ make_script() {
 }
 
 exec_script() {
-    lftp -f /tmp/kamstrupd/script.lftp
+    lftp -f /tmp/kamstrupd/script.lftp >/dev/null
 }
 
 # check commandline parameters
