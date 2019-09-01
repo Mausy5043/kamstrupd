@@ -94,7 +94,7 @@ pushd "${HOME}/kamstrupd" || exit 1
   fi
 
   # Recover the database from the server
-  scripts/kamfile.sh --install
+  ./scripts/kamfile.sh --install
 
   # Create the /etc/cron.d directory if it doesn't exist
   sudo mkdir -p /etc/cron.d
@@ -102,6 +102,7 @@ pushd "${HOME}/kamstrupd" || exit 1
   echo "# m h dom mon dow user  command" | sudo tee /etc/cron.d/kamstrupd
   echo "${minit}  * *   *   *   ${ME}    sleep 80; ${HOME}/kamstrupd/scripts/kamfile.sh --backup 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
   echo "*/10  * *   *   *   ${ME}    sleep 61; ${HOME}/kamstrupd/scripts/pastday.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
+  echo "01  * *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/pastmonth.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
   # @reboot we allow for 10s for the network to come up:
   echo "@reboot             ${ME}    sleep 10; ${HOME}/kamstrupd/update.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
 popd || exit
