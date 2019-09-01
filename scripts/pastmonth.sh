@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# query hourly totals for a period of two days (48 hours)
+# query daily totals for a period of one month (744 hours)
 
 
-interval="-192 hour"
+interval="-744 hour"
 divisor="86400"
 
 pushd "${HOME}/kamstrupd" >/dev/null || exit 1
