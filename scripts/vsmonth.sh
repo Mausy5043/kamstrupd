@@ -20,7 +20,7 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
              strftime('%m',sample_time) as moon\
       FROM kamstrup \
       WHERE (sample_time >= datetime('now', '${interval}')) \
-      GROUP BY moon \
+      GROUP BY solmoon \
       ORDER BY moon ASC \
       ;" > "${kamdata}"
 
