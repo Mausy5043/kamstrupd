@@ -14,10 +14,8 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   sqlite3 "${HOME}/.sqlite3/electriciteit.sqlite3" \
      ".separator '; '" \
      "SELECT strftime('%Y-%m',sample_time) as moon, \
-             MAX(T1in)-MIN(T1in), \
-             MAX(T2in)-MIN(T2in), \
-             MAX(T1out)-MIN(T1out), \
-             MAX(T2out)-MIN(T2out), \
+             MAX(T1in)-MIN(T1in) + MAX(T2in)-MIN(T2in), \
+             MAX(T1out)-MIN(T1out) + MAX(T2out)-MIN(T2out), \
              strftime('%Y',sample_time), \
              strftime('%m',sample_time) \
       FROM kamstrup \
@@ -29,14 +27,12 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   sed -i '1d' "${kamdata}"
 
   if [ "$(wc -l < "${kamdata}")" -gt 5 ]; then
-    timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}'" ./graphs/pastyear.gp
+    timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}'" ./graphs/vsmonth.gp
   fi
 
   ./scripts/upload.sh --upload
 
-  # drop datafile
-  rm "${kamdata}"
-
-  ./scripts/vsmonth.sh
-
 popd >/dev/null || exit
+
+# drop datafile
+rm "${kamdata}"
