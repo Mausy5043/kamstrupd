@@ -13,11 +13,11 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   #shellcheck disable=SC2154
   sqlite3 "${HOME}/.sqlite3/electriciteit.sqlite3" \
      ".separator '; '" \
-     "SELECT strftime('%Y-%m',sample_time) as moon, \
+     "SELECT strftime('%Y-%m',sample_time) as solmoon, \
              MAX(T1in)-MIN(T1in) + MAX(T2in)-MIN(T2in), \
              MAX(T1out)-MIN(T1out) + MAX(T2out)-MIN(T2out), \
-             strftime('%Y',sample_time), \
-             strftime('%m',sample_time) \
+             strftime('%Y',sample_time) as sol, \
+             strftime('%m',sample_time) as moon\
       FROM kamstrup \
       WHERE (sample_time >= datetime('now', '${interval}')) \
       GROUP BY moon \
