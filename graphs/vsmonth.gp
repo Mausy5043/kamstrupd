@@ -39,9 +39,7 @@ set xtics rotate by -60
 set ylabel "Verbruik [Wh]"
 
 # ***************************************************************** Legend *****
-set key inside top left horizontal box
-set key samplen 1
-set key reverse Left
+set key off
 
 # ***************************************************************** Output *****
 set style data histograms
