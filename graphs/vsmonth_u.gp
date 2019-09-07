@@ -38,10 +38,11 @@ set key off
 
 # ***************************************************************** Output *****
 set style data histograms
-set style histogram rowstacked
+set style histogram clustered
 set style fill solid noborder
 set boxwidth 0.75
 
 # ****************************************************************** PLOT ******
-plot kamdata using 2:xtic(1) lc "cyan"
+plot kamdata using 2:xtic(1) title columnheader(1), \
+     for [i=3:6] '' using i title columnheader(i)
 
