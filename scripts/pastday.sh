@@ -13,7 +13,7 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   #shellcheck disable=SC2154
   sqlite3 "${HOME}/.sqlite3/electriciteit.sqlite3" \
      ".separator '; '" \
-     "SELECT strftime('%d-%H',sample_time) as earthhour, \
+     "SELECT strftime('%d %Hh',sample_time) as earthhour, \
              MAX(T1in)-MIN(T1in), \
              MAX(T2in)-MIN(T2in), \
              MAX(T1out)-MIN(T1out), \
