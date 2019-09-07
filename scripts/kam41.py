@@ -16,7 +16,8 @@ NODE        = os.uname()[1]
 
 def get_cli_params(expected_amount):
     """Check for presence of a CLI parameter."""
-    if len(sys.argv) != expected_amount:
+    if len(sys.argv) != (expected_amount + 1):
+        print(f"{expected_amount} arguments expected, {len(sys.argv) - 1} received.")
         sys.exit(0)
     # 1 parameter required = filename to be processed
     return sys.argv[1]
@@ -48,47 +49,40 @@ def write_file(file_to_write_to, lines_to_write):
 
 
 def build_arrays(lines_to_process):
-  """Use the input to build two arrays and return them.
+    """Use the input to build two arrays and return them.
 
-   example input line : "2015-01; 329811; 0"  : YYYY-MM; T1; T2
-   the list comes ordered by the first field
-   the first line and last line can be inspected to find
-   the first and last year in the dataset.
-  """
-  first_year = int(lines_to_process[0].split('; ')[0].split('-')[0])
-  last_year = int(lines_to_process[-1].split('; ')[0].split('-')[0]) + 1
-  num_years = last_year - first_year + 1
-
-  production = ['maand'] + range(first_year, last_year)
-  for month in range(1,13):
-    production.append([month] + [0] * num_years)
-  usage = production
-
-  for line in lines_to_process:
-    data = line.split('; ')
-
-    [year, month] = data.split('-')
-    row_idx = int(month)
-    col_idx = int(year) - first_year + 1
-    usage[row_idx, col_idx] = data[1]
-    production[row_idx, col_idx] = data[2]
-  return production, usage
-
-def order_lines(lines_to_order):
+     example input line : "2015-01; 329811; 0"  : YYYY-MM; T1; T2
+     the list comes ordered by the first field
+     the first line and last line can be inspected to find
+     the first and last year in the dataset.
     """
-    Order the lines as desired.
-    """
-    ordered_lines = lines_to_order.sort(key=lambda x: int(x[6]))
-    ordered_lines = ordered_lines.sort(key=lambda x: int(x[5]))
-    return ordered_lines
+    first_year = int(lines_to_process[0].split('; ')[0].split('-')[0])
+    last_year = int(lines_to_process[-1].split('; ')[0].split('-')[0]) + 1
+    num_years = last_year - first_year
+
+    usage = [['maand'] + list(range(first_year, last_year))]
+    production = [['maand'] + list(range(first_year, last_year))]
+    for month in range(1,13):
+        usage.append([month] + list([0] * num_years))
+        production.append([month] + list([0] * num_years))
+
+    for line in lines_to_process:
+        data = line.split('; ')
+
+        [year, month] = data[0].split('-')
+        row_idx = int(month)
+        col_idx = int(year) - first_year + 1
+        usage[row_idx][col_idx] = int(data[1])
+        production[row_idx][col_idx] = int(data[2])
+    return production, usage
 
 
 if __name__ == "__main__":
-  # initialise logging
-  syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
-  IFILE = get_cli_params(1)
-  FILE_LINES = read_file(IFILE)
-  PRODUCTION_ARRAY, USAGE_ARRAY = build_arrays(FILE_LINES)
+    # initialise logging
+    syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
+    IFILE = get_cli_params(1)
+    FILE_LINES = read_file(IFILE)
+    PRODUCTION_ARRAY, USAGE_ARRAY = build_arrays(FILE_LINES)
 
-
-  write_file(IFILE, USAGE_ARRAY)
+    write_file("".join([IFILE, "u"]), USAGE_ARRAY)
+    write_file("".join([IFILE, "p"]), USAGE_ARRAY)
