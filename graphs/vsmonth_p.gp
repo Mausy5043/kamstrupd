@@ -34,13 +34,16 @@ set xtics rotate by -60
 set ylabel "Productie [Wh]"
 
 # ***************************************************************** Legend *****
-set key off
+set key inside top left horizontal box
+set key samplen 1
+set key reverse Left
 
 # ***************************************************************** Output *****
 set style data histograms
-set style histogram rowstacked
+set style histogram clustered gap 1
 set style fill solid noborder
 set boxwidth 0.75
 
 # ****************************************************************** PLOT ******
-plot kamdata using 3:xtic(1) lc "magenta"
+plot kamdata using 2:xtic(1) title columnheader(2), \
+     for [i=3:7] '' using i title columnheader(i)
