@@ -27,7 +27,7 @@ max(x,y) = (x > y) ? x : y
 set title "Maandverbruik afgelopen jaren ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
 
 # ***************************************************************** X-axis *****
-set xlabel "jaar-maand"
+set xlabel "maand"
 set xtics rotate by -60
 
 # ***************************************************************** Y-axis *****
@@ -40,7 +40,7 @@ set key reverse Left
 
 # ***************************************************************** Output *****
 set style data histograms
-set style histogram clustered gap 1
+set style histogram clustered gap 0.5
 set style fill solid noborder
 set boxwidth 0.75
 
