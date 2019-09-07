@@ -1,9 +1,9 @@
 #!/usr/bin/env gnuplot
 
-# graph of current power usage and production
+# graph of current power usage
 
 
-set output "/tmp/kamstrupd/site/img/kam_vs_month_p.png"
+set output "/tmp/kamstrupd/site/img/kam_vs_month_u.png"
 
 # ******************************************************* General settings *****
 set terminal png enhanced font "Vera,9" size 1280,320

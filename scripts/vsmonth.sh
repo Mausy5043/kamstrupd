@@ -21,19 +21,22 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
       FROM kamstrup \
       WHERE (sample_time >= datetime('now', '${interval}')) \
       GROUP BY solmoon \
+      ORDER BY solmoon ASC \
       ;" > "${kamdata}"
 
   # convert the data into month-rows and year-columns
   ./scripts/kam41.py "${kamdata}"
 
   if [ "$(wc -l < "${kamdata}")" -gt 5 ]; then
-    timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}'" ./graphs/vsmonth_p.gp
-    timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}'" ./graphs/vsmonth_u.gp
+    timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}u'" ./graphs/vsmonth_u.gp
+    timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}p'" ./graphs/vsmonth_p.gp
   fi
 
   ./scripts/upload.sh --upload
 
 popd >/dev/null || exit
 
-# drop datafile
+# drop datafiles
 rm "${kamdata}"
+rm "${kamdata}u"
+rm "${kamdata}p"
