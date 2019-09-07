@@ -32,7 +32,8 @@ set multiplot layout 2,1
 set title "Verbruik recent ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
 
 # ***************************************************************** X-axis *****
-set xlabel "uur"
+set xlabel "dag-uur"
+set xtics rotate by -60
 
 # ***************************************************************** Y-axis *****
 set ylabel "Verbruik [Wh]"
