@@ -4,7 +4,6 @@
 
 
 interval="-48 hour"
-divisor="3600"
 
 pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   #shellcheck disable=SC1091
@@ -14,14 +13,14 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   #shellcheck disable=SC2154
   sqlite3 "${HOME}/.sqlite3/electriciteit.sqlite3" \
      ".separator '; '" \
-     "SELECT strftime('%H',sample_time), \
+     "SELECT strftime('%H',sample_time) as hour, \
              MAX(T1in)-MIN(T1in), \
              MAX(T2in)-MIN(T2in), \
              MAX(T1out)-MIN(T1out), \
              MAX(T2out)-MIN(T2out) \
       FROM kamstrup \
       WHERE (sample_time >= datetime('now', '${interval}')) \
-      GROUP BY ((sample_epoch - (sample_epoch % ${divisor})) / ${divisor}) \
+      GROUP BY hour \
       ;" > "${kamdata}"
 
   if [ "$(wc -l < "${kamdata}")" -gt 5 ]; then

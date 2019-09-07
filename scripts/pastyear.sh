@@ -26,7 +26,6 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
       ORDER BY solmoon ASC \
       ;" > "${kamdata}"
 
-  sed -i '1d' "${kamdata}"
 
   if [ "$(wc -l < "${kamdata}")" -gt 5 ]; then
     timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}'" ./graphs/pastyear.gp

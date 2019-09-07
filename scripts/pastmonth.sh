@@ -3,8 +3,7 @@
 # query daily totals for a period of one month (744 hours)
 
 
-interval="-744 hour"
-divisor="86400"
+interval="-1 month"
 
 pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   #shellcheck disable=SC1091
@@ -14,14 +13,14 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   #shellcheck disable=SC2154
   sqlite3 "${HOME}/.sqlite3/electriciteit.sqlite3" \
      ".separator '; '" \
-     "SELECT strftime('%d',sample_time), \
+     "SELECT strftime('%d',sample_time) as earth, \
              MAX(T1in)-MIN(T1in), \
              MAX(T2in)-MIN(T2in), \
              MAX(T1out)-MIN(T1out), \
              MAX(T2out)-MIN(T2out) \
       FROM kamstrup \
       WHERE (sample_time >= datetime('now', '${interval}')) \
-      GROUP BY ((sample_epoch - (sample_epoch % ${divisor})) / ${divisor}) \
+      GROUP BY earth \
       ;" > "${kamdata}"
 
   if [ "$(wc -l < "${kamdata}")" -gt 5 ]; then
