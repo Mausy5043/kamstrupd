@@ -25,11 +25,12 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
       ;" > "${kamdata}"
 
   # convert the data into month-rows and year-columns
-  ./scripts/kam41.py "${kamdata}"
+  # output two separate files for USAGE and PRODUCTION
+  ./scripts/kam41.py "${kamdata}" || exit 1
 
   if [ "$(wc -l < "${kamdata}")" -gt 5 ]; then
-    timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}u'" ./graphs/vsmonth_u.gp
-    timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}p'" ./graphs/vsmonth_p.gp
+    timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}u'" ./graphs/vsmonth_u.gp || exit 1
+    timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}p'" ./graphs/vsmonth_p.gp || exit 1
   fi
 
   ./scripts/upload.sh --upload
