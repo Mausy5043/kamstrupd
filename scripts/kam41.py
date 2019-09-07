@@ -44,7 +44,7 @@ def write_file(file_to_write_to, lines_to_write):
     """
     with open(file_to_write_to, 'w') as output_file:
         for line in lines_to_write:
-            write_line = "; ".join(line)
+            write_line = "; ".join(map(str,line))
             output_file.write(f'{write_line}\n')
 
 
@@ -85,4 +85,4 @@ if __name__ == "__main__":
     PRODUCTION_ARRAY, USAGE_ARRAY = build_arrays(FILE_LINES)
 
     write_file("".join([IFILE, "u"]), USAGE_ARRAY)
-    write_file("".join([IFILE, "p"]), USAGE_ARRAY)
+    write_file("".join([IFILE, "p"]), PRODUCTION_ARRAY)
