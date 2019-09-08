@@ -208,7 +208,7 @@ def create_db_connection(database_file):
   """
   mf.syslog_trace(f"Connecting to: {database_file}", False, DEBUG)
   try:
-    consql = sqlite3.connect(database_file)
+    consql = sqlite3.connect(database_file, timeout=9000)
     #if consql:    # dB initialised succesfully -> get a cursor on the dB and run a test.
     #  cursql = consql.cursor()
     #  cursql.execute("SELECT sqlite_version()")
