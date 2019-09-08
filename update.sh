@@ -37,10 +37,10 @@ pushd "${HOME}/kamstrupd" || exit 1
 
   for fname in $DIFFLIST; do
     echo ">   ${fname} was updated from GIT"
-    f5l4="${fname:0:3}${fname:${#fname}-4}"
+    f5l4="${fname:0:11}${fname:${#fname}-4}"
 
     # Detect changes
-    if [[ "${f5l4}" == "kamd.py" ]]; then
+    if [[ "${f5l4}" == "daemons/kamd.py" ]]; then
       echo "  ! Domotica daemon changed"
       eval "./daemons/${fname} stop"
     fi
