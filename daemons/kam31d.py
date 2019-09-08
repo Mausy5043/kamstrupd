@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
-"""Communicates with the smart electricity meter [KAMSTRUP]."""
+"""Communicate with the smart electricity meter [KAMSTRUP].
+
+Store data from a Kamstrup smart-electricity meter in a sqlite3 database.
+"""
 
 import configparser
 import datetime as dt
@@ -202,7 +205,7 @@ def do_add_to_database(result, fdatabase, sql_cmd):
       conn.commit()
       conn.close()
       err_flag = False
-    except OperationalError:
+    except sqlite3.OperationalError:
       if cursor:
         cursor.close()
       if conn:
