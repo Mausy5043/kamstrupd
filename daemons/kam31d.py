@@ -195,6 +195,7 @@ def do_add_to_database(result, fdatabase, sql_cmd):
             result[6], result[7])
   mf.syslog_trace(f"   @: {out_date}", False, DEBUG)
   mf.syslog_trace(f"    : {results}", False, DEBUG)
+
   err_flag = True
   while err_flag:
     try:
