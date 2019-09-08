@@ -36,7 +36,7 @@ set xlabel "jaar-maand"
 set xtics rotate by -60
 
 # ***************************************************************** Y-axis *****
-set ylabel "Verbruik [Wh]"
+set ylabel "Verbruik [kWh]"
 
 # ***************************************************************** Legend *****
 set key inside top left horizontal box
@@ -62,7 +62,7 @@ plot kamdata using 2:xtic(1) title "T1" lc "green" \
 set title "Productie per maand afgelopen jaren ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
 
 # ***************************************************************** Y-axis *****
-set ylabel "Productie [Wh]"
+set ylabel "Productie [kWh]"
 
 # ****************************************************************** PLOT ******
 plot kamdata using 4:xtic(1) title "T1" lc "green" \

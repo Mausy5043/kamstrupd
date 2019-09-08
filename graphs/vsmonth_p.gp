@@ -31,7 +31,7 @@ set xlabel "maand"
 set xtics rotate by -60
 
 # ***************************************************************** Y-axis *****
-set ylabel "Productie [Wh]"
+set ylabel "Productie [kWh]"
 
 # ***************************************************************** Legend *****
 set key inside top left horizontal box
