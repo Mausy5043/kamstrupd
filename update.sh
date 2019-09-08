@@ -42,7 +42,7 @@ pushd "${HOME}/kamstrupd" || exit 1
     # Detect changes
     if [[ "${f5l4}" == "daemons/kamd.py" ]]; then
       echo "  ! Domotica daemon changed"
-      eval "./daemons/${fname} stop"
+      eval "./${fname} stop"
     fi
 
     #CONFIG.INI changed
