@@ -192,12 +192,21 @@ def do_add_to_database(result, fdatabase, sql_cmd):
             result[6], result[7])
   mf.syslog_trace(f"   @: {out_date}", False, DEBUG)
   mf.syslog_trace(f"    : {results}", False, DEBUG)
-  conn = create_db_connection(fdatabase)
-  cursor = conn.cursor()
-  cursor.execute(sql_cmd, results)
-  cursor.close()
-  conn.commit()
-  conn.close()
+  err_flag = True
+  while err_flag:
+    try:
+      conn = create_db_connection(fdatabase)
+      cursor = conn.cursor()
+      cursor.execute(sql_cmd, results)
+      cursor.close()
+      conn.commit()
+      conn.close()
+      err_flag = False
+    except OperationalError:
+      if cursor:
+        cursor.close()
+      if conn:
+        conn.close()
 
 
 def create_db_connection(database_file):
