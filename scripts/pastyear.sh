@@ -37,5 +37,6 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   rm "${kamdata}"
 
   ./scripts/vsmonth.sh
+  ./scripts/avgday.sh
 
 popd >/dev/null || exit
