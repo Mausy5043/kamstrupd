@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 copy_default_page() {
+  pushd "${HOME}/kamstrupd" >/dev/null || exit 1
     cp ./web/default.md /tmp/kamstrupd/site
+  popd >/dev/null || exit
 }
 
 make_script() {
