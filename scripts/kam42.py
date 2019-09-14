@@ -1,18 +1,10 @@
 #!/usr/bin/env python3
 
-"""Communicates with the smart electricity meter [KAMSTRUP]."""
+"""Calculate statistics per hour"""
 
-import configparser
-import datetime as dt
 import os
-import re
-import sqlite3
 import sys
 import syslog
-import time
-import traceback
-
-import mausy5043funcs.fileops3 as mf
 
 # constants
 DEBUG       = False
@@ -22,73 +14,68 @@ MYAPP       = os.path.realpath(__file__).split('/')[-3]
 NODE        = os.uname()[1]
 
 
-def do_add_to_database(result, fdata, sql_cmd):
-  """Commit the results to the database."""
-  # Get the time and date in human-readable form and UN*X-epoch...
-  out_date  = dt.datetime.now()  # time.strftime('%Y-%m-%dT%H:%M:%S')
-  out_epoch = int(time.strftime('%s'))
-  results = (out_date, out_epoch,
-            result[0], result[1], result[2],
-            result[3], result[4], result[5],
-            result[6], result[7])
-  mf.syslog_trace(f"   @: {out_date}", False, DEBUG)
-  mf.syslog_trace(f"    : {results}", False, DEBUG)
-  conn = create_db_connection(fdata)
-  cursor = conn.cursor()
-  cursor.execute(sql_cmd, results)
-  cursor.close()
-  conn.commit()
-  conn.close()
+def get_cli_params(expected_amount):
+    """Check for presence of a CLI parameter."""
+    if len(sys.argv) != (expected_amount + 1):
+        print(f"{expected_amount} arguments expected, {len(sys.argv) - 1} received.")
+        sys.exit(0)
+    # 1 parameter required = filename to be processed
+    return sys.argv[1]
 
 
-def create_db_connection(fdata):
-  """ Create a database connection to the SQLite3 database
-      specified by database_file
-  param database_file: database file
-  :return: Connection object or Raise error; will never return None
-  """
-  mf.syslog_trace(f"Connecting to: {fdata}", False, DEBUG)
-  try:
-    consql = sqlite3.connect(fdata)
-    return consql
-  except sqlite3.Error:
-    mf.syslog_trace("Unexpected SQLite3 error when connecting to server.", syslog.LOG_CRIT, DEBUG)
-    mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
-    if consql:    # attempt to close connection to SQLite3 server
-      consql.close()
-      mf.syslog_trace(" ** Closed SQLite3 connection. **", syslog.LOG_CRIT, DEBUG)
-    raise
+def read_file(file_to_read_from):
+    """
+    Return the contents of a file if it exists.
 
-  return None
+    Abort if it doesn't exist.
+    """
+    if not os.path.isfile(file_to_read_from):
+        sys.exit(0)
+    with open(file_to_read_from, 'r') as input_file:
+        # read the inputfile
+        return input_file.read().splitlines()
 
 
-def test_db_connection(fdata):
-  ''' test & log database engine coonnection
-  '''
-  try:
-    conn = create_db_connection(fdata)
-    cursor = conn.cursor()
-    cursor.execute("SELECT sqlite_version();")
-    versql = cursor.fetchone()
-    cursor.close()
-    conn.commit()
-    conn.close()
-    syslog.syslog(syslog.LOG_INFO, f"Attached to SQLite3 server: {versql}")
-  except sqlite3.Error:
-    mf.syslog_trace("Unexpected SQLite3 error during test.", syslog.LOG_CRIT, DEBUG)
-    mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
-    raise
+def write_file(file_to_write_to, lines_to_write):
+    """
+    Output <lines_to_write> to the file <file_to_write_to>.
+
+    Will overwrite existing file.
+    """
+    with open(file_to_write_to, 'w') as output_file:
+        for line in lines_to_write:
+            write_line = "; ".join(map(str,line))
+            output_file.write(f'{write_line}\n')
+
+
+def build_arrays(lines_to_process):
+    """Use the input to build two arrays and return them.
+
+     example input line : "022 10; 418; 0"  : JJJ-HH; T1; T2
+     the list comes ordered by the first field
+     the first line and last line can be inspected to find
+     the first and last year in the dataset.
+    """
+
+    usage = [[] for x in range(0,24)]
+    production = [[] for x in range(0,24)]
+
+    for line in lines_to_process:
+        data = line.split('; ')
+
+        [day, hour] = data[0].split('-')
+        row_idx = int(hour)
+        usage[row_idx].append(int(data[1]))
+        production[row_idx].append(int(data[2]))
+    return production, usage
 
 
 if __name__ == "__main__":
-  # initialise logging
-  syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
+    # initialise logging
+    syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
+    IFILE = get_cli_params(1)
+    FILE_LINES = read_file(IFILE)
+    PRODUCTION_ARRAY, USAGE_ARRAY = build_arrays(FILE_LINES)
 
-  iniconf = configparser.ConfigParser()
-  fdatabase = os.environ['HOME'] + '/' + iniconf.get(31, "databasefile")
-  test_db_connection(fdatabase)
-  conn = create_db_connection(fdatabase)
-
-  curs = conn.cursor()
-  curs.close()
-  conn.close()
+    write_file("".join([IFILE, "u"]), USAGE_ARRAY)
+    write_file("".join([IFILE, "p"]), PRODUCTION_ARRAY)
