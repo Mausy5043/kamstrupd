@@ -22,20 +22,29 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
       ;" > "${kamdata}"
 
   # for debugging
-  more "${kamdata}"
-  exit 0
+  tail "${kamdata}"
+  echo ""
 
   # convert the data into hourly averages
   # output two separate files for USAGE and PRODUCTION
   ./scripts/kam42.py "${kamdata}" || exit 1
 
+  # for debugging
+  tail "${kamdata}u"
+  echo ""
+  # for debugging
+  tail "${kamdata}p"
+
   if [ "$(wc -l < "${kamdata}")" -gt 5 ]; then
-    timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}'" ./graphs/avgday.gp
+    timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}u'" ./graphs/avgday_u.gp
+    timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}p'" ./graphs/avgday_p.gp
   fi
 
   #./scripts/upload.sh --upload
 
   # drop datafile
   rm "${kamdata}"
+  rm "${kamdata}u"
+  rm "${kamdata}p"
 
 popd >/dev/null || exit
