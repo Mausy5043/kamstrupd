@@ -177,6 +177,11 @@ def gettelegram():
   if telegram[0][0] != "/":
     abort = 2
 
+  if abort == 1:
+    with open('/tmp/kamstrup.raw', 'w') as output_file:
+      for line in telegram:
+          output_file.write(f'{line}\n')
+
   # Return codes:
   # abort == 1 indicates a successful read
   # abort == 2 means that a serial port read/write error occurred
