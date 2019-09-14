@@ -43,16 +43,19 @@ def write_file(file_to_write_to, lines_to_write):
     Will overwrite existing file.
     """
     sneetje =  [[] for x in range(0,24)]
+    data_added_flag = True
     with open(file_to_write_to, 'w') as output_file:
-        while lines_to_write:
+        while data_added_flag:
+            data_added_flag = False
             for hour in range(0,24):
                 if lines_to_write[hour]:
                     sneetje[hour] = lines_to_write[hour].pop(0)
+                    data_added_flag = True
                 else:
                     sneetje[hour] = 'NaN'
             write_line = '; '.join(map(str,sneetje))
-
-            output_file.write(f'{write_line}\n')
+            if data_added_flag:
+                output_file.write(f'{write_line}\n')
 
 
 def build_arrays(lines_to_process):
