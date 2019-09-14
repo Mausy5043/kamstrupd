@@ -6,7 +6,7 @@
 set output "/tmp/kamstrupd/site/img/kam_avg_day_p.png"
 
 # ******************************************************* General settings *****
-set terminal png enhanced font "Vera,9" size 640,640
+set terminal png enhanced font "Vera,9" size 1280,640
 set datafile separator ';'
 set datafile missing "NaN"    # Ignore missing values
 set grid front noxtics ytics
