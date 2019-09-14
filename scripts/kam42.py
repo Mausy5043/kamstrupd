@@ -42,9 +42,16 @@ def write_file(file_to_write_to, lines_to_write):
 
     Will overwrite existing file.
     """
+    sneetje =  [[] for x in range(0,24)]
     with open(file_to_write_to, 'w') as output_file:
-        for line in lines_to_write:
-            write_line = "; ".join(map(str,line))
+        while lines_to_write:
+            for hour in range(0,24):
+                if lines_to_write[hour]:
+                    sneetje[hour] = lines_to_write[hour].pop(0)
+                else:
+                    sneetje[hour] = 'NaN'
+            write_line = '; '.join(map(str,sneetje))
+
             output_file.write(f'{write_line}\n')
 
 
