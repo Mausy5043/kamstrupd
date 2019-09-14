@@ -29,23 +29,22 @@ set title "Gemiddeld uurverbruik ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc
 # ***************************************************************** X-axis *****
 set xlabel "uur"
 set xtics rotate by -60
-set xrange [-1:24]
+set xrange [0:25]
+set xtics ("00h" 1, "06h" 7, "12h" 13, "18h" 19, "23h" 24)
 
 # ***************************************************************** Y-axis *****
 set ylabel "Verbruik [Wh]"
+set yrange [:2000]
 
 # ***************************************************************** Legend *****
 set key off
 
 # ***************************************************************** Output *****
 set style data boxplot
-set style boxplot outliers pointtype 7
+set style boxplot nooutliers # pointtype 7
 set style fill solid 0.5 border -1
 set boxwidth 0.75
 set pointsize 0.5
 
 # ****************************************************************** PLOT ******
-plot for [i=1:8] kamdata using (i):i
-#plot kamdata using (1):1 title columnheader(1), \
-#     for [i=2:23] '' using (i):i title columnheader(i)
-
+plot for [i=1:24] kamdata using (i):i lc rgb 'blue'
