@@ -34,14 +34,15 @@ set xtics ("00h" 1, "06h" 7, "12h" 13, "18h" 19, "23h" 24)
 
 # ***************************************************************** Y-axis *****
 set ylabel "Verbruik [Wh]"
-set yrange [:2000]
+set yrange [0:1600]
+set ytics 100
 
 # ***************************************************************** Legend *****
 set key off
 
 # ***************************************************************** Output *****
 set style data boxplot
-set style boxplot nooutliers # pointtype 7
+set style boxplot nooutliers
 set style fill solid 0.5 border -1
 set boxwidth 0.75
 set pointsize 0.5
