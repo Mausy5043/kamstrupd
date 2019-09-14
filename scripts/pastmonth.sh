@@ -13,14 +13,14 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   #shellcheck disable=SC2154
   sqlite3 "${HOME}/.sqlite3/electriciteit.sqlite3" \
      ".separator '; '" \
-     "SELECT strftime('%d',sample_time) as earth, \
+     "SELECT strftime('%d',sample_time) as sol, \
              (MAX(T1in)-MIN(T1in))/1000, \
              (MAX(T2in)-MIN(T2in))/1000, \
              (MAX(T1out)-MIN(T1out))/1000, \
              (MAX(T2out)-MIN(T2out))/1000 \
       FROM kamstrup \
       WHERE (sample_time >= datetime('now', '${interval}')) \
-      GROUP BY earth \
+      GROUP BY sol \
       ;" > "${kamdata}"
 
   if [ "$(wc -l < "${kamdata}")" -gt 5 ]; then
