@@ -74,4 +74,6 @@ pushd "${HOME}/kamstrupd" || exit 1
     fi
   done
 
+  scripts/upload.sh --all
+
 popd || exit
