@@ -17,10 +17,12 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
              MAX(T1in)-MIN(T1in), \
              MAX(T2in)-MIN(T2in), \
              MAX(T1out)-MIN(T1out), \
-             MAX(T2out)-MIN(T2out) \
+             MAX(T2out)-MIN(T2out), \
+             MIN(sample_epoch) as t \
       FROM kamstrup \
       WHERE (sample_time >= datetime('now', '${interval}')) \
       GROUP BY solhour \
+      ORDER BY t ASC \
       ;" > "${kamdata}"
 
   if [ "$(wc -l < "${kamdata}")" -gt 5 ]; then
