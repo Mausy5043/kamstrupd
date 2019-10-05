@@ -168,6 +168,10 @@ def gettelegram():
       mf.syslog_trace("*** Serialport read error:", syslog.LOG_CRIT, DEBUG)
       mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
       abort = 2
+    except UnicodeDecodeError:
+      mf.syslog_trace("*** Unicode Decode error:", syslog.LOG_CRIT, DEBUG)
+      mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+      abort = 2
 
     loops2go = loops2go - 1
     if loops2go < 0:
