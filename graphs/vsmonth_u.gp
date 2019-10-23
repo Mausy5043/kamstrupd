@@ -40,7 +40,7 @@ set key reverse Left
 
 # ***************************************************************** Output *****
 set style data histograms
-set style histogram clustered gap 0.5
+set style histogram clustered gap 1.0
 set style fill solid noborder
 set boxwidth 0.75
 
