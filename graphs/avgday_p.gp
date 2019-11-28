@@ -48,4 +48,4 @@ set boxwidth 0.75
 set pointsize 0.5
 
 # ****************************************************************** PLOT ******
-plot for [i=1:24] kamdata using (i):i lc rgb 'blue'
+plot for [i=1:24] kamdata using (i):i lc rgb 'green'
