@@ -50,8 +50,8 @@ set style fill solid noborder
 set boxwidth 0.75
 
 # ****************************************************************** PLOT ******
-plot kamdata using 2:xtic(1) title "T1" lc "green" \
-        , '' using 3         title "T2" lc "yellow"
+plot kamdata using 2:xtic(1) title "T1" lc "blue" \
+        , '' using 3         title "T2" lc "orange"
 
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -65,5 +65,5 @@ set title "Productie per jaar afgelopen jaren ".strftime("( %Y-%m-%dT%H:%M:%S )"
 set ylabel "Productie [kWh]"
 
 # ****************************************************************** PLOT ******
-plot kamdata using 4:xtic(1) title "T1" lc "green" \
-        , '' using 5         title "T2" lc "yellow"
+plot kamdata using 4:xtic(1) title "T1" lc "blue" \
+        , '' using 5         title "T2" lc "orange"
