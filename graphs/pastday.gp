@@ -65,5 +65,5 @@ set title "Levering recent ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offse
 set ylabel "Levering [Wh]"
 
 # ****************************************************************** PLOT ******
-plot kamdata using 4:xtic(1) title "T1" lc "darkgreen" \
+plot kamdata using 4:xtic(1) title "T1" lc "dark-green" \
         , '' using 5         title "T2" lc "green"

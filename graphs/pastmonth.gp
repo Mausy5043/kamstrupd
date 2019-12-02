@@ -64,5 +64,5 @@ set title "Levering per dag afgelopen maand ".strftime("( %Y-%m-%dT%H:%M:%S )", 
 set ylabel "Levering [kWh]"
 
 # ****************************************************************** PLOT ******
-plot kamdata using 4:xtic(1) title "T1" lc "darkgreen" \
+plot kamdata using 4:xtic(1) title "T1" lc "dark-green" \
         , '' using 5         title "T2" lc "green"
