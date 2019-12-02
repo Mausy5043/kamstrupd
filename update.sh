@@ -11,13 +11,6 @@ branch="$(< "${HOME}/.kamstrupd.branch")"
 #echo "Waiting 30s..."
 #sleep 30
 
-if [ ! -f "${branch}" ]; then
-  echo
-  echo "Cannot run outside production environment"
-  echo
-  exit 1
-fi
-
 # make sure working tree exists
 if [ ! -d /tmp/kamstrupd/site/img ]; then
   mkdir -p /tmp/kamstrupd/site/img
