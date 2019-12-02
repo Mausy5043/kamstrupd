@@ -24,14 +24,14 @@ max(x,y) = (x > y) ? x : y
 #                                                             PLOT: Production
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-set title "Maandproductie afgelopen jaren ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
+set title "Maandelijkse levering afgelopen jaren ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
 
 # ***************************************************************** X-axis *****
 set xlabel "maand"
 set xtics rotate by -60
 
 # ***************************************************************** Y-axis *****
-set ylabel "Productie [kWh]"
+set ylabel "Levering [kWh]"
 
 # ***************************************************************** Legend *****
 set key inside top left horizontal box
