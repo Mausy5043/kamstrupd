@@ -1,6 +1,6 @@
 #!/usr/bin/env gnuplot
 
-# graph of current power usage and production
+# graph of this month's power usage and production
 
 
 set output "/tmp/kamstrupd/site/img/kam_pastmonth.png"
@@ -58,11 +58,11 @@ plot kamdata using 2:xtic(1) title "T1" lc "blue" \
 #                                                         BTM PLOT: Production
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-set title "Productie per dag afgelopen maand ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
+set title "Levering per dag afgelopen maand ".strftime("( %Y-%m-%dT%H:%M:%S )", time(0)+utc_offset)
 
 # ***************************************************************** Y-axis *****
-set ylabel "Productie [kWh]"
+set ylabel "Levering [kWh]"
 
 # ****************************************************************** PLOT ******
-plot kamdata using 4:xtic(1) title "T1" lc "blue" \
-        , '' using 5         title "T2" lc "orange"
+plot kamdata using 4:xtic(1) title "T1" lc "darkgreen" \
+        , '' using 5         title "T2" lc "green"
