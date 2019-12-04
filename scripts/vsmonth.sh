@@ -3,7 +3,7 @@
 # query monthly totals for a period of n years
 
 
-interval="-61 month"
+interval="-5 year"
 
 pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   #shellcheck disable=SC1091
@@ -17,7 +17,7 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
              (MAX(T1in)-MIN(T1in) + MAX(T2in)-MIN(T2in))/1000, \
              (MAX(T1out)-MIN(T1out) + MAX(T2out)-MIN(T2out))/1000 \
       FROM kamstrup \
-      WHERE (sample_time >= datetime('now', '${interval}')) \
+      WHERE (sample_time >= datetime(datetime('now', '${interval}'), 'start of year') ) \
       GROUP BY annomoon \
       ORDER BY annomoon ASC \
       ;" > "${kamdata}"

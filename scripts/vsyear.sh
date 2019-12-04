@@ -19,7 +19,7 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
              (MAX(T1out)-MIN(T1out))/1000, \
              (MAX(T2out)-MIN(T2out))/1000 \
       FROM kamstrup \
-      WHERE (sample_time >= datetime('now', '${interval}')) \
+      WHERE (sample_time >= datetime(datetime('now', '${interval}'), 'start of year') ) \
       GROUP BY anno \
       ORDER BY anno ASC \
       ;" > "${kamdata}"
