@@ -51,8 +51,8 @@ def main():
     This is the main loop
     """
     import_lo = get_historic_data(6, 'hour', 'T2in')
-    import_hi = get_historic_data(6, 'hour', 'T2out')
-    export_lo = get_historic_data(6, 'hour', 'T1in')
+    import_hi = get_historic_data(6, 'hour', 'T1in')
+    export_lo = get_historic_data(6, 'hour', 'T2out')
     export_hi = get_historic_data(6, 'hour', 'T1out')
     opwekking = get_opwekking(6, 'hour')
 
