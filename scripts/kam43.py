@@ -42,7 +42,7 @@ def get_opwekking(period, timeframe):
     """
     Fetch production data
     """
-    ret_data = [80+40+10, 82+41+8, 63+63+9, 95+35+12, 88+42+15, 86+42+16]
+    ret_data = [0, 0, 0, 0, 0, 0]
     return ret_data
 
 
