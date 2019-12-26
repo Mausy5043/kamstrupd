@@ -31,6 +31,7 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
     timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}'" ./graphs/pastyear.gp
   fi
 
+  ./scripts/kam43.py -y
   ./scripts/upload.sh --upload
 
   # drop datafile
