@@ -15,12 +15,13 @@ def get_historic_data(period, timeframe, telwerk):
     Fetch import data LO
     """
     ret_data = []
+    ret_lbls = []
     interval = f'-{period} {timeframe}'
     db_con = s3.connect(DATABASE)
     with db_con:
         db_cur = db_con.cursor()
         db_cur.execute(f"SELECT strftime('%d %Hh',sample_time) as grouped, \
-                     MAX({telwerk})-MIN({telwerk}), \
+                     MAX({telwerk})-MIN({telwerk})/1000, \
                      MIN(sample_epoch) as t \
                      FROM kamstrup \
                      WHERE (sample_time >= datetime('now', '{interval}')) \
@@ -32,10 +33,11 @@ def get_historic_data(period, timeframe, telwerk):
 
     for row in db_data:
         ret_data.append(row[1])
+        ret_lbls.append(row[0])
     ret_data.pop(0)
     ret_data.pop(0)
     print(ret_data)
-    return ret_data
+    return ret_data, ret_lbls
 
 
 def get_opwekking(period, timeframe):
@@ -50,10 +52,10 @@ def main():
     """
     This is the main loop
     """
-    import_lo = get_historic_data(6, 'hour', 'T2in')
-    import_hi = get_historic_data(6, 'hour', 'T1in')
-    export_lo = get_historic_data(6, 'hour', 'T2out')
-    export_hi = get_historic_data(6, 'hour', 'T1out')
+    import_lo, data_lbls = get_historic_data(6, 'hour', 'T2in')
+    import_hi, data_lbls = get_historic_data(6, 'hour', 'T1in')
+    export_lo, data_lbls = get_historic_data(6, 'hour', 'T2out')
+    export_hi, data_lbls = get_historic_data(6, 'hour', 'T1out')
     opwekking = get_opwekking(6, 'hour')
 
     # print(import_lo)
@@ -62,13 +64,13 @@ def main():
     # print(export_hi)
     # print(export_lo)
 
-    yr = [2012,2013,2014,2015,2016,2017]
+    #yr = [2012,2013,2014,2015,2016,2017]
 
     own_usage = [x-y-z for x,y,z in zip(opwekking, export_hi, export_lo)]
     # print(own_usage)
 
     #Create the general plot and the "subplots" i.e. the bars
-    f, ax1 = plt.subplots(1, figsize=(20, 5))
+    dummy, ax1 = plt.subplots(1, figsize=(20, 5))
     # Set the bar width
     bar_width = 0.75
     # Set the color alpha
@@ -122,7 +124,7 @@ def main():
             )
 
     # set the x ticks with names
-    plt.xticks(tick_pos, yr)
+    plt.xticks(tick_pos, data_lbls)
 
     # Set the label and legends
     ax1.set_ylabel("[kWh]")
