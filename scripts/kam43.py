@@ -111,7 +111,8 @@ def plot_graph(output_file, data_tuple, plot_title):
     tick_pos = list(range(1, len(data_lbls)+1))
 
     #Create the general plot and the bar
-    dummy, ax1 = plt.subplots(1, figsize=(20, 5))
+    plt.rc('font', size=11)
+    dummy, ax1 = plt.subplots(1, figsize=(20, 7))
 
     # Create a bar plot of import_lo
     ax1.bar(tick_pos, import_lo,
@@ -181,13 +182,22 @@ def main():
     OPTION = get_cli_params(1)
 
     if OPTION in ['-d', '-D', '-a', '-A']:
-        plot_graph('/tmp/kamstrupd/site/img/kam_pastday.png', fetch_last_day(), "Recent verbruik per uur")
+        plot_graph('/tmp/kamstrupd/site/img/kam_pastday.png',
+                   fetch_last_day(),
+                   "Recent verbruik per uur"
+                  )
 
     if OPTION in ['-m', '-M', '-a', '-A']:
-        plot_graph('/tmp/kamstrupd/site/img/kam_pastmonth.png', fetch_last_month(), "Verbruik per dag afgelopen maand")
+        plot_graph('/tmp/kamstrupd/site/img/kam_pastmonth.png',
+                   fetch_last_month(),
+                   "Verbruik per dag afgelopen maand"
+                  )
 
     if OPTION in ['-y', '-Y', '-a', '-A']:
-        plot_graph('/tmp/kamstrupd/site/img/kam_pastyear.png', fetch_last_year(), "Verbruik per maand afgelopen jaren")
+        plot_graph('/tmp/kamstrupd/site/img/kam_pastyear.png',
+                   fetch_last_year(),
+                   "Verbruik per maand afgelopen jaren"
+                  )
 
 
 if __name__ == "__main__":
