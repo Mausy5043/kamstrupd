@@ -50,10 +50,10 @@ def fetch_last_day():
     """
     ...
     """
-    import_lo, data_lbls = get_historic_data('%d %Hh', 50, 'hour', 'T2in')
-    import_hi, data_lbls = get_historic_data('%d %Hh', 50, 'hour', 'T1in')
-    export_lo, data_lbls = get_historic_data('%d %Hh', 50, 'hour', 'T2out')
-    export_hi, data_lbls = get_historic_data('%d %Hh', 50, 'hour', 'T1out')
+    import_lo, data_lbls = get_historic_data('%d %Hh', 50, 'hour', 'T1in')
+    import_hi, data_lbls = get_historic_data('%d %Hh', 50, 'hour', 'T2in')
+    export_lo, data_lbls = get_historic_data('%d %Hh', 50, 'hour', 'T1out')
+    export_hi, data_lbls = get_historic_data('%d %Hh', 50, 'hour', 'T2out')
     opwekking = get_opwekking(50, 'hour')
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
@@ -62,10 +62,10 @@ def fetch_last_month():
     """
     ...
     """
-    import_lo, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T2in')
-    import_hi, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T1in')
-    export_lo, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T2out')
-    export_hi, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T1out')
+    import_lo, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T1in')
+    import_hi, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T2in')
+    export_lo, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T1out')
+    export_hi, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T2out')
     opwekking = get_opwekking(33, 'day')
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
@@ -74,15 +74,15 @@ def fetch_last_year():
     """
     ...
     """
-    import_lo, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T2in')
-    import_hi, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T1in')
-    export_lo, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T2out')
-    export_hi, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T1out')
+    import_lo, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T1in')
+    import_hi, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T2in')
+    export_lo, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T1out')
+    export_hi, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T2out')
     opwekking = get_opwekking(61, 'month')
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def plot_graph(output_file, data_tuple):
+def plot_graph(output_file, data_tuple, plot_title):
     """
     ...
     """
@@ -108,7 +108,7 @@ def plot_graph(output_file, data_tuple):
     # Create a bar plot of import_lo
     ax1.bar(tick_pos, import_lo,
             width=bar_width,
-            label='Import (L)',
+            label='Import (T1)',
             alpha=ahpla,
             color='r',
             align='center',
@@ -117,7 +117,7 @@ def plot_graph(output_file, data_tuple):
     # Create a bar plot of import_hi
     ax1.bar(tick_pos, import_hi,
             width=bar_width,
-            label='Import (H)',
+            label='Import (T2)',
             alpha=ahpla,
             color='y',
             align='center',
@@ -134,7 +134,7 @@ def plot_graph(output_file, data_tuple):
     # Create a bar plot of export_lo
     ax1.bar(tick_pos, [-1*i for i in export_lo],
             width=bar_width,
-            label='Export (L)',
+            label='Export (T1)',
             alpha=ahpla,
             color='c',
             align='center'
@@ -142,7 +142,7 @@ def plot_graph(output_file, data_tuple):
     # Create a bar plot of export_hi
     ax1.bar(tick_pos, [-1*i for i in export_hi],
             width=bar_width,
-            label='Export (H)',
+            label='Export (T2)',
             alpha=ahpla,
             color='b',
             align='center',
@@ -157,6 +157,7 @@ def plot_graph(output_file, data_tuple):
     ax1.set_xlabel("Datetime")
     ax1.grid(which='major', axis='y', color='k', linestyle='--', linewidth=0.5)
     plt.legend(loc='upper left', ncol=5)
+    plt.title(f'{plot_title}')
     ax1.axhline(y=0, color='k')
     ax1.axvline(x=0, color='k')
 
@@ -172,13 +173,13 @@ def main():
     #data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi = fetch_last_day()
     #fetched_data = fetch_last_day()
     print("past day")
-    plot_graph('graph_day.png', fetch_last_day())
+    plot_graph('graph_day.png', fetch_last_day(), "Recent verbruik per uur")
 
     print("past month")
-    plot_graph('graph_month.png', fetch_last_month())
+    plot_graph('graph_month.png', fetch_last_month(), "Verbruik per dag afgelopen maand")
 
     print("past year")
-    plot_graph('graph_year.png', fetch_last_year())
+    plot_graph('graph_year.png', fetch_last_year(), "Verbruik per maand afgelopen jaren")
     #import_lo, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T2in')
     #import_hi, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T1in')
     #export_lo, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T2out')
