@@ -2,18 +2,41 @@
 
 """."""
 
+
+import os
+import sqlite3 as s3
+
 import matplotlib.pyplot as plt
 
+DATABASE = os.environ['HOME'] + "/.sqlite3/electriciteit.sqlite3"
 
-def get_import_lo():
+def get_import_lo(period):
     """
     Fetch import data LO
     """
+    interval = '-{period+2} hour'
+    db = sqlite3.connect(DATABASE)
+    with db:
+        cur = db.cursor()
+        cur.execute("SELECT strftime('%d %Hh',sample_time) as grouped, \
+                     MAX(T2in)-MIN(T2in), \
+                     MIN(sample_epoch) as t \
+                     FROM kamstrup \
+                     WHERE (sample_time >= datetime('now', '${interval}')) \
+                     GROUP BY grouped \
+                     ORDER BY t ASC \
+                     ;"
+                    )
+        rows = cur.fetchall()
+
+    for row in rows:
+        print row
+
     ret_data = [ 4, 4, 6, 4, 3, 5]
     return ret_data
 
 
-def get_import_hi():
+def get_import_hi(interval):
     """
     Fetch import data HI
     """
@@ -21,7 +44,7 @@ def get_import_hi():
     return ret_data
 
 
-def get_export_lo():
+def get_export_lo(interval):
     """
     Fetch export data LO
     """
@@ -29,7 +52,7 @@ def get_export_lo():
     return ret_data
 
 
-def get_export_hi():
+def get_export_hi(interval):
     """
     Fetch export data HI
     """
@@ -37,7 +60,7 @@ def get_export_hi():
     return ret_data
 
 
-def get_opwekking():
+def get_opwekking(interval):
     """
     Fetch production data
     """
@@ -49,11 +72,11 @@ def main():
     """
     This is the main loop
     """
-    import_lo = get_import_lo()
-    import_hi = get_import_hi()
-    export_lo = get_export_lo()
-    export_hi = get_export_hi()
-    opwekking = get_opwekking()
+    import_lo = get_import_lo(48)
+    import_hi = get_import_hi(48)
+    export_lo = get_export_lo(48)
+    export_hi = get_export_hi(48)
+    opwekking = get_opwekking(48)
 
     # print(import_lo)
     # print(import_hi)
