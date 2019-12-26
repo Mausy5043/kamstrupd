@@ -43,7 +43,7 @@ def main():
 
     yr = [2012,2013,2014,2015,2016,2017]
 
-    own_usage = [x-y-z for x,y,z in zip(opwekking, export_hi, export_lo)] 
+    own_usage = [x-y-z for x,y,z in zip(opwekking, export_hi, export_lo)]
     # print(own_usage)
 
     #Create the general plot and the "subplots" i.e. the bars
@@ -57,45 +57,45 @@ def main():
     tick_pos = list(range(1, len(import_lo)+1))
 
     # Create a bar plot of import_lo
-    ax1.bar(tick_pos, import_lo, 
-            width=bar_width, 
-            label='Import (L)', 
+    ax1.bar(tick_pos, import_lo,
+            width=bar_width,
+            label='Import (L)',
             alpha=ahpla,
-            color='r', 
+            color='r',
             align='center',
             bottom=[sum(i) for i in zip(import_hi, own_usage)]
             )
     # Create a bar plot of import_hi
-    ax1.bar(tick_pos, import_hi, 
+    ax1.bar(tick_pos, import_hi,
             width=bar_width,
-            label='Import (H)', 
+            label='Import (H)',
             alpha=ahpla,
-            color='y', 
+            color='y',
             align='center',
             bottom=own_usage
             )
     # Create a bar plot of usage_slf
     ax1.bar(tick_pos, own_usage,
-            width=bar_width, 
-            label='Self', 
+            width=bar_width,
+            label='Self',
             alpha=ahpla,
-            color='g', 
+            color='g',
             align='center'
             )
     # Create a bar plot of export_lo
     ax1.bar(tick_pos, [-1*i for i in export_lo],
-            width=bar_width, 
-            label='Export (L)', 
+            width=bar_width,
+            label='Export (L)',
             alpha=ahpla,
-            color='c', 
+            color='c',
             align='center'
             )
     # Create a bar plot of export_hi
-    ax1.bar(tick_pos, [-1*i for i in export_hi], 
+    ax1.bar(tick_pos, [-1*i for i in export_hi],
             width=bar_width,
             label='Export (H)',
             alpha=ahpla,
-            color='b', 
+            color='b',
             align='center',
             bottom=[-1*i for i in export_lo]
             )
