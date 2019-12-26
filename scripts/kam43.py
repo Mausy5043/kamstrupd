@@ -30,7 +30,7 @@ def get_import_lo(period):
         rows = cur.fetchall()
 
     for row in rows:
-        print row
+        print(row)
 
     ret_data = [ 4, 4, 6, 4, 3, 5]
     return ret_data
