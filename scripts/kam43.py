@@ -1,34 +1,54 @@
 #!/usr/bin/env python3
 
+"""."""
+
 import matplotlib.pyplot as plt
 
 
 def get_import_lo():
+    """
+    Fetch import data LO
+    """
     ret_data = [ 4, 4, 6, 4, 3, 5]
     return ret_data
 
 
 def get_import_hi():
+    """
+    Fetch import data HI
+    """
     ret_data = [16, 23, 15, 10, 10, 12]
     return ret_data
 
 
 def get_export_lo():
+    """
+    Fetch export data LO
+    """
     ret_data = [40, 41, 63, 35, 42, 42]
     return ret_data
 
 
 def get_export_hi():
+    """
+    Fetch export data HI
+    """
     ret_data = [10,  8,  9, 12, 15, 16]
     return ret_data
 
 
 def get_opwekking():
+    """
+    Fetch production data
+    """
     ret_data = [80+40+10, 82+41+8, 63+63+9, 95+35+12, 88+42+15, 86+42+16]
     return ret_data
 
 
 def main():
+    """
+    This is the main loop
+    """
     import_lo = get_import_lo()
     import_hi = get_import_hi()
     export_lo = get_export_lo()
