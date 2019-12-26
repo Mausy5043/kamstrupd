@@ -34,12 +34,8 @@ def get_historic_data(grouping, period, timeframe, telwerk):
     for row in db_data:
         ret_data.append(row[1]/1000) # convert Wh to kWh
         ret_lbls.append(row[0])
-    ret_data.pop(0)
-    ret_data.pop(0)
-    ret_lbls.pop(0)
-    ret_lbls.pop(0)
-    print(ret_data)
-    return ret_data, ret_lbls
+
+    return ret_data[-period:], ret_lbls[-period:]
 
 
 def get_opwekking(period, timeframe):
@@ -51,6 +47,9 @@ def get_opwekking(period, timeframe):
 
 
 def fetch_last_day():
+    """
+    ...
+    """
     import_lo, data_lbls = get_historic_data('%d %Hh', 50, 'hour', 'T2in')
     import_hi, data_lbls = get_historic_data('%d %Hh', 50, 'hour', 'T1in')
     export_lo, data_lbls = get_historic_data('%d %Hh', 50, 'hour', 'T2out')
@@ -60,6 +59,9 @@ def fetch_last_day():
 
 
 def fetch_last_month():
+    """
+    ...
+    """
     import_lo, data_lbls = get_historic_data('%m %d', 33, 'day', 'T2in')
     import_hi, data_lbls = get_historic_data('%m %d', 33, 'day', 'T1in')
     export_lo, data_lbls = get_historic_data('%m %d', 33, 'day', 'T2out')
@@ -69,6 +71,9 @@ def fetch_last_month():
 
 
 def fetch_last_year():
+    """
+    ...
+    """
     import_lo, data_lbls = get_historic_data('%Y %m', 61, 'month', 'T2in')
     import_hi, data_lbls = get_historic_data('%Y %m', 61, 'month', 'T1in')
     export_lo, data_lbls = get_historic_data('%Y %m', 61, 'month', 'T2out')
@@ -77,21 +82,16 @@ def fetch_last_year():
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def main():
+def plot_graph(output_file, data_tuple):
     """
-    This is the main loop
+    ...
     """
-    data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi = fetch_last_day()
-
-    data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi = fetch_last_month()
-
-    data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi = fetch_last_year()
-    #import_lo, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T2in')
-    #import_hi, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T1in')
-    #export_lo, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T2out')
-    #export_hi, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T1out')
-    #opwekking = get_opwekking(6, 'hour')
-
+    data_lbls = data_tuple[0]
+    import_lo = data_tuple[1]
+    import_hi = data_tuple[2]
+    opwekking = data_tuple[3]
+    export_lo = data_tuple[4]
+    export_hi = data_tuple[5]
     own_usage = [x-y-z for x,y,z in zip(opwekking, export_hi, export_lo)]
     # print(own_usage)
 
@@ -150,19 +150,38 @@ def main():
             )
 
     # set the x ticks with names
-    plt.xticks(tick_pos, data_lbls)
+    plt.xticks(tick_pos, data_lbls, rotation=-60)
 
     # Set the label and legends
     ax1.set_ylabel("[kWh]")
     ax1.set_xlabel("Datetime")
     ax1.grid(which='major', axis='y', color='k', linestyle='--', linewidth=0.5)
-    plt.legend(loc='center left')
+    plt.legend(loc='upper left', ncol=5)
     ax1.axhline(y=0, color='k')
     ax1.axvline(x=0, color='k')
 
     # Set a buffer around the edge
     plt.xlim([min(tick_pos)-bar_width, max(tick_pos)+bar_width])
-    plt.savefig(fname='graph.png', format='png')
+    plt.savefig(fname=f'{output_file}', format='png')
+
+
+def main():
+    """
+    This is the main loop
+    """
+    #data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi = fetch_last_day()
+    fetched_data = fetch_last_day()
+    plot_graph('graph_day.png', fetch_last_day())
+
+    plot_graph('graph_month.png', fetch_last_month())
+
+    plot_graph('graph_year.png', fetch_last_year())
+    #import_lo, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T2in')
+    #import_hi, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T1in')
+    #export_lo, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T2out')
+    #export_hi, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T1out')
+    #opwekking = get_opwekking(6, 'hour')
+
 
 
 if __name__ == "__main__":
