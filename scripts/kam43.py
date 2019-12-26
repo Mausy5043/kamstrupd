@@ -68,7 +68,7 @@ def fetch_last_month():
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def fetch_last_month():
+def fetch_last_year():
     import_lo, data_lbls = get_historic_data('%Y %m', 61, 'month', 'T2in')
     import_hi, data_lbls = get_historic_data('%Y %m', 61, 'month', 'T1in')
     export_lo, data_lbls = get_historic_data('%Y %m', 61, 'month', 'T2out')
