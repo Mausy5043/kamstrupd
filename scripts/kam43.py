@@ -5,10 +5,19 @@
 
 import os
 import sqlite3 as s3
+import sys
 
 import matplotlib.pyplot as plt
 
 DATABASE = os.environ['HOME'] + "/.sqlite3/electriciteit.sqlite3"
+
+def get_cli_params(expected_amount):
+    """Check for presence of a CLI parameter."""
+    if len(sys.argv) != (expected_amount + 1):
+        print(f"{expected_amount} arguments expected, {len(sys.argv) - 1} received.")
+        sys.exit(0)
+    return sys.argv[1]
+
 
 def get_historic_data(grouping, period, timeframe, telwerk):
     """
@@ -93,17 +102,16 @@ def plot_graph(output_file, data_tuple, plot_title):
     export_lo = data_tuple[4]
     export_hi = data_tuple[5]
     own_usage = [x-y-z for x,y,z in zip(opwekking, export_hi, export_lo)]
-    # print(own_usage)
 
-    #Create the general plot and the "subplots" i.e. the bars
-    dummy, ax1 = plt.subplots(1, figsize=(20, 5))
     # Set the bar width
     bar_width = 0.75
     # Set the color alpha
     ahpla = 0.5
-
     # positions of the left bar-boundaries
-    tick_pos = list(range(1, len(import_lo)+1))
+    tick_pos = list(range(1, len(data_lbls)+1))
+
+    #Create the general plot and the bar
+    dummy, ax1 = plt.subplots(1, figsize=(20, 5))
 
     # Create a bar plot of import_lo
     ax1.bar(tick_pos, import_lo,
@@ -131,6 +139,7 @@ def plot_graph(output_file, data_tuple, plot_title):
             color='g',
             align='center'
             )
+    # Exports hang below the y-axis
     # Create a bar plot of export_lo
     ax1.bar(tick_pos, [-1*i for i in export_lo],
             width=bar_width,
@@ -149,17 +158,17 @@ def plot_graph(output_file, data_tuple, plot_title):
             bottom=[-1*i for i in export_lo]
             )
 
-    # set the x ticks with names
-    plt.xticks(tick_pos, data_lbls, rotation=-60)
-
-    # Set the label and legends
+    # Set Axes stuff
     ax1.set_ylabel("[kWh]")
     ax1.set_xlabel("Datetime")
     ax1.grid(which='major', axis='y', color='k', linestyle='--', linewidth=0.5)
-    plt.legend(loc='upper left', ncol=5)
-    plt.title(f'{plot_title}')
     ax1.axhline(y=0, color='k')
     ax1.axvline(x=0, color='k')
+    # Set plot stuff
+    plt.tight_layout()
+    plt.xticks(tick_pos, data_lbls, rotation=-60)
+    plt.title(f'{plot_title}')
+    plt.legend(loc='upper left', ncol=5)
 
     # Set a buffer around the edge
     plt.xlim([min(tick_pos)-bar_width, max(tick_pos)+bar_width])
@@ -170,22 +179,16 @@ def main():
     """
     This is the main loop
     """
-    #data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi = fetch_last_day()
-    #fetched_data = fetch_last_day()
-    print("past day")
-    plot_graph('graph_day.png', fetch_last_day(), "Recent verbruik per uur")
+    OPTION = get_cli_params(1)
 
-    print("past month")
-    plot_graph('graph_month.png', fetch_last_month(), "Verbruik per dag afgelopen maand")
+    if OPTION in ['-d', '-D', '-a', '-A']:
+        plot_graph('graph_day.png', fetch_last_day(), "Recent verbruik per uur")
 
-    print("past year")
-    plot_graph('graph_year.png', fetch_last_year(), "Verbruik per maand afgelopen jaren")
-    #import_lo, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T2in')
-    #import_hi, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T1in')
-    #export_lo, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T2out')
-    #export_hi, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T1out')
-    #opwekking = get_opwekking(6, 'hour')
+    if OPTION in ['-m', '-M', '-a', '-A']:
+        plot_graph('graph_month.png', fetch_last_month(), "Verbruik per dag afgelopen maand")
 
+    if OPTION in ['-y', '-Y', '-a', '-A']:
+        plot_graph('graph_year.png', fetch_last_year(), "Verbruik per maand afgelopen jaren")
 
 
 if __name__ == "__main__":
