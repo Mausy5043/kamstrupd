@@ -32,10 +32,12 @@ def get_historic_data(grouping, period, timeframe, telwerk):
         db_data = db_cur.fetchall()
 
     for row in db_data:
-        ret_data.append(row[1])
+        ret_data.append(row[1]/1000) # convert Wh to kWh
         ret_lbls.append(row[0])
     ret_data.pop(0)
     ret_data.pop(0)
+    ret_lbls.pop(0)
+    ret_lbls.pop(0)
     print(ret_data)
     return ret_data, ret_lbls
 
