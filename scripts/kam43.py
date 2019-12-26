@@ -165,13 +165,12 @@ def plot_graph(output_file, data_tuple, plot_title):
     ax1.axhline(y=0, color='k')
     ax1.axvline(x=0, color='k')
     # Set plot stuff
-    plt.tight_layout()
     plt.xticks(tick_pos, data_lbls, rotation=-60)
     plt.title(f'{plot_title}')
     plt.legend(loc='upper left', ncol=5)
-
-    # Set a buffer around the edge
+    # Fit every nicely
     plt.xlim([min(tick_pos)-bar_width, max(tick_pos)+bar_width])
+    plt.tight_layout()
     plt.savefig(fname=f'{output_file}', format='png')
 
 
@@ -182,13 +181,13 @@ def main():
     OPTION = get_cli_params(1)
 
     if OPTION in ['-d', '-D', '-a', '-A']:
-        plot_graph('graph_day.png', fetch_last_day(), "Recent verbruik per uur")
+        plot_graph('/tmp/kamstrupd/site/img/kam_pastday.png', fetch_last_day(), "Recent verbruik per uur")
 
     if OPTION in ['-m', '-M', '-a', '-A']:
-        plot_graph('graph_month.png', fetch_last_month(), "Verbruik per dag afgelopen maand")
+        plot_graph('/tmp/kamstrupd/site/img/kam_pastmonth.png', fetch_last_month(), "Verbruik per dag afgelopen maand")
 
     if OPTION in ['-y', '-Y', '-a', '-A']:
-        plot_graph('graph_year.png', fetch_last_year(), "Verbruik per maand afgelopen jaren")
+        plot_graph('/tmp/kamstrupd/site/img/kam_pastyear.png', fetch_last_year(), "Verbruik per maand afgelopen jaren")
 
 
 if __name__ == "__main__":
