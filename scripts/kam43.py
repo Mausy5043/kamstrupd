@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 DATABASE = os.environ['HOME'] + "/.sqlite3/electriciteit.sqlite3"
 
-def get_historic_data(period, timeframe, telwerk):
+def get_historic_data(grouping, period, timeframe, telwerk):
     """
     Fetch import data LO
     """
