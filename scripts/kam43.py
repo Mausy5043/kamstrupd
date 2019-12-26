@@ -62,10 +62,10 @@ def fetch_last_month():
     """
     ...
     """
-    import_lo, data_lbls = get_historic_data('%m %d', 33, 'day', 'T2in')
-    import_hi, data_lbls = get_historic_data('%m %d', 33, 'day', 'T1in')
-    export_lo, data_lbls = get_historic_data('%m %d', 33, 'day', 'T2out')
-    export_hi, data_lbls = get_historic_data('%m %d', 33, 'day', 'T1out')
+    import_lo, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T2in')
+    import_hi, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T1in')
+    export_lo, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T2out')
+    export_hi, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T1out')
     opwekking = get_opwekking(33, 'day')
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
@@ -74,10 +74,10 @@ def fetch_last_year():
     """
     ...
     """
-    import_lo, data_lbls = get_historic_data('%Y %m', 61, 'month', 'T2in')
-    import_hi, data_lbls = get_historic_data('%Y %m', 61, 'month', 'T1in')
-    export_lo, data_lbls = get_historic_data('%Y %m', 61, 'month', 'T2out')
-    export_hi, data_lbls = get_historic_data('%Y %m', 61, 'month', 'T1out')
+    import_lo, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T2in')
+    import_hi, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T1in')
+    export_lo, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T2out')
+    export_hi, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T1out')
     opwekking = get_opwekking(61, 'month')
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
@@ -170,11 +170,14 @@ def main():
     This is the main loop
     """
     #data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi = fetch_last_day()
-    fetched_data = fetch_last_day()
+    #fetched_data = fetch_last_day()
+    print("past day")
     plot_graph('graph_day.png', fetch_last_day())
 
+    print("past month")
     plot_graph('graph_month.png', fetch_last_month())
 
+    print("past year")
     plot_graph('graph_year.png', fetch_last_year())
     #import_lo, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T2in')
     #import_hi, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T1in')
