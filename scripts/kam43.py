@@ -111,7 +111,7 @@ def plot_graph(output_file, data_tuple, plot_title):
     tick_pos = list(range(1, len(data_lbls)+1))
 
     #Create the general plot and the bar
-    plt.rc('font', size=11)
+    plt.rc('font', size=13)
     dummy, ax1 = plt.subplots(1, figsize=(20, 7))
 
     # Create a bar plot of import_lo
