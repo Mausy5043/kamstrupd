@@ -68,6 +68,15 @@ def fetch_last_month():
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
+def fetch_last_month():
+    import_lo, data_lbls = get_historic_data('%Y %m', 61, 'month', 'T2in')
+    import_hi, data_lbls = get_historic_data('%Y %m', 61, 'month', 'T1in')
+    export_lo, data_lbls = get_historic_data('%Y %m', 61, 'month', 'T2out')
+    export_hi, data_lbls = get_historic_data('%Y %m', 61, 'month', 'T1out')
+    opwekking = get_opwekking(61, 'month')
+    return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
+
+
 def main():
     """
     This is the main loop
@@ -75,6 +84,8 @@ def main():
     data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi = fetch_last_day()
 
     data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi = fetch_last_month()
+
+    data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi = fetch_last_year()
     #import_lo, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T2in')
     #import_hi, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T1in')
     #export_lo, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T2out')
