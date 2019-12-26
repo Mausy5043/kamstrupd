@@ -21,7 +21,7 @@ def get_historic_data(period, timeframe, telwerk):
     with db_con:
         db_cur = db_con.cursor()
         db_cur.execute(f"SELECT strftime('%d %Hh',sample_time) as grouped, \
-                     MAX({telwerk})-MIN({telwerk})/1000, \
+                     (MAX({telwerk})-MIN({telwerk}))/1000, \
                      MIN(sample_epoch) as t \
                      FROM kamstrup \
                      WHERE (sample_time >= datetime('now', '{interval}')) \
