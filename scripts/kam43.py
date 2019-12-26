@@ -14,24 +14,25 @@ def get_import_lo(period):
     """
     Fetch import data LO
     """
-    interval = '-{period+2} hour'
-    db = sqlite3.connect(DATABASE)
-    with db:
-        cur = db.cursor()
-        cur.execute("SELECT strftime('%d %Hh',sample_time) as grouped, \
+    ret_data = []
+    interval = f'-{period+2} hour'
+    db_con = s3.connect(DATABASE)
+    with db_con:
+        db_cur = db_con.cursor()
+        db_cur.execute(f"SELECT strftime('%d %Hh',sample_time) as grouped, \
                      MAX(T2in)-MIN(T2in), \
                      MIN(sample_epoch) as t \
                      FROM kamstrup \
-                     WHERE (sample_time >= datetime('now', '${interval}')) \
+                     WHERE (sample_time >= datetime('now', '{interval}')) \
                      GROUP BY grouped \
                      ORDER BY t ASC \
                      ;"
                     )
-        rows = cur.fetchall()
+        db_data = db_cur.fetchall()
 
-    for row in rows:
-        print(row)
-
+    for row in db_data:
+        ret_data.append(row)
+    print(ret_data)
     ret_data = [ 4, 4, 6, 4, 3, 5]
     return ret_data
 
@@ -72,11 +73,11 @@ def main():
     """
     This is the main loop
     """
-    import_lo = get_import_lo(48)
-    import_hi = get_import_hi(48)
-    export_lo = get_export_lo(48)
-    export_hi = get_export_hi(48)
-    opwekking = get_opwekking(48)
+    import_lo = get_import_lo(4)
+    import_hi = get_import_hi(4)
+    export_lo = get_export_lo(4)
+    export_hi = get_export_hi(4)
+    opwekking = get_opwekking(4)
 
     # print(import_lo)
     # print(import_hi)
