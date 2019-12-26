@@ -38,31 +38,7 @@ def get_historic_data(period, timeframe, telwerk):
     return ret_data
 
 
-def get_import_hi(interval):
-    """
-    Fetch import data HI
-    """
-    ret_data = [16, 23, 15, 10, 10, 12]
-    return ret_data
-
-
-def get_export_lo(interval):
-    """
-    Fetch export data LO
-    """
-    ret_data = [40, 41, 63, 35, 42, 42]
-    return ret_data
-
-
-def get_export_hi(interval):
-    """
-    Fetch export data HI
-    """
-    ret_data = [10,  8,  9, 12, 15, 16]
-    return ret_data
-
-
-def get_opwekking(interval):
+def get_opwekking(period, timeframe):
     """
     Fetch production data
     """
