@@ -49,6 +49,9 @@ install_package "build-essential"
 install_package "python3-dev"
 install_package "python3-pip"
 
+# Support for matplotlib & numpy
+install_package "libatlas-base-dev"
+
 # Support for serial port
 install_package "picocom"
 install_package "python3-serial"
