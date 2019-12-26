@@ -20,8 +20,8 @@ def get_historic_data(grouping, period, timeframe, telwerk):
     db_con = s3.connect(DATABASE)
     with db_con:
         db_cur = db_con.cursor()
-        db_cur.execute(f"SELECT strftime('%d %Hh',sample_time) as grouped, \
-                     (MAX({telwerk})-MIN({telwerk}))/1000, \
+        db_cur.execute(f"SELECT strftime('{grouping}',sample_time) as grouped, \
+                     MAX({telwerk})-MIN({telwerk}), \
                      MIN(sample_epoch) as t \
                      FROM kamstrup \
                      WHERE (sample_time >= datetime('now', '{interval}')) \
@@ -44,27 +44,40 @@ def get_opwekking(period, timeframe):
     """
     Fetch production data
     """
-    ret_data = [0, 0, 0, 0, 0, 0]
+    ret_data = [0] * period
     return ret_data
+
+
+def fetch_last_day():
+    import_lo, data_lbls = get_historic_data('%d %Hh', 50, 'hour', 'T2in')
+    import_hi, data_lbls = get_historic_data('%d %Hh', 50, 'hour', 'T1in')
+    export_lo, data_lbls = get_historic_data('%d %Hh', 50, 'hour', 'T2out')
+    export_hi, data_lbls = get_historic_data('%d %Hh', 50, 'hour', 'T1out')
+    opwekking = get_opwekking(50, 'hour')
+    return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
+
+
+def fetch_last_month():
+    import_lo, data_lbls = get_historic_data('%m %d', 33, 'day', 'T2in')
+    import_hi, data_lbls = get_historic_data('%m %d', 33, 'day', 'T1in')
+    export_lo, data_lbls = get_historic_data('%m %d', 33, 'day', 'T2out')
+    export_hi, data_lbls = get_historic_data('%m %d', 33, 'day', 'T1out')
+    opwekking = get_opwekking(33, 'day')
+    return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
 def main():
     """
     This is the main loop
     """
-    import_lo, data_lbls = get_historic_data(6, 'hour', 'T2in')
-    import_hi, data_lbls = get_historic_data(6, 'hour', 'T1in')
-    export_lo, data_lbls = get_historic_data(6, 'hour', 'T2out')
-    export_hi, data_lbls = get_historic_data(6, 'hour', 'T1out')
-    opwekking = get_opwekking(6, 'hour')
+    data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi = fetch_last_day()
 
-    # print(import_lo)
-    # print(import_hi)
-    # print(opwekking)
-    # print(export_hi)
-    # print(export_lo)
-
-    #yr = [2012,2013,2014,2015,2016,2017]
+    data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi = fetch_last_month()
+    #import_lo, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T2in')
+    #import_hi, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T1in')
+    #export_lo, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T2out')
+    #export_hi, data_lbls = get_historic_data('%d %Hh', 6, 'hour', 'T1out')
+    #opwekking = get_opwekking(6, 'hour')
 
     own_usage = [x-y-z for x,y,z in zip(opwekking, export_hi, export_lo)]
     # print(own_usage)
