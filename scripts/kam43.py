@@ -10,17 +10,17 @@ import matplotlib.pyplot as plt
 
 DATABASE = os.environ['HOME'] + "/.sqlite3/electriciteit.sqlite3"
 
-def get_import_lo(period):
+def get_historic_data(period, timeframe, telwerk):
     """
     Fetch import data LO
     """
     ret_data = []
-    interval = f'-{period+2} hour'
+    interval = f'-{period} {timeframe}'
     db_con = s3.connect(DATABASE)
     with db_con:
         db_cur = db_con.cursor()
         db_cur.execute(f"SELECT strftime('%d %Hh',sample_time) as grouped, \
-                     MAX(T2in)-MIN(T2in), \
+                     MAX({telwerk})-MIN({telwerk}), \
                      MIN(sample_epoch) as t \
                      FROM kamstrup \
                      WHERE (sample_time >= datetime('now', '{interval}')) \
@@ -31,9 +31,10 @@ def get_import_lo(period):
         db_data = db_cur.fetchall()
 
     for row in db_data:
-        ret_data.append(row)
+        ret_data.append(row[1])
+    ret_data.pop(0)
+    ret_data.pop(0)
     print(ret_data)
-    ret_data = [ 4, 4, 6, 4, 3, 5]
     return ret_data
 
 
@@ -73,11 +74,11 @@ def main():
     """
     This is the main loop
     """
-    import_lo = get_import_lo(4)
-    import_hi = get_import_hi(4)
-    export_lo = get_export_lo(4)
-    export_hi = get_export_hi(4)
-    opwekking = get_opwekking(4)
+    import_lo = get_historic_data(6, 'hour', 'T2in')
+    import_hi = get_historic_data(6, 'hour', 'T2out')
+    export_lo = get_historic_data(6, 'hour', 'T1in')
+    export_hi = get_historic_data(6, 'hour', 'T1out')
+    opwekking = get_opwekking(6, 'hour')
 
     # print(import_lo)
     # print(import_hi)
