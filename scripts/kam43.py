@@ -98,11 +98,11 @@ def fetch_last_years():
     """
     ...
     """
-    import_lo, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T1in', from_start_of_year=True)
-    import_hi, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T2in', from_start_of_year=True)
-    export_lo, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T1out', from_start_of_year=True)
-    export_hi, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T2out', from_start_of_year=True)
-    opwekking = get_opwekking(61, 'month', from_start_of_year=True)
+    import_lo, data_lbls = get_historic_data('%Y', 5, 'year', 'T1in', from_start_of_year=True)
+    import_hi, data_lbls = get_historic_data('%Y', 5, 'year', 'T2in', from_start_of_year=True)
+    export_lo, data_lbls = get_historic_data('%Y', 5, 'year', 'T1out', from_start_of_year=True)
+    export_hi, data_lbls = get_historic_data('%Y', 5, 'year', 'T2out', from_start_of_year=True)
+    opwekking = get_opwekking(5, 'year', from_start_of_year=True)
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 

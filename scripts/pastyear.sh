@@ -34,8 +34,8 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   ./scripts/kam43.py -y
   ./scripts/upload.sh --upload
 
-  # drop datafile
-  rm "${kamdata}"
+  # # drop datafile
+  # rm "${kamdata}"
 
   ./scripts/vsmonth.sh
   ./scripts/avgday.sh
