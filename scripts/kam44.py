@@ -47,14 +47,16 @@ def get_historic_data(grouping, period, timeframe, telwerk, from_start_of_year=F
         ret_data.append(row[1]/1000) # convert Wh to kWh
         ret_lbls.append(row[0])
 
-    return ret_data[-period:], ret_lbls[-period:]
+    return ret_data[-period*12:], ret_lbls[-period*12:]
 
 
 def get_opwekking(period, timeframe, from_start_of_year=False):
     """
     Fetch production data
     """
-    ret_data = [0] * period
+    if from_start_of_year: #bogus code
+        timeframe+=1
+    ret_data = [0] * period*12
     return ret_data
 
 
@@ -80,7 +82,9 @@ def plot_graph(output_file, data_tuple, plot_title):
     opwekking = data_tuple[3]
     export_lo = data_tuple[4]
     export_hi = data_tuple[5]
-    own_usage = [x-y-z for x,y,z in zip(opwekking, export_hi, export_lo)]
+    own_usage = [sum(x) for x in zip(opwekking, export_hi, export_lo)]
+    total_use = [sum(x) for x in zip(own_usage, import_lo, import_hi)]
+    total_out = [sum(x) for x in zip(export_lo, export_hi)]
 
     # Set the bar width
     bar_width = 0.75
@@ -94,48 +98,20 @@ def plot_graph(output_file, data_tuple, plot_title):
     dummy, ax1 = plt.subplots(1, figsize=(20, 7))
 
     # Create a bar plot of import_lo
-    ax1.bar(tick_pos, import_hi,
+    ax1.bar(tick_pos, total_use,
             width=bar_width,
-            label='Import (T2)',
-            alpha=ahpla,
-            color='y',
-            align='center',
-            bottom=[sum(i) for i in zip(import_lo, own_usage)]
-            )
-    # Create a bar plot of import_hi
-    ax1.bar(tick_pos, import_lo,
-            width=bar_width,
-            label='Import (T1)',
+            label='Verbruik',
             alpha=ahpla,
             color='b',
-            align='center',
-            bottom=own_usage
-            )
-    # Create a bar plot of usage_slf
-    ax1.bar(tick_pos, own_usage,
-            width=bar_width,
-            label='Self',
-            alpha=ahpla,
-            color='g',
             align='center'
             )
-    # Exports hang below the y-axis
-    # Create a bar plot of export_lo
-    ax1.bar(tick_pos, [-1*i for i in export_lo],
+    # Create a bar plot of import_hi
+    ax1.bar(tick_pos, [-1*i for i in total_out],
             width=bar_width,
-            label='Export (T1)',
+            label='Export',
             alpha=ahpla,
-            color='c',
+            color='b',
             align='center'
-            )
-    # Create a bar plot of export_hi
-    ax1.bar(tick_pos, [-1*i for i in export_hi],
-            width=bar_width,
-            label='Export (T2)',
-            alpha=ahpla,
-            color='r',
-            align='center',
-            bottom=[-1*i for i in export_lo]
             )
 
     # Set Axes stuff
