@@ -33,6 +33,6 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   ./scripts/upload.sh --upload
 
   # drop datafile
-  rm "${kamdata}"
+  # rm "${kamdata}"
 
 popd >/dev/null || exit
