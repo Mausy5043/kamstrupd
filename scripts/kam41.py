@@ -91,7 +91,7 @@ def build_arrays44(lbls, use_data, expo_data):
     usage = list()
     export = list()
 
-    label_lists = list([range(first_year, last_year)], list(range(1,13)))
+    label_lists = [list(range(first_year, last_year)), list(range(1,13))]
     for month in range(1,13):
         usage.append(list([0] * num_years))
         export.append(list([0] * num_years))
