@@ -32,7 +32,7 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   ./scripts/kam43.py -d
   ./scripts/upload.sh --upload
 
-  # drop datafile
-  rm "${kamdata}"
+  # # drop datafile
+  # rm "${kamdata}"
 
 popd >/dev/null || exit
