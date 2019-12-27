@@ -130,18 +130,18 @@ def plot_graph(output_file, data_tuple, plot_title):
     dummy, ax1 = plt.subplots(1, figsize=(20, 7))
 
     # Create a bar plot of import_lo
-    ax1.bar(tick_pos, import_lo,
-            width=bar_width,
-            label='Import (T1)',
-            alpha=ahpla,
-            color='r',
-            align='center',
-            bottom=[sum(i) for i in zip(import_hi, own_usage)]
-            )
-    # Create a bar plot of import_hi
     ax1.bar(tick_pos, import_hi,
             width=bar_width,
             label='Import (T2)',
+            alpha=ahpla,
+            color='r',
+            align='center',
+            bottom=[sum(i) for i in zip(import_lo, own_usage)]
+            )
+    # Create a bar plot of import_hi
+    ax1.bar(tick_pos, import_lo,
+            width=bar_width,
+            label='Import (T1)',
             alpha=ahpla,
             color='y',
             align='center',
