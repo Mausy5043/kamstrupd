@@ -212,12 +212,11 @@ def main():
         plot_graph('/tmp/kamstrupd/site/img/kam_pastyear.png',
                    fetch_last_year(),
                    "Verbruik per maand afgelopen jaren"
-                  )`
+                  )
         plot_graph('/tmp/kamstrupd/site/img/kam_vs_year.png',
                    fetch_last_years(),
                    "Verbruik per jaar afgelopen jaren"
-                  )`
-
+                  )
 
 
 if __name__ == "__main__":
