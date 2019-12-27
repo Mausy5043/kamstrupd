@@ -134,7 +134,7 @@ def plot_graph(output_file, data_tuple, plot_title):
             width=bar_width,
             label='Import (T2)',
             alpha=ahpla,
-            color='r',
+            color='y',
             align='center',
             bottom=[sum(i) for i in zip(import_lo, own_usage)]
             )
@@ -143,7 +143,7 @@ def plot_graph(output_file, data_tuple, plot_title):
             width=bar_width,
             label='Import (T1)',
             alpha=ahpla,
-            color='y',
+            color='c',
             align='center',
             bottom=own_usage
             )
@@ -161,7 +161,7 @@ def plot_graph(output_file, data_tuple, plot_title):
             width=bar_width,
             label='Export (T1)',
             alpha=ahpla,
-            color='c',
+            color='b',
             align='center'
             )
     # Create a bar plot of export_hi
@@ -169,7 +169,7 @@ def plot_graph(output_file, data_tuple, plot_title):
             width=bar_width,
             label='Export (T2)',
             alpha=ahpla,
-            color='b',
+            color='r',
             align='center',
             bottom=[-1*i for i in export_lo]
             )
