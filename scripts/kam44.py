@@ -77,14 +77,14 @@ def plot_graph(output_file, data_tuple, plot_title):
     ...
     """
     data_lbls = data_tuple[0]
-    import_lo = data_tuple[1]
-    import_hi = data_tuple[2]
+    # import_lo = data_tuple[1]
+    # import_hi = data_tuple[2]
     opwekking = data_tuple[3]
-    export_lo = data_tuple[4]
-    export_hi = data_tuple[5]
-    own_usage = [sum(x) for x in zip(opwekking, export_hi, export_lo)]
-    total_use = [sum(x) for x in zip(own_usage, import_lo, import_hi)]
-    total_out = [sum(x) for x in zip(export_lo, export_hi)]
+    # export_lo = data_tuple[4]
+    # export_hi = data_tuple[5]
+    own_usage = [sum(x) for x in zip(opwekking, data_tuple[5], data_tuple[4])]
+    total_use = [sum(x) for x in zip(own_usage, data_tuple[1], data_tuple[2])]
+    total_out = [sum(x) for x in zip(data_tuple[4], data_tuple[5])]
 
     # Set the bar width
     bar_width = 0.75
@@ -97,7 +97,7 @@ def plot_graph(output_file, data_tuple, plot_title):
     plt.rc('font', size=13)
     dummy, ax1 = plt.subplots(1, figsize=(20, 7))
 
-    # Create a bar plot of import_lo
+    # Create a bar plot usage
     ax1.bar(tick_pos, total_use,
             width=bar_width,
             label='Verbruik',
@@ -105,7 +105,7 @@ def plot_graph(output_file, data_tuple, plot_title):
             color='b',
             align='center'
             )
-    # Create a bar plot of import_hi
+    # Create a bar plot of production
     ax1.bar(tick_pos, [-1*i for i in total_out],
             width=bar_width,
             label='Export',
