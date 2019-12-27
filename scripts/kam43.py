@@ -161,7 +161,7 @@ def plot_graph(output_file, data_tuple, plot_title):
             width=bar_width,
             label='Export (T1)',
             alpha=ahpla,
-            color='b',
+            color='c',
             align='center'
             )
     # Create a bar plot of export_hi
