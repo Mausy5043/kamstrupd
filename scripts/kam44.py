@@ -9,6 +9,8 @@ import sys
 
 import matplotlib.pyplot as plt
 
+import kam41
+
 DATABASE = os.environ['HOME'] + "/.sqlite3/electriciteit.sqlite3"
 
 def get_cli_params(expected_amount):
@@ -79,12 +81,13 @@ def plot_graph(output_file, data_tuple, plot_title):
     data_lbls = data_tuple[0]
     # import_lo = data_tuple[1]
     # import_hi = data_tuple[2]
-    opwekking = data_tuple[3]
+    # opwekking = data_tuple[3]
     # export_lo = data_tuple[4]
     # export_hi = data_tuple[5]
-    own_usage = [sum(x) for x in zip(opwekking, data_tuple[5], data_tuple[4])]
+    own_usage = [sum(x) for x in zip(data_tuple[3], data_tuple[5], data_tuple[4])]
     total_use = [sum(x) for x in zip(own_usage, data_tuple[1], data_tuple[2])]
     total_out = [sum(x) for x in zip(data_tuple[4], data_tuple[5])]
+    data_lbls, total_use, total_out = kam41.build_arrays44(data_lbls, total_use, total_out)
 
     # Set the bar width
     bar_width = 0.75
