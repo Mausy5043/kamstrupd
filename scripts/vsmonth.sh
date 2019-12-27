@@ -31,6 +31,7 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
     timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}p'" ./graphs/vsmonth_p.gp || exit 1
   fi
 
+  ./scripts/kam44.py -m
   ./scripts/upload.sh --upload
 
 popd >/dev/null || exit
