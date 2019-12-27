@@ -19,13 +19,16 @@ def get_cli_params(expected_amount):
     return sys.argv[1]
 
 
-def get_historic_data(grouping, period, timeframe, telwerk):
+def get_historic_data(grouping, period, timeframe, telwerk, from_start_of_year=False):
     """
     Fetch import data LO
     """
     ret_data = []
     ret_lbls = []
-    interval = f'-{period} {timeframe}'
+    if from_start_of_year:
+        interval = f"datetime(datetime(\'now\', \'-{period} {timeframe}\'), \'start of year\')"
+    else:
+        interval = f"datetime(\'now\', \'-{period} {timeframe}\')"
     db_con = s3.connect(DATABASE)
     with db_con:
         db_cur = db_con.cursor()
@@ -33,7 +36,7 @@ def get_historic_data(grouping, period, timeframe, telwerk):
                      MAX({telwerk})-MIN({telwerk}), \
                      MIN(sample_epoch) as t \
                      FROM kamstrup \
-                     WHERE (sample_time >= datetime('now', '{interval}')) \
+                     WHERE (sample_time >= {interval}) \
                      GROUP BY grouped \
                      ORDER BY t ASC \
                      ;"
@@ -47,7 +50,7 @@ def get_historic_data(grouping, period, timeframe, telwerk):
     return ret_data[-period:], ret_lbls[-period:]
 
 
-def get_opwekking(period, timeframe):
+def get_opwekking(period, timeframe, from_start_of_year=False):
     """
     Fetch production data
     """
@@ -88,6 +91,18 @@ def fetch_last_year():
     export_lo, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T1out')
     export_hi, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T2out')
     opwekking = get_opwekking(61, 'month')
+    return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
+
+
+def fetch_last_years():
+    """
+    ...
+    """
+    import_lo, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T1in', from_start_of_year=True)
+    import_hi, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T2in', from_start_of_year=True)
+    export_lo, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T1out', from_start_of_year=True)
+    export_hi, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T2out', from_start_of_year=True)
+    opwekking = get_opwekking(61, 'month', from_start_of_year=True)
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
@@ -197,7 +212,12 @@ def main():
         plot_graph('/tmp/kamstrupd/site/img/kam_pastyear.png',
                    fetch_last_year(),
                    "Verbruik per maand afgelopen jaren"
-                  )
+                  )`
+        plot_graph('/tmp/kamstrupd/site/img/kam_vs_year.png',
+                   fetch_last_years(),
+                   "Verbruik per jaar afgelopen jaren"
+                  )`
+
 
 
 if __name__ == "__main__":
