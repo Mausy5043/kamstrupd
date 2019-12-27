@@ -110,7 +110,7 @@ def plot_graph(output_file, data_tuple, plot_title):
             width=bar_width,
             label='Export',
             alpha=ahpla,
-            color='b',
+            color='g',
             align='center'
             )
 
