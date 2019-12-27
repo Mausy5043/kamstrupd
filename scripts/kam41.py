@@ -98,8 +98,8 @@ def build_arrays44(lbls, use_data, expo_data):
 
     for data_point in zip(lbls, use_data, expo_data):
         [year, month] = data_point[0].split('-')
-        row_idx = int(month)
-        col_idx = int(year) - first_year + 1
+        row_idx = int(month) - 1
+        col_idx = int(year) - first_year
         usage[row_idx][col_idx] = data_point[1]
         export[row_idx][col_idx] = data_point[2]
     return label_lists, usage, export
