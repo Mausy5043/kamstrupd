@@ -121,7 +121,7 @@ def plot_graph(output_file, data_tuple, plot_title):
     # Set the bar width
     bar_width = 0.75
     # Set the color alpha
-    ahpla = 0.5
+    ahpla = 0.7
     # positions of the left bar-boundaries
     tick_pos = list(range(1, len(data_lbls)+1))
 
@@ -143,7 +143,7 @@ def plot_graph(output_file, data_tuple, plot_title):
             width=bar_width,
             label='Import (T1)',
             alpha=ahpla,
-            color='c',
+            color='b',
             align='center',
             bottom=own_usage
             )
