@@ -94,28 +94,29 @@ def plot_graph(output_file, data_tuple, plot_title):
     # Set the color alpha
     ahpla = 0.7
     # positions of the left bar-boundaries
-    tick_pos = list(range(1, len(data_lbls)+1))
+    tick_pos = list(range(1, len(data_lbls[1])+1))
 
     #Create the general plot and the bar
     plt.rc('font', size=13)
     dummy, ax1 = plt.subplots(1, figsize=(20, 7))
 
     # Create a bar plot usage
-    ax1.bar(tick_pos, total_use,
-            width=bar_width,
-            label='Verbruik',
-            alpha=ahpla,
-            color='b',
-            align='center'
-            )
-    # Create a bar plot of production
-    ax1.bar(tick_pos, [-1*i for i in total_out],
-            width=bar_width,
-            label='Export',
-            alpha=ahpla,
-            color='g',
-            align='center'
-            )
+    for idx in range(0,len(data_lbls[1])):
+        ax1.bar(tick_pos, total_use[idx],
+                width=bar_width,
+                label=data_lbls[0][idx],
+                alpha=ahpla,
+                color='b',
+                align='center'
+                )
+        # Create a bar plot of production
+        ax1.bar(tick_pos, [-1*i for i in total_out[idx]],
+                width=bar_width,
+                label=data_lbls[0][idx],
+                alpha=ahpla,
+                color='g',
+                align='center'
+                )
 
     # Set Axes stuff
     ax1.set_ylabel("[kWh]")
