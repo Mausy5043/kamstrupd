@@ -97,7 +97,7 @@ def plot_graph(output_file, data_tuple, plot_title):
     # Set the color alpha
     ahpla = 0.7
     # positions of the left bar-boundaries
-    tick_pos = np.arange(1, len(data_lbls[1])+1) - bars_width / 2
+    tick_pos = np.arange(1, len(data_lbls[1])+1) - (bars_width / 2)
 
     #Create the general plot and the bar
     plt.rc('font', size=13)
@@ -105,21 +105,18 @@ def plot_graph(output_file, data_tuple, plot_title):
 
     # Create a bar plot usage
     for idx in range(0,len(data_lbls[0])):
-        ax1.bar(tick_pos + idx * bar_width, total_use[idx],
-                width=bars_width,
+        ax1.bar(tick_pos + (idx * bar_width), total_use[idx],
+                width=bar_width,
                 label=data_lbls[0][idx],
                 alpha=ahpla,
-                color='b',
                 align='center'
                 )
         # Create a bar plot of production
-        # ax1.bar(tick_pos, [-1*i for i in total_out[idx]],
-        #         width=bar_width,
-        #         label=data_lbls[0][idx],
-        #         alpha=ahpla,
-        #         color='g',
-        #         align='center'
-        #         )
+        ax1.bar(tick_pos + (idx * bar_width), [-1*i for i in total_out[idx]],
+                width=bar_width,
+                alpha=ahpla,
+                align='center'
+                )
 
     # Set Axes stuff
     ax1.set_ylabel("[kWh]")
@@ -128,11 +125,11 @@ def plot_graph(output_file, data_tuple, plot_title):
     ax1.axhline(y=0, color='k')
     ax1.axvline(x=0, color='k')
     # Set plot stuff
-    plt.xticks(tick_pos, data_lbls, rotation=-60)
+    plt.xticks(tick_pos, data_lbls[1], rotation=-60)
     plt.title(f'{plot_title}')
     plt.legend(loc='upper left', ncol=5, framealpha=0.2)
     # Fit every nicely
-    plt.xlim([min(tick_pos)-bar_width, max(tick_pos)+bar_width])
+    plt.xlim([min(tick_pos)-bars_width, max(tick_pos)+bars_width])
     plt.tight_layout()
     plt.savefig(fname=f'{output_file}', format='png')
 
