@@ -92,33 +92,34 @@ def plot_graph(output_file, data_tuple, plot_title):
     data_lbls, total_use, total_out = kam41.build_arrays44(data_lbls, total_use, total_out)
 
     # Set the bar width
-    bar_width = 0.75
+    bars_width = 0.75
+    bar_width = bars_width / len(data_lbls[1])
     # Set the color alpha
     ahpla = 0.7
     # positions of the left bar-boundaries
-    tick_pos = list(range(1, len(data_lbls[1])+1))
+    tick_pos = np.arange(1, len(data_lbls[1])+1) - bars_width / 2
 
     #Create the general plot and the bar
     plt.rc('font', size=13)
     dummy, ax1 = plt.subplots(1, figsize=(20, 7))
 
     # Create a bar plot usage
-    for idx in range(0,len(data_lbls[1])):
-        ax1.bar(tick_pos, total_use[idx],
-                width=bar_width,
+    for idx in range(0,len(data_lbls[0])):
+        ax1.bar(tick_pos + idx * bar_width, total_use[idx],
+                width=bars_width,
                 label=data_lbls[0][idx],
                 alpha=ahpla,
                 color='b',
                 align='center'
                 )
         # Create a bar plot of production
-        ax1.bar(tick_pos, [-1*i for i in total_out[idx]],
-                width=bar_width,
-                label=data_lbls[0][idx],
-                alpha=ahpla,
-                color='g',
-                align='center'
-                )
+        # ax1.bar(tick_pos, [-1*i for i in total_out[idx]],
+        #         width=bar_width,
+        #         label=data_lbls[0][idx],
+        #         alpha=ahpla,
+        #         color='g',
+        #         align='center'
+        #         )
 
     # Set Axes stuff
     ax1.set_ylabel("[kWh]")
