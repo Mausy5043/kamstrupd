@@ -145,7 +145,7 @@ def main():
     if OPTION in ['-m', '-M', '-y', '-Y', '-a', '-A']:
         plot_graph('/tmp/kamstrupd/site/img/kam_vs_month.png',
                    fetch_last_months(),
-                   "Verbruik per maand afgelopen jaren"
+                   f"Verbruik per maand afgelopen jaren ({now.strftime('%d-%m-%Y %H:%M:%S')}"
                   )
 
 

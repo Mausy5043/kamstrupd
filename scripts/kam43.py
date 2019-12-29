@@ -199,13 +199,13 @@ def main():
     if OPTION in ['-d', '-D', '-a', '-A']:
         plot_graph('/tmp/kamstrupd/site/img/kam_pastday.png',
                    fetch_last_day(),
-                   "Recent verbruik per uur"
+                   f"Recent verbruik per uur ({now.strftime('%d-%m-%Y %H:%M:%S')}"
                   )
 
     if OPTION in ['-m', '-M', '-a', '-A']:
         plot_graph('/tmp/kamstrupd/site/img/kam_pastmonth.png',
                    fetch_last_month(),
-                   "Verbruik per dag afgelopen maand"
+                   f"Verbruik per dag afgelopen maand ({now.strftime('%d-%m-%Y %H:%M:%S')}"
                   )
 
     if OPTION in ['-y', '-Y', '-a', '-A']:
@@ -215,7 +215,7 @@ def main():
                   )
         plot_graph('/tmp/kamstrupd/site/img/kam_vs_year.png',
                    fetch_last_years(),
-                   "Verbruik per jaar afgelopen jaren"
+                   f"Verbruik per jaar afgelopen jaren ({now.strftime('%d-%m-%Y %H:%M:%S')}"
                   )
 
 
