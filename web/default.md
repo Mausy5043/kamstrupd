@@ -12,9 +12,9 @@ A Raspberry Pi reads the measurement data via the serialport of the meter.
 
 ![A GNUplot image should be here: year](img/kam_pastyear.png)
 
-![A GNUplot image should be here: vs_month_p](img/kam_vs_month.png)
-
 ![A GNUplot image should be here: vsyear](img/kam_vs_year.png)
+
+![A GNUplot image should be here: vs_month_p](img/kam_vs_month.png)
 
 ![A GNUplot image should be here: vsyear](img/kam_avg_day_u.png)
 ![A GNUplot image should be here: vsyear](img/kam_avg_day_p.png)
