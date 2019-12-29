@@ -127,7 +127,7 @@ def plot_graph(output_file, data_tuple, plot_title):
     # Set plot stuff
     plt.xticks(tick_pos, data_lbls[1], rotation=-60)
     plt.title(f'{plot_title}')
-    plt.legend(loc='upper left', ncol=5, framealpha=0.2)
+    plt.legend(loc='upper left', ncol=6, framealpha=0.2)
     # Fit every nicely
     plt.xlim([min(tick_pos)-bars_width, max(tick_pos)+bars_width])
     plt.tight_layout()
