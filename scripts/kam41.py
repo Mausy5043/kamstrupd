@@ -6,6 +6,8 @@ import os
 import sys
 import syslog
 
+import numpy as np
+
 # constants
 DEBUG       = False
 IS_JOURNALD = os.path.isfile('/bin/journalctl')
@@ -88,21 +90,18 @@ def build_arrays44(lbls, use_data, expo_data):
     first_year = int(lbls[0].split('-')[0])
     last_year = int(lbls[-1].split('-')[0]) + 1
     num_years = last_year - first_year
-    usage = list()
-    export = list()
 
-    label_lists = [list(range(first_year, last_year)), list(range(1,13))]
-    for month in range(1,13):
-        usage.append(list([0] * num_years))
-        export.append(list([0] * num_years))
+    label_lists = [np.arange(first_year, last_year), np.arange(1,13)]
+    usage = np.zeros((num_years, 12))
+    exprt = np.zeros((num_years, 12))
 
     for data_point in zip(lbls, use_data, expo_data):
         [year, month] = data_point[0].split('-')
-        row_idx = int(month) - 1
-        col_idx = int(year) - first_year
+        col_idx = int(month) - 1
+        row_idx = int(year) - first_year
         usage[row_idx][col_idx] = data_point[1]
-        export[row_idx][col_idx] = data_point[2]
-    return label_lists, usage, export
+        exprt[row_idx][col_idx] = data_point[2]
+    return label_lists, usage, exprt
 
 
 if __name__ == "__main__":
