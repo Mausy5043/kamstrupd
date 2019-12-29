@@ -2,7 +2,7 @@
 
 """Create multi-year graphs"""
 
-
+from datetime import datetime as dt
 import os
 import sqlite3 as s3
 import sys
@@ -145,7 +145,7 @@ def main():
     if OPTION in ['-m', '-M', '-y', '-Y', '-a', '-A']:
         plot_graph('/tmp/kamstrupd/site/img/kam_vs_month.png',
                    fetch_last_months(),
-                   f"Verbruik per maand afgelopen jaren ({now.strftime('%d-%m-%Y %H:%M:%S')}"
+                   f"Verbruik per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')}"
                   )
 
 
