@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""."""
+"""Create multi-year graphs"""
 
 
 import os
@@ -78,7 +78,7 @@ def fetch_last_months():
 
 def plot_graph(output_file, data_tuple, plot_title):
     """
-    ...
+    Create the graph
     """
     data_lbls = data_tuple[0]
     # import_lo = data_tuple[1]
