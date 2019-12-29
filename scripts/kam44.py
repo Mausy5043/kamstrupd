@@ -95,7 +95,7 @@ def plot_graph(output_file, data_tuple, plot_title):
     bars_width = 0.9
     bar_width = bars_width / len(data_lbls[0])
     # Set the color alpha
-    ahpla = 0.7
+    ahpla = 1 - (1/(len(data_lbls[0])+1) * len(data_lbls[0]))
     # positions of the left bar-boundaries
     tick_pos = np.arange(1, len(data_lbls[1])+1) - (bars_width / 2)
 
@@ -108,13 +108,13 @@ def plot_graph(output_file, data_tuple, plot_title):
         ax1.bar(tick_pos + (idx * bar_width), total_use[idx],
                 width=bar_width,
                 label=data_lbls[0][idx],
-                alpha=ahpla,
+                alpha=ahpla+(idx*ahpla),
                 align='edge'
                 )
         # Create a bar plot of production
         ax1.bar(tick_pos + (idx * bar_width), [-1*i for i in total_out[idx]],
                 width=bar_width,
-                alpha=ahpla,
+                alpha=ahpla+(idx*ahpla),
                 align='edge'
                 )
 
@@ -125,11 +125,11 @@ def plot_graph(output_file, data_tuple, plot_title):
     ax1.axhline(y=0, color='k')
     ax1.axvline(x=0, color='k')
     # Set plot stuff
-    plt.xticks(tick_pos, data_lbls[1], rotation=-60)
+    plt.xticks(tick_pos + (bars_width / 2), data_lbls[1])
     plt.title(f'{plot_title}')
     plt.legend(loc='upper left', ncol=6, framealpha=0.2)
     # Fit every nicely
-    plt.xlim([min(tick_pos)-bars_width, max(tick_pos)+bars_width])
+    plt.xlim([min(tick_pos)-(bars_width/2), max(tick_pos)+(bars_width/2*3)])
     plt.tight_layout()
     plt.savefig(fname=f'{output_file}', format='png')
 
