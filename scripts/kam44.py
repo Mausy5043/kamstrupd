@@ -92,8 +92,8 @@ def plot_graph(output_file, data_tuple, plot_title):
     data_lbls, total_use, total_out = kam41.build_arrays44(data_lbls, total_use, total_out)
 
     # Set the bar width
-    bars_width = 0.75
-    bar_width = bars_width / len(data_lbls[1])
+    bars_width = 0.9
+    bar_width = bars_width / len(data_lbls[0])
     # Set the color alpha
     ahpla = 0.7
     # positions of the left bar-boundaries
@@ -109,13 +109,13 @@ def plot_graph(output_file, data_tuple, plot_title):
                 width=bar_width,
                 label=data_lbls[0][idx],
                 alpha=ahpla,
-                align='center'
+                align='edge'
                 )
         # Create a bar plot of production
         ax1.bar(tick_pos + (idx * bar_width), [-1*i for i in total_out[idx]],
                 width=bar_width,
                 alpha=ahpla,
-                align='center'
+                align='edge'
                 )
 
     # Set Axes stuff
