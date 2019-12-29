@@ -8,6 +8,7 @@ import sqlite3 as s3
 import sys
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 import kam41
 
@@ -49,7 +50,7 @@ def get_historic_data(grouping, period, timeframe, telwerk, from_start_of_year=F
         ret_data.append(row[1]/1000) # convert Wh to kWh
         ret_lbls.append(row[0])
 
-    return ret_data[-period*12:], ret_lbls[-period*12:]
+    return np.array(ret_data[-period*12:]), np.array(ret_lbls[-period*12:])
 
 
 def get_opwekking(period, timeframe, from_start_of_year=False):
@@ -58,7 +59,8 @@ def get_opwekking(period, timeframe, from_start_of_year=False):
     """
     if from_start_of_year: #bogus code
         timeframe+=1
-    ret_data = [0] * period*12
+    ret_data = np.zeros(period*12)
+    # return np.array(ret_data)
     return ret_data
 
 
