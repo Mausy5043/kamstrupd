@@ -400,12 +400,14 @@ function-naming-style=snake_case
 good-names=i,
            j,
            k,
+           x,
            ex,
            Run,
+           OPTION,
            _
 
 # Include a hint for the correct naming format with invalid-name
-include-naming-hint=no
+include-naming-hint=yes
 
 # Naming style matching correct inline iteration names
 inlinevar-naming-style=any
@@ -445,7 +447,7 @@ variable-naming-style=snake_case
 
 # Regular expression matching correct variable names. Overrides variable-
 # naming-style
-#variable-rgx=
+#variable-rgx=^[A-Z][A-Z0-9]*((_[A-Z0-9]+)*)?$
 
 
 [IMPORTS]
