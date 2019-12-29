@@ -109,12 +109,14 @@ def plot_graph(output_file, data_tuple, plot_title):
                 width=bar_width,
                 label=data_lbls[0][idx],
                 alpha=ahpla+(idx*ahpla),
+                color='b',
                 align='edge'
                 )
         # Create a bar plot of production
         ax1.bar(tick_pos + (idx * bar_width), [-1*i for i in total_out[idx]],
                 width=bar_width,
                 alpha=ahpla+(idx*ahpla),
+                color='g',
                 align='edge'
                 )
 
