@@ -143,7 +143,7 @@ def main():
     OPTION = get_cli_params(1)
 
     if OPTION in ['-m', '-M', '-y', '-Y', '-a', '-A']:
-        plot_graph('/tmp/kamstrupd/site/img/kam_vs_month_p.png',
+        plot_graph('/tmp/kamstrupd/site/img/kam_vs_month.png',
                    fetch_last_months(),
                    "Verbruik per maand afgelopen jaren"
                   )

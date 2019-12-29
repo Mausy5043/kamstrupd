@@ -7,7 +7,7 @@ interval="-61 month"
 
 pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   #shellcheck disable=SC1091
-  source ./scripts/environment.sh
+  # source ./scripts/environment.sh
   # totals per hour for T1in, T2in, T1out, T2out
 
   # #shellcheck disable=SC2154
