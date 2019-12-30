@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-"""Communicate with the smart electricity meter [KAMSTRUP].
+"""
+Communicate with the smart electricity meter [KAMSTRUP].
 
 Store data from a Kamstrup smart-electricity meter in a sqlite3 database.
 """
@@ -18,31 +19,36 @@ import traceback
 import serial
 
 import mausy5043funcs.fileops3 as mf
+# noinspection PyUnresolvedReferences
 from mausy5043libs.libdaemon3 import Daemon
 
 # constants
-DEBUG       = False
+DEBUG = False
 IS_JOURNALD = os.path.isfile('/bin/journalctl')
-MYID        = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split('/')[-1])))
-MYAPP       = os.path.realpath(__file__).split('/')[-3]
-NODE        = os.uname()[1]
+MYID = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split('/')[-1])))
+MYAPP = os.path.realpath(__file__).split('/')[-3]
+NODE = os.uname()[1]
 
 
+# noinspection PyUnresolvedReferences
 class MyDaemon(Daemon):
-  """Override Daemon-class run() function."""
+  """
+  Override Daemon-class run() function.
+  """
 
   # pylint: disable=too-few-public-methods
 
+  # noinspection PyUnresolvedReferences
   @staticmethod
   def run():
     """Execute main loop."""
     iniconf = configparser.ConfigParser()
-    iniconf.read(os.environ['HOME'] + '/' + MYAPP + '/config.ini')
-    report_time      = iniconf.getint(MYID, "reporttime")
-    fdatabase        = os.environ['HOME'] + '/' + iniconf.get(MYID, "databasefile")
-    sqlcmd           = iniconf.get(MYID,    "sqlcmd")
-    samples_averaged = iniconf.getint(MYID, "samplespercycle") * iniconf.getint(MYID, "cycles")
-    sample_time      = report_time / iniconf.getint(MYID, "samplespercycle")
+    iniconf.read(f"{os.environ['HOME']}/{MYAPP}/config.ini")
+    report_time = iniconf.getint(MYID, "reporttime")
+    fdatabase = f"{os.environ['HOME']}/{iniconf.get(MYID, 'databasefile')}"
+    sqlcmd = iniconf.get(MYID, 'sqlcmd')
+    samples_averaged = iniconf.getint(MYID, 'samplespercycle') * iniconf.getint(MYID, 'cycles')
+    sample_time = report_time / iniconf.getint(MYID, 'samplespercycle')
     data = []
 
     test_db_connection(fdatabase)
@@ -97,14 +103,14 @@ class MyDaemon(Daemon):
 
 def do_work():
   """Push the results out to a file."""
-  electra1in  = 0
-  electra2in  = 0
-  powerin     = 0
+  electra1in = 0
+  electra2in = 0
+  powerin = 0
   electra1out = 0
   electra2out = 0
-  powerout    = 0
-  tarif       = 0
-  swits       = 1
+  powerout = 0
+  tarif = 0
+  swits = 1
 
   telegram, status = gettelegram()
 
@@ -141,11 +147,10 @@ def do_work():
       # ['0-0:96.13.0', '', '']
       # not recorded
 
-  return '{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}'.format(electra1in,  electra2in,  powerin,
-                                                         electra1out, electra2out, powerout,
-                                                         tarif, swits)
+  return f'{electra1in}, {electra2in}, {powerin}, {electra1out}, {electra2out}, {powerout}, {tarif}, {swits}'
 
 
+# noinspection PyUnresolvedReferences
 def gettelegram():
   """Fetch a telegram from the serialport."""
   # flag used to exit the while-loop
@@ -185,7 +190,7 @@ def gettelegram():
   if abort == 1:
     with open('/tmp/kamstrup.raw', 'w') as output_file:
       for line in telegram:
-          output_file.write(f'{line}\n')
+        output_file.write(f'{line}\n')
 
   # Return codes:
   # abort == 1 indicates a successful read
@@ -197,12 +202,14 @@ def gettelegram():
 def do_add_to_database(result, fdatabase, sql_cmd):
   """Commit the results to the database."""
   # Get the time and date in human-readable form and UN*X-epoch...
-  out_date  = dt.datetime.now()  # time.strftime('%Y-%m-%dT%H:%M:%S')
+  conn = None
+  cursor = None
+  out_date = dt.datetime.now()  # time.strftime('%Y-%m-%dT%H:%M:%S')
   out_epoch = int(time.strftime('%s'))
   results = (out_date, out_epoch,
-            result[0], result[1], result[2],
-            result[3], result[4], result[5],
-            result[6], result[7])
+             result[0], result[1], result[2],
+             result[3], result[4], result[5],
+             result[6], result[7])
   mf.syslog_trace(f"   @: {out_date}", False, DEBUG)
   mf.syslog_trace(f"    : {results}", False, DEBUG)
 
@@ -229,10 +236,11 @@ def create_db_connection(database_file):
   param database_file: database file
   :return: Connection object or None
   """
+  consql = None
   mf.syslog_trace(f"Connecting to: {database_file}", False, DEBUG)
   try:
     consql = sqlite3.connect(database_file, timeout=9000)
-    #if consql:    # dB initialised succesfully -> get a cursor on the dB and run a test.
+    # if consql:    # dB initialised succesfully -> get a cursor on the dB and run a test.
     #  cursql = consql.cursor()
     #  cursql.execute("SELECT sqlite_version()")
     #  versql = cursql.fetchone()
@@ -243,15 +251,16 @@ def create_db_connection(database_file):
   except sqlite3.Error:
     mf.syslog_trace("Unexpected SQLite3 error when connecting to server.", syslog.LOG_CRIT, DEBUG)
     mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
-    if consql:    # attempt to close connection to SQLite3 server
+    if consql:  # attempt to close connection to SQLite3 server
       consql.close()
       mf.syslog_trace(" ** Closed SQLite3 connection. **", syslog.LOG_CRIT, DEBUG)
     raise
 
 
 def test_db_connection(fdatabase):
-  ''' test & log database engine coonnection
-  '''
+  """
+  Test & log database engine connection
+  """
   try:
     conn = create_db_connection(fdatabase)
     cursor = conn.cursor()
@@ -268,18 +277,22 @@ def test_db_connection(fdatabase):
 
 
 if __name__ == "__main__":
-  daemon = MyDaemon('/tmp/' + MYAPP + '/' + MYID + '.pid')  # pylint: disable=C0103
+  daemon = MyDaemon(f'/tmp/{MYAPP}/{MYID}.pid')  # pylint: disable=C0103
 
-  port = serial.Serial()                                    # pylint: disable=C0103
+  # noinspection PyUnresolvedReferences
+  port = serial.Serial()  # pylint: disable=C0103
   port.baudrate = 9600
+  # noinspection PyUnresolvedReferences
   port.bytesize = serial.SEVENBITS
-  port.parity   = serial.PARITY_EVEN
+  # noinspection PyUnresolvedReferences
+  port.parity = serial.PARITY_EVEN
+  # noinspection PyUnresolvedReferences
   port.stopbits = serial.STOPBITS_ONE
-  port.xonxoff  = 1
-  port.rtscts   = 0
-  port.dsrdtr   = 0
-  port.timeout  = 15
-  port.port     = "/dev/ttyUSB0"
+  port.xonxoff = 1
+  port.rtscts = 0
+  port.dsrdtr = 0
+  port.timeout = 15
+  port.port = '/dev/ttyUSB0'
 
   # initialise logging
   syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
