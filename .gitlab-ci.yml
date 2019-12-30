@@ -55,4 +55,4 @@ lint_shellcheck-queries:
   stage: lint
   script:
     - apt-get install -qqy shellcheck >/dev/null
-    - shellcheck --format=gcc --external-sources queries/*.sh
+    - shellcheck --format=gcc --external-sources scripts/*.sh
