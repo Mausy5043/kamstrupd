@@ -76,6 +76,7 @@ def fetch_last_months():
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
+# noinspection SpellCheckingInspection
 def plot_graph(output_file, data_tuple, plot_title):
     """
     Create the graph

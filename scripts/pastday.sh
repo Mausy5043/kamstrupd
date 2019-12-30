@@ -3,7 +3,7 @@
 # query hourly totals for a period of two days (48 hours)
 
 
-interval="-48 hour"
+# interval="-48 hour"
 
 pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   #shellcheck disable=SC1091

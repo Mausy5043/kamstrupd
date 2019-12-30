@@ -3,7 +3,7 @@
 # query monthly totals for a period of n years
 
 
-interval="-5 year"
+# interval="-5 year"
 
 pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   #shellcheck disable=SC1091

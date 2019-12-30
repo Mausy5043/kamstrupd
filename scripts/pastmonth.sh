@@ -3,7 +3,7 @@
 # query daily totals for a period of one month (744 hours)
 
 
-interval="-1 month"
+# interval="-1 month"
 
 pushd "${HOME}/kamstrupd" >/dev/null || exit 1
   #shellcheck disable=SC1091

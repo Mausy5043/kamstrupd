@@ -48,6 +48,7 @@ class MyDaemon(Daemon):
     test_db_connection(fdatabase)
 
     port.open()
+    # noinspection PyStatementEffect
     serial.XON  # pylint: disable=W0104
     while True:
       try:
@@ -246,8 +247,6 @@ def create_db_connection(database_file):
       consql.close()
       mf.syslog_trace(" ** Closed SQLite3 connection. **", syslog.LOG_CRIT, DEBUG)
     raise
-
-  return None
 
 
 def test_db_connection(fdatabase):
