@@ -32,9 +32,7 @@ NODE = os.uname()[1]
 
 # noinspection PyUnresolvedReferences
 class MyDaemon(Daemon):
-  """
-  Override Daemon-class run() function.
-  """
+  """Override Daemon-class run() function."""
 
   # pylint: disable=too-few-public-methods
 
@@ -231,10 +229,8 @@ def do_add_to_database(result, fdatabase, sql_cmd):
 
 
 def create_db_connection(database_file):
-  """ Create a database connection to the SQLite3 database
-      specified by database_file
-  param database_file: database file
-  :return: Connection object or None
+  """
+  Create a database connection to the SQLite3 database specified by database_file.
   """
   consql = None
   mf.syslog_trace(f"Connecting to: {database_file}", False, DEBUG)
@@ -259,7 +255,7 @@ def create_db_connection(database_file):
 
 def test_db_connection(fdatabase):
   """
-  Test & log database engine connection
+  Test & log database engine connection.
   """
   try:
     conn = create_db_connection(fdatabase)
