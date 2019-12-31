@@ -7,12 +7,12 @@ ME=$(whoami)
 required_commonlibversion="0.6.0"
 commonlibbranch="v0_6"
 
-echo -n "Started installing KAMSTRUPd on "; date
-minit=$(echo $RANDOM/555 |bc)
+echo -n "Started installing KAMSTRUPd on "
+date
+minit=$(echo $RANDOM/555 | bc)
 echo "MINIT = ${minit}"
 
-install_package()
-{
+install_package() {
   # See if packages are installed and install them.
   package=$1
   echo "*********************************************************"
@@ -29,13 +29,13 @@ install_package()
 }
 
 getfilefromserver() {
-file="${1}"
-mode="${2}"
+  file="${1}"
+  mode="${2}"
 
-#if [ ! -f "${HOME}/${file}" ]; then
-  cp -rvf  "${HOME}/bin/.config/home/${file}" "${HOME}/"
-  chmod    "${mode}" "${HOME}/${file}"
-#fi
+  #if [ ! -f "${HOME}/${file}" ]; then
+  cp -rvf "${HOME}/bin/.config/home/${file}" "${HOME}/"
+  chmod "${mode}" "${HOME}/${file}"
+  #fi
 }
 
 sudo apt-get update
@@ -64,23 +64,25 @@ install_package "gnuplot-nox"
 # SQLite3 support (incl python3)
 install_package "sqlite3"
 
-echo; echo "*********************************************************"
+echo
+echo "*********************************************************"
 python3 -m pip install --upgrade pip setuptools wheel
 sudo pip3 install -r requirements.txt
 
 getfilefromserver ".my.kam.cnf" "0740"
 
-commonlibversion=$(pip3 freeze |grep mausy5043 |cut -c 26-)
+commonlibversion=$(pip3 freeze | grep mausy5043 | cut -c 26-)
 if [ "${commonlibversion}" != "${required_commonlibversion}" ]; then
-  echo; echo "*********************************************************"
+  echo
+  echo "*********************************************************"
   echo "Install common python functions..."
   sudo pip3 uninstall -y mausy5043-common-python
   pushd /tmp || exit 1
-    git clone -b "${commonlibbranch}" https://gitlab.com/mausy5043-installer/mausy5043-common-python.git
-    pushd /tmp/mausy5043-common-python || exit 1
-      sudo ./setup.py install
-    popd || exit
-    sudo rm -rf mausy5043-common-python/
+  git clone -b "${commonlibbranch}" https://gitlab.com/mausy5043-installer/mausy5043-common-python.git
+  pushd /tmp/mausy5043-common-python || exit 1
+  sudo ./setup.py install
+  popd || exit
+  sudo rm -rf mausy5043-common-python/
   popd || exit
   echo
   echo -n "Installed: "
@@ -89,30 +91,31 @@ if [ "${commonlibversion}" != "${required_commonlibversion}" ]; then
 fi
 
 pushd "${HOME}/kamstrupd" || exit 1
-  # To suppress git detecting changes by chmod:
-  git config core.fileMode false
-  # set the branch
-  if [ ! -e "${HOME}/.kamstrupd.branch" ]; then
-    echo "v4" > "${HOME}/.kamstrupd.branch"
-  fi
+# To suppress git detecting changes by chmod:
+git config core.fileMode false
+# set the branch
+if [ ! -e "${HOME}/.kamstrupd.branch" ]; then
+  echo "v4" >"${HOME}/.kamstrupd.branch"
+fi
 
-  # Recover the database from the server
-  ./scripts/kamfile.sh --install
+# Recover the database from the server
+./scripts/kamfile.sh --install
 
-  # Create the /etc/cron.d directory if it doesn't exist
-  sudo mkdir -p /etc/cron.d
-  # Set up some cronjobs
-  echo "# m h dom mon dow user  command" | sudo tee /etc/cron.d/kamstrupd
-  echo "${minit}  * *   *   *   ${ME}    sleep 80; ${HOME}/kamstrupd/scripts/kamfile.sh --backup 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
-  echo "*/10  * *   *   *   ${ME}    sleep 61; ${HOME}/kamstrupd/scripts/pastday.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
-  echo "01  * *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/pastmonth.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
-  echo "03  01 *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/pastyear.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
-  # echo "13  01 *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/vsyear.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
-  # echo "23  01 *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/vsmonth.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
-  # @reboot we allow for 10s for the network to come up:
-  echo "@reboot             ${ME}    sleep 10; ${HOME}/kamstrupd/update.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
+# Create the /etc/cron.d directory if it doesn't exist
+sudo mkdir -p /etc/cron.d
+# Set up some cronjobs
+echo "# m h dom mon dow user  command" | sudo tee /etc/cron.d/kamstrupd
+echo "${minit}  * *   *   *   ${ME}    sleep 80; ${HOME}/kamstrupd/scripts/kamfile.sh --backup 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
+echo "*/10  * *   *   *   ${ME}    sleep 61; ${HOME}/kamstrupd/scripts/pastday.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
+echo "01  * *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/pastmonth.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
+echo "03  01 *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/pastyear.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
+# echo "13  01 *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/vsyear.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
+# echo "23  01 *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/vsmonth.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
+# @reboot we allow for 10s for the network to come up:
+echo "@reboot             ${ME}    sleep 10; ${HOME}/kamstrupd/update.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
 popd || exit
 
-
-echo; echo "*********************************************************"
-echo -n "Finished installation of KAMSTRUPd on "; date
+echo
+echo "*********************************************************"
+echo -n "Finished installation of KAMSTRUPd on "
+date
