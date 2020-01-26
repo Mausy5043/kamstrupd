@@ -63,7 +63,7 @@ class MyDaemon(Daemon):
         result = result.split(',')
         mf.syslog_trace(f"Result   : {result}", False, DEBUG)
         # data.append(list(map(int, result)))
-        data.append([d for d in result])
+        data.append([float(d) for d in result])
         if len(data) > samples_averaged:
           data.pop(0)
         mf.syslog_trace(f"Data     : {data}", False, DEBUG)
@@ -74,9 +74,9 @@ class MyDaemon(Daemon):
           somma = [sum(d) for d in zip(*data)]
           # not all entries should be float
           # ['3088596', '3030401', '270', '0', '0', '0', '1', '1']
-          # averages = [format(sm / len(data), '.2f') for sm in somma]
-          averages[0] = int(somma[0] / len(data))  # avg temperature
-          averages[1] = somma[1]  # total solar radiation
+          averages = [format(sm / len(data), '.2f') for sm in somma]
+          averages[0] = float(somma[0] / len(data))  # avg temperature
+          averages[1] = int(somma[1])  # total solar radiation
           mf.syslog_trace(f"Averages : {averages}", False, DEBUG)
           if averages[0] > 0:
             do_add_to_database(averages, fdatabase, sqlcmd)
@@ -110,9 +110,9 @@ def do_work():
         # if key == 'datum':
         #   sampletime = stn[key]
         if key == 'temperatuurGC':
-          temperature = float(stn[key])
+          temperature = stn[key]
         if key == 'zonintensiteitWM2':
-          solrad = int(stn[key])
+          solrad = stn[key]
 
   return f'{temperature}, {solrad}'
 
