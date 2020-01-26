@@ -120,7 +120,7 @@ def plot_graph(output_file, data_tuple, plot_title):
            )
 
   # Set Axes stuff
-  ax1.set_ylabel("[kWh]")
+  ax1.set_ylabel("[kWh/m2]")
   ax1.legend(loc='upper left', ncol=5, framealpha=0.2)
   ax2.set_ylabel("[degC]")
   ax2.legend(loc='upper right', ncol=5, framealpha=0.2)
