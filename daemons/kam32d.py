@@ -18,7 +18,7 @@ import sys
 import syslog
 import time
 import traceback
-import urllib
+import urllib.request
 
 # noinspection PyUnresolvedReferences
 import mausy5043funcs.fileops3 as mf
@@ -110,9 +110,9 @@ def do_work():
         # if key == 'datum':
         #   sampletime = stn[key]
         if key == 'temperatuurGC':
-          temperature = stn[key]
+          temperature = float(stn[key])
         if key == 'zonintensiteitWM2':
-          solrad = stn[key]
+          solrad = int(stn[key])
 
   return f'{temperature}, {solrad}'
 
