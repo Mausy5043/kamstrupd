@@ -110,9 +110,11 @@ def do_work():
         # if key == 'datum':
         #   sampletime = stn[key]
         if key == 'temperatuurGC':
-          temperature = stn[key]
+          temperature = stn[key].strip()
         if key == 'zonintensiteitWM2':
-          solrad = stn[key]
+          solrad = stn[key].strip()
+          if solrad == '-':
+            solrad = '0'
 
   return f'{temperature}, {solrad}'
 
