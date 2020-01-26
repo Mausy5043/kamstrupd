@@ -1,6 +1,6 @@
 # SQLite3 script
-# create table for KAMSTRUP smart electricity meter reaadings
-# create tabel for SOLAREDGE solar panel monitoring
+# create table for KAMSTRUP smart electricity meter readings
+# create table for SOLAREDGE solar panel monitoring
 
 DROP TABLE IF EXISTS kamstrup;
 
