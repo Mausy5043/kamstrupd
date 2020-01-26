@@ -113,14 +113,17 @@ def plot_graph(output_file, data_tuple, plot_title):
           color='r',
           align='center'
           )
-  ax1.line(tick_pos, trend_T_data,
+  ax2 = ax1.twinx()
+  ax2.plot(tick_pos, trend_T_data,
            label='Temperatuur',
-           color='k',
-           align='center'
+           color='k'
            )
 
   # Set Axes stuff
   ax1.set_ylabel("[kWh]")
+  ax1.legend(loc='upper left', ncol=5, framealpha=0.2)
+  ax2.set_ylabel("[degC]")
+  ax2.legend(loc='upper right', ncol=5, framealpha=0.2)
   ax1.set_xlabel("Datetime")
   ax1.grid(which='major', axis='y', color='k', linestyle='--', linewidth=0.5)
   ax1.axhline(y=0, color='k')
@@ -128,7 +131,6 @@ def plot_graph(output_file, data_tuple, plot_title):
   # Set plot stuff
   plt.xticks(tick_pos, data_lbls, rotation=-60)
   plt.title(f'{plot_title}')
-  plt.legend(loc='upper left', ncol=5, framealpha=0.2)
   # Fit every nicely
   plt.xlim([min(tick_pos) - bar_width, max(tick_pos) + bar_width])
   plt.tight_layout()
