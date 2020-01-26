@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""."""
+"""Create trendbargraphs for various periods of electricity use and production."""
 
 import os
 import sqlite3 as s3
@@ -200,23 +200,23 @@ def main():
   if OPTION in ['-d', '-D', '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_pastday.png',
                fetch_last_day(),
-               f"Recent verbruik per uur ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+               f"Verbruiktrend per uur ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
 
   if OPTION in ['-m', '-M', '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_pastmonth.png',
                fetch_last_month(),
-               f"Verbruik per dag afgelopen maand ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+               f"Verbruikstrend per dag afgelopen maand ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
 
   if OPTION in ['-y', '-Y', '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_pastyear.png',
                fetch_last_year(),
-               f"Verbruik per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+               f"Verbruikstrend per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
     plot_graph('/tmp/kamstrupd/site/img/kam_vs_year.png',
                fetch_last_years(),
-               f"Verbruik per jaar afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+               f"Verbruikstrend per jaar afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
 
 
