@@ -6,8 +6,8 @@ DROP TABLE IF EXISTS weather;
 CREATE TABLE weather (
   sample_time   datetime NOT NULL PRIMARY KEY,
   sample_epoch  integer,
-  temperature   float,
-  solrad        float
+  temperature   real,
+  solrad        real
   );
 
 # SQLite3 automatically creates a UNIQUE INDEX on the PRIMARY KEY in the background.
