@@ -35,8 +35,8 @@ def get_historic_data(grouping, period, timeframe, from_start_of_year=False):
   with db_con:
     db_cur = db_con.cursor()
     db_cur.execute(f"SELECT strftime('{grouping}',sample_time) as grouped, \
-                     AVERAGE(temperature), \
-                     AVERAGE(solrad), \
+                     AVG(temperature), \
+                     AVG(solrad), \
                      MIN(sample_epoch) as t \
                      FROM weather \
                      WHERE (sample_time >= {interval}) \
