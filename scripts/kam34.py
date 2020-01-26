@@ -88,7 +88,7 @@ def plot_graph(output_file, data_tuple, plot_title):
             width=bar_width,
             label=data_lbls[0][idx],
             alpha=ahpla + (idx * ahpla),
-            color='b',
+            color='r',
             align='edge'
             )
 
