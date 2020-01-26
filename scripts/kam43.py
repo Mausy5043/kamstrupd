@@ -200,7 +200,7 @@ def main():
   if OPTION in ['-d', '-D', '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_pastday.png',
                fetch_last_day(),
-               f"Verbruiktrend per uur ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+               f"Verbruikstrend per uur ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
 
   if OPTION in ['-m', '-M', '-a', '-A']:
