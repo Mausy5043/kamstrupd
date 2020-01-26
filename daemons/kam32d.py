@@ -76,7 +76,7 @@ class MyDaemon(Daemon):
           # ['3088596', '3030401', '270', '0', '0', '0', '1', '1']
           averages = [format(sm / len(data), '.2f') for sm in somma]
           averages[0] = float(somma[0] / len(data))  # avg temperature
-          averages[1] = int(somma[1])  # total solar radiation
+          averages[1] = float(somma[1])  # total solar radiation
           mf.syslog_trace(f"Averages : {averages}", False, DEBUG)
           if averages[0] > 0:
             do_add_to_database(averages, fdatabase, sqlcmd)
@@ -99,7 +99,7 @@ class MyDaemon(Daemon):
 
 def do_work():
   """Push the results out to a file."""
-  temperature = 0.1
+  temperature = 0.0
   solrad = 0
 
   station_data = gettelegram()
