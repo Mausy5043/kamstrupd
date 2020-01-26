@@ -38,7 +38,7 @@ def get_historic_data(grouping, period, timeframe, from_start_of_year=False):
     db_cur.execute(f"SELECT strftime('{grouping}',sample_time) as grouped, \
                      AVG(solrad), \
                      MIN(sample_epoch) as t \
-                     FROM kamstrup \
+                     FROM weather \
                      WHERE (sample_time >= {interval}) \
                      GROUP BY grouped \
                      ORDER BY t ASC \
