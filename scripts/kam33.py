@@ -24,7 +24,8 @@ def get_historic_data(grouping, period, timeframe, from_start_of_year=False):
   """
     Fetch data
     """
-  ret_data = []
+  ret_T_data = []
+  ret_S_data = []
   ret_lbls = []
   if from_start_of_year:
     interval = f"datetime(datetime(\'now\', \'-{period} {timeframe}\'), \'start of year\')"
@@ -46,45 +47,46 @@ def get_historic_data(grouping, period, timeframe, from_start_of_year=False):
     db_data = db_cur.fetchall()
 
   for row in db_data:
-    ret_data.append(row[1])  # temperature in degC
-    ret_data.append(row[2] / 1000 * 3600)  # convert solar radiation in 10' avg W/m2   to   kWh/m2
+    ret_T_data.append(row[1])
+    ret_S_data.append(row[2] / 1000 * 3600)  # convert solar radiation in 10' avg W/m2   to   kWh/m2
     ret_lbls.append(row[0])
 
-  return ret_data[-period:], ret_lbls[-period:]
+  return ret_T_data[-period:], ret_S_data[-period:], ret_lbls[-period:]
 
 
 def fetch_last_day():
   """
     ...
     """
-  trend_data, data_lbls = get_historic_data('%d %Hh', 50, 'hour')
+  trend_T_data, trend_S_data, data_lbls = get_historic_data('%d %Hh', 50, 'hour')
   print(data_lbls)
-  print(trend_data)
-  return data_lbls, trend_data
+  print(trend_T_data)
+  print(trend_S_data)
+  return data_lbls, trend_T_data, trend_S_data
 
 
 def fetch_last_month():
   """
     ...
     """
-  trend_data, data_lbls = get_historic_data('%m-%d', 33, 'day')
-  return data_lbls, trend_data
+  trend_T_data, trend_S_data, data_lbls = get_historic_data('%m-%d', 33, 'day')
+  return data_lbls, trend_T_data, trend_S_data
 
 
 def fetch_last_year():
   """
     ...
     """
-  trend_data, data_lbls = get_historic_data('%Y-%m', 61, 'month')
-  return data_lbls, trend_data
+  trend_T_data, trend_S_data, data_lbls = get_historic_data('%Y-%m', 61, 'month')
+  return data_lbls, trend_T_data, trend_S_data
 
 
 def fetch_last_years():
   """
     ...
     """
-  trend_data, data_lbls = get_historic_data('%Y', 6, 'year', from_start_of_year=True)
-  return data_lbls, trend_data
+  trend_T_data, trend_S_data, data_lbls = get_historic_data('%Y', 6, 'year', from_start_of_year=True)
+  return data_lbls, trend_T_data, trend_S_data
 
 
 def plot_graph(output_file, data_tuple, plot_title):
@@ -92,12 +94,8 @@ def plot_graph(output_file, data_tuple, plot_title):
     ...
     """
   data_lbls = data_tuple[0]
-  import_lo = data_tuple[1]
-  import_hi = data_tuple[2]
-  opwekking = data_tuple[3]
-  export_lo = data_tuple[4]
-  export_hi = data_tuple[5]
-  own_usage = [x - y - z for x, y, z in zip(opwekking, export_hi, export_lo)]
+  trend_T_data = data_tuple[1]
+  trend_S_data = data_tuple[2]
 
   # Set the bar width
   bar_width = 0.75
