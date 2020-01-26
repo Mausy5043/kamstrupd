@@ -103,7 +103,7 @@ def plot_graph(output_file, data_tuple, plot_title):
 
   # Create the general plot and the bar
   plt.rc('font', size=13)
-  dummy, ax1 = plt.subplots(1, figsize=(20, 7))
+  dummy, ax1 = plt.subplots(1, figsize=(20, 5))
 
   # Create a bar plot of usage_slf
   ax1.bar(tick_pos, trend_S_data,

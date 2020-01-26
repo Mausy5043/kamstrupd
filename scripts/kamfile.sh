@@ -1,26 +1,31 @@
 #!/usr/bin/env bash
 
-DBFILE="electriciteit.sqlite3"
+DBFILE_1="electriciteit.sqlite3"
+DBFILE_2="weerdata.sqlite3"
 
-install_database_file() {
+install_database_files() {
     mkdir -p "${HOME}/.sqlite3"
-    recover_database_file
-    if [ ! -e "${HOME}/.sqlite3/${DBFILE}" ]; then
-        create_database_file "idf"
+    recover_database_file DBFILE_1
+    if [ ! -e "${HOME}/.sqlite3/${DBFILE_1}" ]; then
+        create_database_file "idf1"
+    fi
+    recover_database_file DBFILE_2
+    if [ ! -e "${HOME}/.sqlite3/${DBFILE_2}" ]; then
+        create_database_file "idf2"
     fi
 }
 
 backup_database_file() {
-    if [ -e "${HOME}/.sqlite3/${DBFILE}" ]; then
-        echo "Standby while making a backup..."
-        sqlite3 "${HOME}/.sqlite3/${DBFILE}" ".backup /mnt/data/${DBFILE}"
+    if [ -e "${HOME}/.sqlite3/${1}" ]; then
+        echo "Standby while making a backup of ${1} ..."
+        sqlite3 "${HOME}/.sqlite3/${1}" ".backup /mnt/data/${1}"
     fi
 }
 
 recover_database_file() {
-    if [ -e "/mnt/data/${DBFILE}" ]; then
-        echo "Standby while recovering from backup..."
-        cp "/mnt/data/${DBFILE}" "${HOME}/.sqlite3/"
+    if [ -e "/mnt/data/${1}" ]; then
+        echo "Standby while recovering ${1} from backup ..."
+        cp "/mnt/data/${1}" "${HOME}/.sqlite3/"
     fi
 }
 
@@ -28,8 +33,15 @@ create_database_file() {
     # WARNING!!
     # Calling this function from the wild will overwrite an existing database!
     #
-    if [[ "${1}" == "idf" ]]; then
-        sqlite3 "${HOME}/.sqlite3/${DBFILE}" < scripts/table31.sqlite3.sql
+    if [[ "${1}" == "idf1" ]]; then
+        sqlite3 "${HOME}/.sqlite3/${DBFILE_1}" < scripts/table31.sqlite3.sql
+    else
+        echo "Unsupported functionality. Use the 'install_database_file' function instead!"
+        exit 1
+    fi
+
+    if [[ "${1}" == "idf2" ]]; then
+        sqlite3 "${HOME}/.sqlite3/${DBFILE_2}" < scripts/table32.sqlite3.sql
     else
         echo "Unsupported functionality. Use the 'install_database_file' function instead!"
         exit 1
@@ -41,13 +53,15 @@ for i in "$@"
 do
   case $i in
     -i|--install)
-        install_database_file
+        install_database_files
         ;;
     -b|--backup)
-        backup_database_file
+        backup_database_file DBFILE_1
+        backup_database_file DBFILE_2
         ;;
     -r|--recover)
-        recover_database_file
+        recover_database_file DBFILE_1
+        recover_database_file DBFILE_2
         ;;
     *)
         # unknown option
