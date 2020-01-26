@@ -144,25 +144,25 @@ def main():
   OPTION = get_cli_params(1)
 
   if OPTION in ['-d', '-D', '-a', '-A']:
-    plot_graph('/tmp/kamstrupd/site/img/kam_pastday.png',
+    plot_graph('/tmp/kamstrupd/site/img/sun_pastday.png',
                fetch_last_day(),
                f"Trend per uur ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
 
   if OPTION in ['-m', '-M', '-a', '-A']:
-    plot_graph('/tmp/kamstrupd/site/img/kam_pastmonth.png',
+    plot_graph('/tmp/kamstrupd/site/img/sun_pastmonth.png',
                fetch_last_month(),
-               f"Verbruikstrend per dag afgelopen maand ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+               f"Trend per dag afgelopen maand ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
 
   if OPTION in ['-y', '-Y', '-a', '-A']:
-    plot_graph('/tmp/kamstrupd/site/img/kam_pastyear.png',
+    plot_graph('/tmp/kamstrupd/site/img/sun_pastyear.png',
                fetch_last_year(),
-               f"Verbruikstrend per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+               f"Trend per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
-    plot_graph('/tmp/kamstrupd/site/img/kam_vs_year.png',
+    plot_graph('/tmp/kamstrupd/site/img/sun_vs_year.png',
                fetch_last_years(),
-               f"Verbruikstrend per jaar afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+               f"Trend per jaar afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
 
 
