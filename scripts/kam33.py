@@ -104,6 +104,9 @@ def plot_graph(output_file, data_tuple, plot_title):
   # Create the general plot and the bar
   plt.rc('font', size=13)
   dummy, ax1 = plt.subplots(1, figsize=(20, 5))
+  # Set plot stuff
+  plt.xticks(tick_pos, data_lbls, rotation=-60)
+  plt.title(f'{plot_title}')
 
   # Create a bar plot of usage_slf
   ax1.bar(tick_pos, trend_S_data,
@@ -128,9 +131,6 @@ def plot_graph(output_file, data_tuple, plot_title):
   ax1.grid(which='major', axis='y', color='k', linestyle='--', linewidth=0.5)
   ax1.axhline(y=0, color='k')
   ax1.axvline(x=0, color='k')
-  # Set plot stuff
-  plt.xticks(tick_pos, data_lbls, rotation=-60)
-  plt.title(f'{plot_title}')
   # Fit every nicely
   plt.xlim([min(tick_pos) - bar_width, max(tick_pos) + bar_width])
   plt.tight_layout()
