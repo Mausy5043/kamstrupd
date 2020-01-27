@@ -67,7 +67,7 @@ def fetch_last_month():
     ...
     """
   trend_T_data, trend_S_data, data_lbls = get_historic_data('%m-%d', 33, 'day')
-  return data_lbls, trend_T_data, trend_S_data
+  return data_lbls, trend_T_data, [x * 24 for x in trend_S_data]
 
 
 def fetch_last_year():
@@ -75,7 +75,7 @@ def fetch_last_year():
     ...
     """
   trend_T_data, trend_S_data, data_lbls = get_historic_data('%Y-%m', 61, 'month')
-  return data_lbls, trend_T_data, trend_S_data
+  return data_lbls, trend_T_data, [x * 24 * 30.5 for x in trend_S_data]
 
 
 def fetch_last_years():
