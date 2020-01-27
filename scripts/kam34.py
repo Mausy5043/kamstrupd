@@ -58,7 +58,7 @@ def fetch_last_months():
     ...
     """
   trend_data, data_lbls = get_historic_data('%Y-%m', 5, 'year', from_start_of_year=True)
-  return data_lbls, trend_data
+  return data_lbls, [x * 24 for x in trend_data]
 
 
 # noinspection SpellCheckingInspection
