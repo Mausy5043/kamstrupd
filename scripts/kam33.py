@@ -25,6 +25,7 @@ def get_historic_data(grouping, period, timeframe, from_start_of_year=False):
     Fetch data
     """
   ret_T_data = []
+  ret_T_err = []
   ret_S_data = []
   ret_lbls = []
   if from_start_of_year:
@@ -37,6 +38,8 @@ def get_historic_data(grouping, period, timeframe, from_start_of_year=False):
     db_cur.execute(f"SELECT strftime('{grouping}',sample_time) as grouped, \
                      AVG(temperature), \
                      AVG(solrad), \
+                     MIN(temperature), \
+                     MAX(temperature), \
                      MIN(sample_epoch) as t \
                      FROM weather \
                      WHERE (sample_time >= {interval}) \
@@ -49,41 +52,42 @@ def get_historic_data(grouping, period, timeframe, from_start_of_year=False):
   for row in db_data:
     ret_T_data.append(row[1])
     ret_S_data.append(row[2] / 1000 * 3600)  # convert solar radiation in 10' avg W/m2   to   kWh/m2
+    ret_T_err.append([row[3], row[4]])
     ret_lbls.append(row[0])
 
-  return ret_T_data[-period:], ret_S_data[-period:], ret_lbls[-period:]
+  return ret_T_data[-period:], ret_T_err[-period:], ret_S_data[-period:], ret_lbls[-period:]
 
 
 def fetch_last_day():
   """
     ...
     """
-  trend_T_data, trend_S_data, data_lbls = get_historic_data('%d %Hh', 50, 'hour')
-  return data_lbls, trend_T_data, trend_S_data
+  trend_T_data, trend_T_err, trend_S_data, data_lbls = get_historic_data('%d %Hh', 50, 'hour')
+  return data_lbls, trend_T_data, trend_T_err, trend_S_data
 
 
 def fetch_last_month():
   """
     ...
     """
-  trend_T_data, trend_S_data, data_lbls = get_historic_data('%m-%d', 33, 'day')
-  return data_lbls, trend_T_data, [x * 24 for x in trend_S_data]
+  trend_T_data, trend_T_err, trend_S_data, data_lbls = get_historic_data('%m-%d', 33, 'day')
+  return data_lbls, trend_T_data, trend_T_err, [x * 24 for x in trend_S_data]
 
 
 def fetch_last_year():
   """
     ...
     """
-  trend_T_data, trend_S_data, data_lbls = get_historic_data('%Y-%m', 61, 'month')
-  return data_lbls, trend_T_data, [x * 24 for x in trend_S_data]
+  trend_T_data, trend_T_err, trend_S_data, data_lbls = get_historic_data('%Y-%m', 61, 'month')
+  return data_lbls, trend_T_data, trend_T_err, [x * 24 for x in trend_S_data]
 
 
 def fetch_last_years():
   """
     ...
     """
-  trend_T_data, trend_S_data, data_lbls = get_historic_data('%Y', 6, 'year', from_start_of_year=True)
-  return data_lbls, trend_T_data, [x * 24 for x in trend_S_data]
+  trend_T_data, trend_T_err, trend_S_data, data_lbls = get_historic_data('%Y', 6, 'year', from_start_of_year=True)
+  return data_lbls, trend_T_data, trend_T_err, [x * 24 for x in trend_S_data]
 
 
 def plot_graph(output_file, data_tuple, plot_title):
@@ -92,7 +96,8 @@ def plot_graph(output_file, data_tuple, plot_title):
     """
   data_lbls = data_tuple[0]
   trend_T_data = data_tuple[1]
-  trend_S_data = data_tuple[2]
+  trend_T_error = data_tuple[2]
+  trend_S_data = data_tuple[3]
 
   # Set the bar width
   bar_width = 0.75
@@ -117,10 +122,12 @@ def plot_graph(output_file, data_tuple, plot_title):
           align='center'
           )
   ax2 = ax1.twinx()
-  ax2.plot(tick_pos, trend_T_data,
-           label='Temperatuur',
-           color='k'
-           )
+  ax2.errorbar(tick_pos, trend_T_data,
+               yerr=trend_T_error,
+               fmt='o-k',
+               label='Temperatuur',
+               color='k'
+               )
 
   # Set Axes stuff
   ax1.set_ylabel("[kWh/m2]")
