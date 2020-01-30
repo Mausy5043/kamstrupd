@@ -53,8 +53,8 @@ def get_historic_data(grouping, period, timeframe, from_start_of_year=False):
   for row in db_data:
     ret_T_data.append(row[1])
     ret_S_data.append(row[2] / 1000 * 3600)  # convert solar radiation in 10' avg W/m2   to   kWh/m2
-    ret_T_err_lo.append(row[3])
-    ret_T_err_hi.append(row[4])
+    ret_T_err_lo.append(row[1] - row[3])
+    ret_T_err_hi.append(row[4] - row[1])
     ret_lbls.append(row[0])
   ret_T_err = [ret_T_err_lo[-period:], ret_T_err_hi[-period:]]
   return ret_T_data[-period:], ret_T_err, ret_S_data[-period:], ret_lbls[-period:]
