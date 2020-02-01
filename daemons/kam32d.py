@@ -76,7 +76,7 @@ class MyDaemon(Daemon):
           somma = [sum(d) for d in zip(*data)]
           # not all entries should be float
           # ['3088596', '3030401', '270', '0', '0', '0', '1', '1']
-          # averages = [format(sm / len(data), '.2f') for sm in somma]
+          averages = [format(sm / len(data), '.2f') for sm in somma]
           averages[0] = float(somma[0] / len(data))  # avg temperature
           averages[1] = float(somma[1])  # total solar radiation
           mf.syslog_trace(f"Averages : {averages}", False, DEBUG)
@@ -136,6 +136,7 @@ def gettelegram():
       data = json.loads(response.read())
       # only return current station info
       stns = data['buienradarnl']['weergegevens']['actueel_weer']['weerstations']['weerstation']
+      break
     except urllib.error.URLError:
       retries -= 1
       if retries:
