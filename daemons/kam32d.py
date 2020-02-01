@@ -101,8 +101,10 @@ class MyDaemon(Daemon):
 
 def do_work():
   """Push the results out to a file."""
-  temperature = None
-  solrad = None
+  global T_MEMORY
+  global S_MEMORY
+  temperature = T_MEMORY
+  solrad = S_MEMORY
 
   station_data = gettelegram()
 
@@ -117,6 +119,9 @@ def do_work():
           solrad = stn[key].strip()
           if solrad == '-':
             solrad = '0'
+
+  T_MEMORY = temperature
+  S_MEMORY = solrad
 
   return f'{temperature}, {solrad}'
 
