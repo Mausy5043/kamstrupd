@@ -31,6 +31,8 @@ IS_JOURNALD = os.path.isfile('/bin/journalctl')
 MYID = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split('/')[-1])))
 MYAPP = os.path.realpath(__file__).split('/')[-3]
 NODE = os.uname()[1]
+T_MEMORY = None
+S_MEMORY = None
 
 URL = "https://api.buienradar.nl/data/public/1.1/jsonfeed"
 
@@ -74,7 +76,7 @@ class MyDaemon(Daemon):
           somma = [sum(d) for d in zip(*data)]
           # not all entries should be float
           # ['3088596', '3030401', '270', '0', '0', '0', '1', '1']
-          averages = [format(sm / len(data), '.2f') for sm in somma]
+          # averages = [format(sm / len(data), '.2f') for sm in somma]
           averages[0] = float(somma[0] / len(data))  # avg temperature
           averages[1] = float(somma[1])  # total solar radiation
           mf.syslog_trace(f"Averages : {averages}", False, DEBUG)
@@ -99,8 +101,8 @@ class MyDaemon(Daemon):
 
 def do_work():
   """Push the results out to a file."""
-  temperature = 0.0
-  solrad = 0
+  temperature = None
+  solrad = None
 
   station_data = gettelegram()
 
@@ -122,10 +124,21 @@ def do_work():
 # noinspection PyUnresolvedReferences
 def gettelegram():
   """Fetch current weather from website."""
-  response = urllib.request.urlopen(URL)
-  data = json.loads(response.read())
-  # only return current station info
-  stns = data['buienradarnl']['weergegevens']['actueel_weer']['weerstations']['weerstation']
+  retries = 4
+  while True:
+    try:
+      response = urllib.request.urlopen(URL)
+      data = json.loads(response.read())
+      # only return current station info
+      stns = data['buienradarnl']['weergegevens']['actueel_weer']['weerstations']['weerstation']
+    except urllib.error.URLError:
+      retries -= 1
+      if retries:
+        time.sleep(30)
+        continue
+      else:
+        stns = {}
+        break
 
   return stns
 
