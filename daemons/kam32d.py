@@ -136,7 +136,7 @@ def gettelegram():
       data = json.loads(response.read())
       # only return current station info
       stns = data['buienradarnl']['weergegevens']['actueel_weer']['weerstations']['weerstation']
-    except urllib.error.URLError:
+    except:
       retries -= 1
       if retries:
         time.sleep(30)
