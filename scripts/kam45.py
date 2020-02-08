@@ -113,56 +113,12 @@ def plot_graph(output_file, data_tuple, plot_title):
   plt.rc('font', size=13)
   dummy, ax1 = plt.subplots(1, figsize=(20, 7))
 
-  for x_data in imprt
+  for x_data in imprt:
     ax1.boxplot(imprt,
                 notch=True,
 
                 )
 
-  # Create a bar plot of import_lo
-  ax1.bar(tick_pos, import_hi,
-          width=bar_width,
-          label='Import (T2)',
-          alpha=ahpla,
-          color='y',
-          align='center',
-          bottom=[sum(i) for i in zip(import_lo, own_usage)]
-          )
-  # Create a bar plot of import_hi
-  # ax1.bar(tick_pos, import_lo,
-  #         width=bar_width,
-  #         label='Import (T1)',
-  #         alpha=ahpla,
-  #         color='b',
-  #         align='center',
-  #         bottom=own_usage
-  #         )
-  # Create a bar plot of usage_slf
-  ax1.bar(tick_pos, own_usage,
-          width=bar_width,
-          label='Self',
-          alpha=ahpla,
-          color='g',
-          align='center'
-          )
-  # Exports hang below the y-axis
-  # Create a bar plot of export_lo
-  ax1.bar(tick_pos, [-1 * i for i in export_lo],
-          width=bar_width,
-          label='Export (T1)',
-          alpha=ahpla,
-          color='c',
-          align='center'
-          )
-  # Create a bar plot of export_hi
-  ax1.bar(tick_pos, [-1 * i for i in export_hi],
-          width=bar_width,
-          label='Export (T2)',
-          alpha=ahpla,
-          color='r',
-          align='center',
-          bottom=[-1 * i for i in export_lo]
-          )
 
   # Set Axes stuff
   ax1.set_ylabel("[kWh]")
