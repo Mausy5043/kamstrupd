@@ -63,7 +63,7 @@ def reshape_to_hourly(data, labels):
   """
     ...
     """
-  ret_data = [[] * 24]
+  ret_data = [[]] * 24
   ret_lbls = ['00h', '01h', '02h', '03h', '04h', '05h', '06h', '07h', '08h', '09h',
               '10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h', '19h',
               '20h', '21h', '22h', '23h'
@@ -80,10 +80,10 @@ def fetch_avg_day():
   """
     ...
     """
-  import_lo, data_lbls = reshape_to_hourly(get_historic_data('%Y %j %Hh', 1, 'year', 'T1in', from_start_of_year=True))
-  import_hi, data_lbls = get_historic_data('%Y %j %Hh', 1, 'year', 'T2in', from_start_of_year=True)
-  export_lo, data_lbls = get_historic_data('%Y %j %Hh', 1, 'year', 'T1out', from_start_of_year=True)
-  export_hi, data_lbls = get_historic_data('%Y %j %Hh', 1, 'year', 'T2out', from_start_of_year=True)
+  import_lo, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 1, 'year', 'T1in', from_start_of_year=True))
+  import_hi, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 1, 'year', 'T2in', from_start_of_year=True))
+  export_lo, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 1, 'year', 'T1out', from_start_of_year=True))
+  export_hi, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 1, 'year', 'T2out', from_start_of_year=True))
   opwekking = get_opwekking(1, 'year', from_start_of_year=True)
   return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
