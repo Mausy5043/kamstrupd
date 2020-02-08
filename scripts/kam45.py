@@ -88,30 +88,6 @@ def fetch_avg_day():
   return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def fetch_avg_month():
-  """
-    ...
-    """
-  import_lo, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T1in')
-  import_hi, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T2in')
-  export_lo, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T1out')
-  export_hi, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T2out')
-  opwekking = get_opwekking(33, 'day')
-  return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
-
-
-def fetch_avg_year():
-  """
-    ...
-    """
-  import_lo, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T1in')
-  import_hi, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T2in')
-  export_lo, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T1out')
-  export_hi, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T2out')
-  opwekking = get_opwekking(61, 'month')
-  return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
-
-
 def plot_graph(output_file, data_tuple, plot_title):
   """
     ...
@@ -119,10 +95,12 @@ def plot_graph(output_file, data_tuple, plot_title):
   data_lbls = data_tuple[0]
   import_lo = data_tuple[1]
   import_hi = data_tuple[2]
-  opwekking = data_tuple[3]
-  export_lo = data_tuple[4]
-  export_hi = data_tuple[5]
-  own_usage = [x - y - z for x, y, z in zip(opwekking, export_hi, export_lo)]
+  imprt = [x1 + x2 for x1, x2 in zip(import_lo, import_hi)]
+  # opwekking = data_tuple[3]
+  # export_lo = data_tuple[4]
+  # export_hi = data_tuple[5]
+  # exprt = [x1 + x2 for x1, x2 in zip(export_lo, export_hi)]
+  # own_usage = [x - y - z for x, y, z in zip(opwekking, export_hi, export_lo)]
 
   # Set the bar width
   bar_width = 0.75
@@ -145,14 +123,14 @@ def plot_graph(output_file, data_tuple, plot_title):
           bottom=[sum(i) for i in zip(import_lo, own_usage)]
           )
   # Create a bar plot of import_hi
-  ax1.bar(tick_pos, import_lo,
-          width=bar_width,
-          label='Import (T1)',
-          alpha=ahpla,
-          color='b',
-          align='center',
-          bottom=own_usage
-          )
+  # ax1.bar(tick_pos, import_lo,
+  #         width=bar_width,
+  #         label='Import (T1)',
+  #         alpha=ahpla,
+  #         color='b',
+  #         align='center',
+  #         bottom=own_usage
+  #         )
   # Create a bar plot of usage_slf
   ax1.bar(tick_pos, own_usage,
           width=bar_width,
@@ -203,22 +181,12 @@ def main():
   OPTION = get_cli_params(1)
 
   if OPTION in ['-d', '-D', '-a', '-A']:
-    plot_graph('/tmp/kamstrupd/site/img/kam_pastday.png',
+    plot_graph('/tmp/kamstrupd/site/img/kam_avg_day_u.png',
                fetch_avg_day(),
-               f"Gemiddeld uurverbruik ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+               f"Typisch uurverbruik ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
 
-  if OPTION in ['-m', '-M', '-a', '-A']:
-    plot_graph('/tmp/kamstrupd/site/img/kam_pastmonth.png',
-               fetch_avg_month(),
-               f"Verbruikstrend per dag afgelopen maand ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
-               )
 
-  if OPTION in ['-y', '-Y', '-a', '-A']:
-    plot_graph('/tmp/kamstrupd/site/img/kam_pastyear.png',
-               fetch_avg_year(),
-               f"Verbruikstrend per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
-               )
 
 
 if __name__ == "__main__":
