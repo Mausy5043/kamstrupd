@@ -63,7 +63,7 @@ def reshape_to_hourly(data, labels):
   """
     ...
     """
-  ret_data = [[]] * 24
+  ret_data = [[] for _ in range(0, 24)]
   ret_lbls = ['00h', '01h', '02h', '03h', '04h', '05h', '06h', '07h', '08h', '09h',
               '10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h', '19h',
               '20h', '21h', '22h', '23h'
@@ -112,6 +112,12 @@ def plot_graph(output_file, data_tuple, plot_title):
   # Create the general plot and the bar
   plt.rc('font', size=13)
   dummy, ax1 = plt.subplots(1, figsize=(20, 7))
+
+  for x_data in imprt
+    ax1.boxplot(imprt,
+                notch=True,
+
+                )
 
   # Create a bar plot of import_lo
   ax1.bar(tick_pos, import_hi,
@@ -181,7 +187,7 @@ def main():
   OPTION = get_cli_params(1)
 
   if OPTION in ['-d', '-D', '-a', '-A']:
-    plot_graph('/tmp/kamstrupd/site/img/kam_avg_day_u.png',
+    plot_graph('/tmp/kamstrupd/site/img/kam_avg_day_p.png',
                fetch_avg_day(),
                f"Typisch uurverbruik ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
