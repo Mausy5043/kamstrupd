@@ -48,22 +48,39 @@ def get_historic_data(grouping, period, timeframe, telwerk, from_start_of_year=F
     ret_data.append(row[1] / 1000)  # convert Wh to kWh
     ret_lbls.append(row[0])
 
-  return ret_data[-period:], ret_lbls[-period:]
+  return ret_data, ret_lbls
 
 
 def get_opwekking(period, timeframe, from_start_of_year=False):
   """
     Fetch production data
     """
-  ret_data = [0] * 24
+  ret_data = [[0] * 24]
   return ret_data
+
+
+def reshape_to_hourly(data, labels):
+  """
+    ...
+    """
+  ret_data = [[] * 24]
+  ret_lbls = ['00h', '01h', '02h', '03h', '04h', '05h', '06h', '07h', '08h', '09h',
+              '10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h', '19h',
+              '20h', '21h', '22h', '23h'
+              ]
+  for data_idx in range(0, len(data)):
+    datum_num = data[data_idx]
+    datum_tim = labels[data_idx].split(' ')[2]
+    datum_ptr = ret_lbls.index(datum_tim)
+    ret_data[datum_ptr].append(datum_num)
+  return ret_data, ret_lbls
 
 
 def fetch_avg_day():
   """
     ...
     """
-  import_lo, data_lbls = get_historic_data('%Y %j %Hh', 1, 'year', 'T1in', from_start_of_year=True)
+  import_lo, data_lbls = reshape_to_hourly(get_historic_data('%Y %j %Hh', 1, 'year', 'T1in', from_start_of_year=True))
   import_hi, data_lbls = get_historic_data('%Y %j %Hh', 1, 'year', 'T2in', from_start_of_year=True)
   export_lo, data_lbls = get_historic_data('%Y %j %Hh', 1, 'year', 'T1out', from_start_of_year=True)
   export_hi, data_lbls = get_historic_data('%Y %j %Hh', 1, 'year', 'T2out', from_start_of_year=True)
