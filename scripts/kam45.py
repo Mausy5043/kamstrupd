@@ -88,6 +88,13 @@ def fetch_avg_day():
   return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
+def contract(array1, array2):
+  result = []
+  for idx_hr in range(0, len(array1)):
+    result.append([x + y for x, y in zip(array1[idx_hr], array2[idx_hr])])
+  return result
+
+
 def plot_graph(output_file, data_tuple, plot_title):
   """
     ...
@@ -95,7 +102,7 @@ def plot_graph(output_file, data_tuple, plot_title):
   data_lbls = data_tuple[0]
   import_lo = data_tuple[1]
   import_hi = data_tuple[2]
-  imprt = [x1 + x2 for x1, x2 in zip(import_lo, import_hi)]
+  imprt = contract(import_lo, import_hi)
   # opwekking = data_tuple[3]
   # export_lo = data_tuple[4]
   # export_hi = data_tuple[5]
