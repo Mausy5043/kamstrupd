@@ -95,10 +95,11 @@ def contract(array1, array2):
   return result
 
 
-def plot_graph(output_file, data_tuple, plot_title):
+def plot_graph(output_file, data_tuple, plot_title, imorex):
   """
     ...
     """
+  x_data = list(range(0, 24))
   data_lbls = data_tuple[0]
   import_lo = data_tuple[1]
   import_hi = data_tuple[2]
@@ -107,6 +108,10 @@ def plot_graph(output_file, data_tuple, plot_title):
   export_lo = data_tuple[4]
   export_hi = data_tuple[5]
   exprt = contract(export_lo, export_hi)
+  if imorex == "u":
+    x_data = imprt
+  if imorex == "p":
+    x_data = exprt
   # own_usage = [x - y - z for x, y, z in zip(opwekking, export_hi, export_lo)]
 
   # Set the bar width
@@ -121,7 +126,7 @@ def plot_graph(output_file, data_tuple, plot_title):
   dummy, ax1 = plt.subplots(1, figsize=(20, 7))
 
   # for x_data in imprt:
-  ax1.boxplot(imprt,
+  ax1.boxplot(x_data,
               patch_artist=True,
               notch=False,
               showbox=True,
@@ -157,13 +162,15 @@ def main():
   if OPTION in ['-u', '-U', '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_avg_day_u.png',
                fetch_avg_day(),
-               f"Typisch uurverbruik ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+               f"Typisch uurverbruik ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+               "u"
                )
 
   if OPTION in ['-p', '-P', '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_avg_day_p.png',
                fetch_avg_day(),
-               f"Typische uurproductie ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+               f"Typische uurproductie ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+               "p"
                )
 
 
