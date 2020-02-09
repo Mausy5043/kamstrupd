@@ -154,10 +154,16 @@ def main():
     """
   OPTION = get_cli_params(1)
 
-  if OPTION in ['-d', '-D', '-a', '-A']:
+  if OPTION in ['-u', '-U', '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_avg_day_u.png',
                fetch_avg_day(),
                f"Typisch uurverbruik ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+               )
+
+  if OPTION in ['-p', '-P', '-a', '-A']:
+    plot_graph('/tmp/kamstrupd/site/img/kam_avg_day_p.png',
+               fetch_avg_day(),
+               f"Typische uurproductie ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
 
 
