@@ -113,12 +113,14 @@ def plot_graph(output_file, data_tuple, plot_title):
   plt.rc('font', size=13)
   dummy, ax1 = plt.subplots(1, figsize=(20, 7))
 
-  for x_data in imprt:
-    ax1.boxplot(imprt,
-                notch=True,
-
-                )
-
+  # for x_data in imprt:
+  ax1.boxplot(imprt,
+              notch=True,
+              showbox=True,
+              showcaps=True,
+              showfliers=False,
+              showmeans=True,
+              )
 
   # Set Axes stuff
   ax1.set_ylabel("[kWh]")
