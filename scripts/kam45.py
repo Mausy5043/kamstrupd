@@ -80,10 +80,10 @@ def fetch_avg_day():
   """
     ...
     """
-  import_lo, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 1, 'year', 'T1in', from_start_of_year=True))
-  import_hi, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 1, 'year', 'T2in', from_start_of_year=True))
-  export_lo, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 1, 'year', 'T1out', from_start_of_year=True))
-  export_hi, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 1, 'year', 'T2out', from_start_of_year=True))
+  import_lo, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 2, 'year', 'T1in', from_start_of_year=True))
+  import_hi, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 2, 'year', 'T2in', from_start_of_year=True))
+  export_lo, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 2, 'year', 'T1out', from_start_of_year=True))
+  export_hi, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 2, 'year', 'T2out', from_start_of_year=True))
   opwekking = get_opwekking(1, 'year', from_start_of_year=True)
   return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
@@ -103,16 +103,16 @@ def plot_graph(output_file, data_tuple, plot_title):
   import_lo = data_tuple[1]
   import_hi = data_tuple[2]
   imprt = contract(import_lo, import_hi)
-  # opwekking = data_tuple[3]
-  # export_lo = data_tuple[4]
-  # export_hi = data_tuple[5]
-  # exprt = [x1 + x2 for x1, x2 in zip(export_lo, export_hi)]
+  opwekking = data_tuple[3]
+  export_lo = data_tuple[4]
+  export_hi = data_tuple[5]
+  exprt = contract(export_lo, export_hi)
   # own_usage = [x - y - z for x, y, z in zip(opwekking, export_hi, export_lo)]
 
   # Set the bar width
   bar_width = 0.75
   # Set the color alpha
-  ahpla = 0.7
+  ahpla = 0.4
   # positions of the left bar-boundaries
   tick_pos = list(range(1, len(data_lbls) + 1))
 
@@ -122,11 +122,15 @@ def plot_graph(output_file, data_tuple, plot_title):
 
   # for x_data in imprt:
   ax1.boxplot(imprt,
-              notch=True,
+              patch_artist=True,
+              notch=False,
               showbox=True,
+              boxprops=dict(facecolor='b', alpha=ahpla),
               showcaps=True,
               showfliers=False,
               showmeans=True,
+              meanprops=dict(markerfacecolor='k', marker='o'),
+              medianprops=dict(color='k')
               )
 
   # Set Axes stuff
@@ -151,12 +155,10 @@ def main():
   OPTION = get_cli_params(1)
 
   if OPTION in ['-d', '-D', '-a', '-A']:
-    plot_graph('/tmp/kamstrupd/site/img/kam_avg_day_p.png',
+    plot_graph('/tmp/kamstrupd/site/img/kam_avg_day_u.png',
                fetch_avg_day(),
                f"Typisch uurverbruik ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
-
-
 
 
 if __name__ == "__main__":
