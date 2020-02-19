@@ -113,6 +113,8 @@ echo "03  01 *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/pastyear.s
 # echo "23  01 *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/vsmonth.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
 # @reboot we allow for 10s for the network to come up:
 echo "@reboot             ${ME}    sleep 10; ${HOME}/kamstrupd/update.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
+echo "*/59 *  *  *   *   pi    sleep 10; /home/pi/kamstrupd/update.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
+
 popd || exit
 
 echo
