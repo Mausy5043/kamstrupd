@@ -1,6 +1,7 @@
 # SQLite3 script
 # create table for KAMSTRUP smart electricity meter readings
 # create table for SOLAREDGE solar panel monitoring
+# create table for power production registration
 
 DROP TABLE IF EXISTS kamstrup;
 
@@ -41,3 +42,14 @@ CREATE TABLE solaredge (
 
 CREATE INDEX idx_panel ON solaredge(panel_id);
 CREATE INDEX idx_time ON solaredge(sample_time);
+
+DROP TABLE IF EXISTS production;
+
+CREATE TABLE production (
+  sample_time   datetime not NULL PRIMARY KEY,
+  sample_epoch  integer,
+  energy        integer
+  );
+
+# SQLite3 automatically creates a UNIQUE INDEX on the PRIMARY KEY in the background.
+# So, no index needed.
