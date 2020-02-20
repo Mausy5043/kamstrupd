@@ -1,5 +1,7 @@
-pyserial
-numpy
 matplotlib
-skyfield
+numpy
+pyserial
+python-dateutil
 pytz
+requests
+skyfield
