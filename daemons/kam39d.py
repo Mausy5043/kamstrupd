@@ -176,7 +176,7 @@ def epoch_is_present_in_database(db_cur, epoch, site_id):
                    WHERE (site_id = 0) OR (site_id = {site_id}) \
                    ;"
                  )
-  db_epoch = db_cur.fetchall()[0]
+  db_epoch = db_cur.fetchone()[0]
   if db_epoch >= epoch:
     return True
   return False
