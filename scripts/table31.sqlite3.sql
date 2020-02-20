@@ -46,10 +46,12 @@ CREATE INDEX idx_time ON solaredge(sample_time);
 DROP TABLE IF EXISTS production;
 
 CREATE TABLE production (
-  sample_time   datetime not NULL PRIMARY KEY,
+  id            integer PRIMARY KEY AUTOINCREMENT,
+  sample_time   datetime,
   sample_epoch  integer,
+  site_id       integer,
   energy        integer
   );
 
-# SQLite3 automatically creates a UNIQUE INDEX on the PRIMARY KEY in the background.
-# So, no index needed.
+CREATE INDEX idx_site ON production(site_id);
+CREATE INDEX idx_date ON production(sample_time);
