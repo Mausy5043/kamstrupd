@@ -19,10 +19,9 @@ import traceback
 
 # noinspection PyUnresolvedReferences
 import mausy5043funcs.fileops3 as mf
+import solaredge
 # noinspection PyUnresolvedReferences
 from mausy5043libs.libdaemon3 import Daemon
-
-import daemons.solaredge as solaredge
 
 # constants
 DEBUG = False
@@ -106,7 +105,7 @@ def do_work(api, site_list):
   data_list = list()
 
   for site in site_list:
-    site_id = site[0]['id']
+    site_id = site['id']
     data_dict = api.get_overview(site_id)['overview']
     """
     data_dict looks like this:
@@ -121,10 +120,13 @@ def do_work(api, site_list):
     """
     try:
       date_time = data_dict['lastUpdateTime']
-      epoch = int(dt.datetime.strptime(date_time, dt_format).time_stamp())
+      epoch = int(dt.datetime.strptime(date_time, dt_format).timestamp())
       energy = data_dict['lifeTimeData']['energy']
       data_list.append([date_time, epoch, site_id, energy])
+      mf.syslog_trace(f"    : {date_time} = {energy}", False, DEBUG)
     except:
+      mf.syslog_trace(f"****: {site_id} ", False, DEBUG)
+      mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
       continue
 
   return data_list
