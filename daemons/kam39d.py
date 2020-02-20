@@ -30,9 +30,6 @@ IS_JOURNALD = os.path.isfile('/bin/journalctl')
 MYID = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split('/')[-1])))
 MYAPP = os.path.realpath(__file__).split('/')[-3]
 NODE = os.uname()[1]
-DT_MEMORY = None  # remember last sampletime
-ST_MEMORY = None  # remember last site_id
-SE_MEMORY = None  # remember last energy totaliser value
 
 
 # noinspection PyUnresolvedReferences
@@ -108,8 +105,6 @@ class MyDaemon(Daemon):
 
 def do_work(api, site_list):
   """Extract the data from the dict(s)."""
-  global DT_MEMORY
-  global SE_MEMORY
   dt_format = '%Y-%m-%d %H:%M:%S'
   data_list = list()
 
