@@ -16,9 +16,8 @@ import syslog
 import time
 import traceback
 
-import serial
-
 import mausy5043funcs.fileops3 as mf
+import serial
 # noinspection PyUnresolvedReferences
 from mausy5043libs.libdaemon3 import Daemon
 
@@ -203,7 +202,7 @@ def do_add_to_database(result, fdatabase, sql_cmd):
   conn = None
   cursor = None
   out_date = dt.datetime.now()  # time.strftime('%Y-%m-%dT%H:%M:%S')
-  out_epoch = int(time.strftime('%s'))
+  out_epoch = int(out_date.timestamp())
   results = (out_date, out_epoch,
              result[0], result[1], result[2],
              result[3], result[4], result[5],
