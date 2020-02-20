@@ -60,9 +60,6 @@ class MyDaemon(Daemon):
 
     api = solaredge.Solaredge(api_key)
     site_list = api.get_list()['sites']['site']
-    mf.syslog_trace("** List of Sites", False, DEBUG)
-    # we only show the first few sites
-    mf.syslog_trace(site_list[:3], False, DEBUG)
 
     while True:
       try:
@@ -109,7 +106,7 @@ def do_work(api, site_list):
   data_list = list()
 
   for site in site_list:
-    site_id = site['id']
+    site_id = site[0]['id']
     data_dict = api.get_overview(site_id)['overview']
     """
     data_dict looks like this:
@@ -122,10 +119,13 @@ def do_work(api, site_list):
       'measuredBy': 'INVERTER'
     }
     """
-    date_time = data_dict['lastUpdateTime']
-    epoch = dt.datetime.strptime(date_time, dt_format)
-    energy = data_dict['lifeTimeData']['energy']
-    data_list.append([date_time, epoch, site_id, energy])
+    try:
+      date_time = data_dict['lastUpdateTime']
+      epoch = int(dt.datetime.strptime(date_time, dt_format).time_stamp())
+      energy = data_dict['lifeTimeData']['energy']
+      data_list.append([date_time, epoch, site_id, energy])
+    except:
+      continue
 
   return data_list
 
@@ -151,8 +151,8 @@ def do_add_to_database(result_data, fdatabase, sql_cmd):
           cursor.close()
           conn.commit()
           conn.close()
-        # else:
-        #   mf.syslog_trace(f"Skip: {result[0]}", False, DEBUG)
+        else:
+          mf.syslog_trace(f"Skip: {results[0]}", False, DEBUG)
         err_flag = False
       except sqlite3.OperationalError:
         if cursor:
@@ -174,7 +174,7 @@ def epoch_is_present_in_database(db_cur, epoch, site_id):
                    WHERE (site_id = 0) OR (site_id = {site_id}) \
                    ;"
                  )
-  db_epoch = db_cur.fetchall()
+  db_epoch = db_cur.fetchall()[0]
   if db_epoch >= epoch:
     return True
   return False
