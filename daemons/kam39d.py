@@ -124,6 +124,9 @@ def do_work(api, site_list):
       energy = data_dict['lifeTimeData']['energy']
       data_list.append([date_time, epoch, site_id, energy])
       mf.syslog_trace(f"    : {date_time} = {energy}", False, DEBUG)
+    except TypeError:
+      # ignore empty sites
+      continue
     except:
       mf.syslog_trace(f"****: {site_id} ", False, DEBUG)
       mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
