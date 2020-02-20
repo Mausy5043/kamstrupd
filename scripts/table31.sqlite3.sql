@@ -55,3 +55,6 @@ CREATE TABLE production (
 
 CREATE INDEX idx_site ON production(site_id);
 CREATE INDEX idx_date ON production(sample_time);
+
+# Set a starting value
+INSERT INTO production (sample_time, sample_epoch, site_id, energy) VALUES ('2020-02-20 09:08:22', 1582186102, 0, 0);
