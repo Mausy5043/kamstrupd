@@ -58,7 +58,13 @@ class MyDaemon(Daemon):
     test_db_connection(fdatabase)
 
     api = solaredge.Solaredge(api_key)
-    site_list = api.get_list()['sites']['site']
+
+    try:
+      site_list = api.get_list()['sites']['site']
+    except Exception:
+      mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
+      mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+      raise
 
     while True:
       try:
