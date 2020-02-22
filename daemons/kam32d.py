@@ -108,7 +108,7 @@ def do_work():
   """Push the results out to a file."""
   global T_MEMORY
   global S_MEMORY
-  dt_format = '%Y-%m-%d %H:%M:%S'
+  dt_format = '%m/%d/%Y %H:%M:%S'
   temperature = T_MEMORY
   solrad = S_MEMORY
   date_time = ''
