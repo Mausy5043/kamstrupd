@@ -166,7 +166,7 @@ def do_add_to_database(results, fdatabase, sql_cmd):
   # we don't record the datetime of addition to the database here.
   # instead we use the datetime we got from buienradar.
   # So, we can just dump the data into sqlite3.
-  mf.syslog_trace(f"   @: {result[0]}", False, DEBUG)
+  mf.syslog_trace(f"   @: {results[0]}", False, DEBUG)
   mf.syslog_trace(f"    : {results[1:]}", False, DEBUG)
 
   err_flag = True
