@@ -61,7 +61,11 @@ class MyDaemon(Daemon):
     while True:
       try:
         start_time = time.time()
-        result = do_work()
+        data = do_work()
+        if data:
+          mf.syslog_trace(f"Data to add : {data}", False, DEBUG)
+          do_add_to_database(data, fdatabase, sqlcmd)
+        """
         result = result.split(',')
         mf.syslog_trace(f"Result   : {result}", False, DEBUG)
         # data.append(list(map(int, result)))
@@ -77,11 +81,12 @@ class MyDaemon(Daemon):
           # not all entries should be float
           # ['3088596', '3030401', '270', '0', '0', '0', '1', '1']
           averages = [format(sm / len(data), '.2f') for sm in somma]
-          averages[0] = float(somma[0] / len(data))  # avg temperature
-          averages[1] = float(somma[1])  # total solar radiation
+          averages[1] = float(somma[0] / len(data))  # avg temperature
+          averages[2] = float(somma[1])  # total solar radiation
           mf.syslog_trace(f"Averages : {averages}", False, DEBUG)
           if averages[0] > 0:
             do_add_to_database(averages, fdatabase, sqlcmd)
+        """
 
         pause_time = (sample_time
                       - (time.time() - start_time)
@@ -103,27 +108,31 @@ def do_work():
   """Push the results out to a file."""
   global T_MEMORY
   global S_MEMORY
+  dt_format = '%Y-%m-%d %H:%M:%S'
   temperature = T_MEMORY
   solrad = S_MEMORY
+  date_time = ''
+  epoch = 0
 
   station_data = gettelegram()
 
   for stn in station_data:
     if int(stn['@id']) == 6350:
       for key in stn:
-        # if key == 'datum':
-        #   sampletime = stn[key]
         if key == 'temperatuurGC':
           temperature = stn[key].strip()
         if key == 'zonintensiteitWM2':
           solrad = stn[key].strip()
           if solrad == '-':
             solrad = '0'
+        if key == 'datum':
+          date_time = stn[key].strip()
+          epoch = int(dt.datetime.strptime(date_time, dt_format).timestamp())
 
   T_MEMORY = temperature
   S_MEMORY = solrad
 
-  return f'{temperature}, {solrad}'
+  return [date_time, epoch, temperature, solrad]
 
 
 # noinspection PyUnresolvedReferences
@@ -154,8 +163,11 @@ def do_add_to_database(result, fdatabase, sql_cmd):
   # Get the time and date in human-readable form and UN*X-epoch...
   conn = None
   cursor = None
-  out_date = dt.datetime.now()  # time.strftime('%Y-%m-%dT%H:%M:%S')
-  out_epoch = int(out_date.timestamp())
+  # we don't record the datetime of addition to the database here.
+  # instead we use the datetime we got from buienradar.
+  # So, we can just dump the data into sqlite3.
+  out_date = result[0]
+  out_epoch = int(result[1])
   results = (out_date, out_epoch,
              result[0], result[1])
   mf.syslog_trace(f"   @: {out_date}", False, DEBUG)
@@ -166,16 +178,42 @@ def do_add_to_database(result, fdatabase, sql_cmd):
     try:
       conn = create_db_connection(fdatabase)
       cursor = conn.cursor()
-      cursor.execute(sql_cmd, results)
-      cursor.close()
-      conn.commit()
-      conn.close()
+      # cursor.execute(sql_cmd, results)
+      # cursor.close()
+      # conn.commit()
+      # conn.close()
+      if not epoch_is_present_in_database(cursor, results[1]):
+        mf.syslog_trace(f"   @: {results[0]} = {results[2]} {results[3]}", False, DEBUG)
+        cursor.execute(sql_cmd, results)
+        cursor.close()
+        conn.commit()
+        conn.close()
+      else:
+        mf.syslog_trace(f"Skip: {results[0]}", False, DEBUG)
       err_flag = False
     except sqlite3.OperationalError:
       if cursor:
         cursor.close()
       if conn:
         conn.close()
+
+
+def epoch_is_present_in_database(db_cur, epoch):
+  """
+  Test if results is already present in the database
+  :param db_cur: object database-cursor
+  :param epoch: int
+  :param site_id: int
+  :return: boolean  (true if data is present in the database for the given site at or after the given epoch)
+  """
+  db_cur.execute(f"SELECT MAX(sample_epoch) \
+                   FROM weather \
+                   ;"
+                 )
+  db_epoch = db_cur.fetchone()[0]
+  if db_epoch >= epoch:
+    return True
+  return False
 
 
 def create_db_connection(database_file):
