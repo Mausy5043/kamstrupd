@@ -158,7 +158,7 @@ def gettelegram():
   return stns
 
 
-def do_add_to_database(result, fdatabase, sql_cmd):
+def do_add_to_database(results, fdatabase, sql_cmd):
   """Commit the results to the database."""
   # Get the time and date in human-readable form and UN*X-epoch...
   conn = None
@@ -166,12 +166,8 @@ def do_add_to_database(result, fdatabase, sql_cmd):
   # we don't record the datetime of addition to the database here.
   # instead we use the datetime we got from buienradar.
   # So, we can just dump the data into sqlite3.
-  out_date = result[0]
-  out_epoch = int(result[1])
-  results = (out_date, out_epoch,
-             result[0], result[1])
-  mf.syslog_trace(f"   @: {out_date}", False, DEBUG)
-  mf.syslog_trace(f"    : {results}", False, DEBUG)
+  mf.syslog_trace(f"   @: {result[0]}", False, DEBUG)
+  mf.syslog_trace(f"    : {results[1:]}", False, DEBUG)
 
   err_flag = True
   while err_flag:
