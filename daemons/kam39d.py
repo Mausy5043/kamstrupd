@@ -74,21 +74,6 @@ class MyDaemon(Daemon):
           mf.syslog_trace(f"Data to add : {data}", False, DEBUG)
           do_add_to_database(data, fdatabase, sqlcmd)
 
-        """"
-        result = result.split(',')
-        mf.syslog_trace(f"Result      : {result}", False, DEBUG)
-        data.append([int(d) for d in result])
-        if len(data) > samples_averaged:
-          data.pop(0)
-        mf.syslog_trace(f"Data        : {data}", False, DEBUG)
-
-        # report sample average
-        if start_time % report_time < sample_time:
-          averages = data[-1]
-          mf.syslog_trace(f"Data to add : {averages}", False, DEBUG)
-          if data[0] > 0:
-            do_add_to_database(averages, fdatabase, sqlcmd)
-        """
         pause_time = (sample_time
                       - (time.time() - start_time)
                       - (start_time % sample_time))
