@@ -76,7 +76,7 @@ def get_opwekking(grouping, period, timeframe, from_start_of_year=False):
     db_data = db_cur.fetchall()
 
   for row in db_data:
-    ret_data.append(row[1])
+    ret_data.append(row[1] / 1000)  # convert Wh to kWh
     ret_lbls.append(row[0])
 
   return ret_data[-period:], ret_lbls[-period:]
