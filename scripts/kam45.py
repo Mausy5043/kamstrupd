@@ -144,7 +144,7 @@ def distract(arr1, arr2):
   return list(reversed(result))
 
 
-def plot_graph(output_file, data_tuple, plot_title, imorex):
+def plot_graph(output_file, data_tuple, plot_title, imorex="u"):
   """
     ...
     """
@@ -213,14 +213,14 @@ def main():
     plot_graph('/tmp/kamstrupd/site/img/kam_avg_day_u.png',
                fetch_avg_day(),
                f"Typisch uurverbruik ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-               "u"
+               imorex="u"
                )
 
   if OPTION in ['-p', '-P', '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_avg_day_p.png',
                fetch_avg_day(),
                f"Typische uurproductie ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-               "p"
+               imorex="p"
                )
 
 
