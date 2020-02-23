@@ -29,8 +29,7 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
 #  timeout 120s gnuplot -e "utc_offset='${UTCOFFSET}'; kamdata='${kamdata}p'" ./graphs/avgday_p.gp
 #fi
 
-./scripts/kam45.py -u
-./scripts/kam45.py -p
+./scripts/kam45.py -a
 ./scripts/upload.sh --upload
 
 ## drop datafile

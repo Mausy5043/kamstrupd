@@ -210,24 +210,24 @@ def main():
     This is the main loop
     """
   OPTION = get_cli_params(1)
-
+  avg_day = fetch_avg_day()
   if OPTION in ['-u', '-U', '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_avg_day_u.png',
-               fetch_avg_day(),
+               avg_day,
                f"Typisch stroomgebruik per uur ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                imorex="u"
                )
 
   if OPTION in ['-p', '-P', '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_avg_day_p.png',
-               fetch_avg_day(),
+               avg_day,
                f"Typische opwekking per uur ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                imorex="p"
                )
 
   if OPTION in ['-s', '-S', '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_avg_day_s.png',
-               fetch_avg_day(),
+               avg_day,
                f"Typisch overschot per uur ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                imorex="s"
                )
