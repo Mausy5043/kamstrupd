@@ -24,7 +24,7 @@ def get_cli_params(expected_amount):
 
 def get_historic_data(grouping, period, timeframe, telwerk, from_start_of_year=False):
   """
-    Fetch import data LO
+    Fetch historic data from KAMSTRUP meter
     """
   ret_data = []
   ret_lbls = []
@@ -53,26 +53,46 @@ def get_historic_data(grouping, period, timeframe, telwerk, from_start_of_year=F
   return np.array(ret_data[-period * 12:]), np.array(ret_lbls[-period * 12:])
 
 
-def get_opwekking(period, timeframe, from_start_of_year=False):
+def get_opwekking(grouping, period, timeframe, from_start_of_year=False):
   """
-    Fetch production data
+    Fetch historic data from SOLAREDGE site
     """
-  if from_start_of_year:  # bogus code
-    timeframe += 1
-  ret_data = np.zeros(period * 12)
-  # return np.array(ret_data)
-  return ret_data
+  ret_data = [0] * period
+  ret_lbls = [] * period
+  if from_start_of_year:
+    interval = f"datetime(datetime(\'now\', \'-{period} {timeframe}\'), \'start of year\')"
+  else:
+    interval = f"datetime(\'now\', \'-{period} {timeframe}\')"
+  db_con = s3.connect(DATABASE)
+  with db_con:
+    db_cur = db_con.cursor()
+    db_cur.execute(f"SELECT strftime('{grouping}',sample_time) as grouped, \
+                     MAX(energy)-MIN(energy), \
+                     MIN(sample_epoch) as t \
+                     FROM production \
+                     WHERE (sample_time >= {interval}) \
+                     GROUP BY grouped \
+                     ORDER BY t ASC \
+                     ;"
+                   )
+    db_data = db_cur.fetchall()
+
+  for row in db_data:
+    ret_data.append(row[1] / 1000)  # convert Wh to kWh
+    ret_lbls.append(row[0])
+
+  return np.array(ret_data[-period * 12:]), np.array(ret_lbls[-period * 12:])
 
 
 def fetch_last_months():
   """
     ...
     """
+  opwekking, data_lbls = get_opwekking('%Y-%m', 5, 'year', from_start_of_year=True)
   import_lo, data_lbls = get_historic_data('%Y-%m', 5, 'year', 'T1in', from_start_of_year=True)
   import_hi, data_lbls = get_historic_data('%Y-%m', 5, 'year', 'T2in', from_start_of_year=True)
   export_lo, data_lbls = get_historic_data('%Y-%m', 5, 'year', 'T1out', from_start_of_year=True)
   export_hi, data_lbls = get_historic_data('%Y-%m', 5, 'year', 'T2out', from_start_of_year=True)
-  opwekking = get_opwekking(5, 'year')
   return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
@@ -82,15 +102,16 @@ def plot_graph(output_file, data_tuple, plot_title):
     Create the graph
     """
   data_lbls = data_tuple[0]
-  # import_lo = data_tuple[1]
-  # import_hi = data_tuple[2]
-  # opwekking = data_tuple[3]
-  # export_lo = data_tuple[4]
-  # export_hi = data_tuple[5]
-  own_usage = [sum(x) for x in zip(data_tuple[3], data_tuple[5], data_tuple[4])]
-  total_use = [sum(x) for x in zip(own_usage, data_tuple[1], data_tuple[2])]
-  total_out = [sum(x) for x in zip(data_tuple[4], data_tuple[5])]
-  data_lbls, total_use, total_out = kam41.build_arrays44(data_lbls, total_use, total_out)
+  import_lo = data_tuple[1]
+  import_hi = data_tuple[2]
+  opwekking = data_tuple[3]
+  export_lo = data_tuple[4]
+  export_hi = data_tuple[5]
+  own_usage = [x - y - z for x, y, z in zip(opwekking, export_hi, export_lo)]
+  # own_usage = [sum(x) for x in zip(data_tuple[3], data_tuple[5], data_tuple[4])]
+  total_use = [sum(x) for x in zip(own_usage, import_lo, import_hi)]
+  total_out = [sum(x) for x in zip(export_lo, export_hi)]
+  data_lbls, total_use_arr, total_out_arr = kam41.build_arrays44(data_lbls, total_use, total_out)
 
   # Set the bar width
   bars_width = 0.9
@@ -106,7 +127,7 @@ def plot_graph(output_file, data_tuple, plot_title):
 
   # Create a bar plot usage
   for idx in range(0, len(data_lbls[0])):
-    ax1.bar(tick_pos + (idx * bar_width), total_use[idx],
+    ax1.bar(tick_pos + (idx * bar_width), total_use_arr[idx],
             width=bar_width,
             label=data_lbls[0][idx],
             alpha=ahpla + (idx * ahpla),
@@ -114,7 +135,7 @@ def plot_graph(output_file, data_tuple, plot_title):
             align='edge'
             )
     # Create a bar plot of production
-    ax1.bar(tick_pos + (idx * bar_width), [-1 * i for i in total_out[idx]],
+    ax1.bar(tick_pos + (idx * bar_width), [-1 * i for i in total_out_arr[idx]],
             width=bar_width,
             alpha=ahpla + (idx * ahpla),
             color='g',
