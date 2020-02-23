@@ -162,6 +162,8 @@ def plot_graph(output_file, data_tuple, plot_title, imorex="u"):
   if imorex == "u":
     x_data = usage
   if imorex == "p":
+    x_data = opwekking
+  if imorex == "s":
     x_data = exprt
 
   # Set the bar width
