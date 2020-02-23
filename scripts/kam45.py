@@ -2,6 +2,7 @@
 
 """."""
 
+import itertools as it
 import os
 import sqlite3 as s3
 import sys
@@ -112,18 +113,35 @@ def fetch_avg_day():
   return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def contract(array1, array2):
+def contract(arr1, arr2):
+  """
+  Add two arrays together.
+  :param arr1:   list
+  :param arr2:   list
+  :return:   list
+  """
   result = []
+  array1 = list(reversed(arr1))
+  array2 = list(reversed(arr2))
   for idx_hr in range(0, len(array1)):
-    result.append([x + y for x, y in zip(array1[idx_hr], array2[idx_hr])])
-  return result
+    result.append([sum(filter(None, [x, y])) for x, y in it.zip_longest(array1[idx_hr], array2[idx_hr])])
+  return list(reversed(result))
 
 
-def distract(array1, array2):
+def distract(arr1, arr2):
+  """
+  Subtract two arrays.
+  Note: order is important!
+  :param arr1:  list
+  :param arr2:  list
+  :return:  list
+  """
   result = []
+  array1 = list(reversed(arr1))
+  array2 = list(reversed(arr2))
   for idx_hr in range(0, len(array1)):
-    result.append([x - y for x, y in zip(array1[idx_hr], array2[idx_hr])])
-  return result
+    result.append([sum(filter(None, [x, -1 * y])) for x, y in it.zip_longest(array1[idx_hr], array2[idx_hr])])
+  return list(reversed(result))
 
 
 def plot_graph(output_file, data_tuple, plot_title, imorex):
