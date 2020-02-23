@@ -140,7 +140,7 @@ def plot_graph(output_file, data_tuple, plot_title):
     ax1.bar(tick_pos + (idx * bar_width), [-1 * i for i in total_out_arr[idx]],
             width=bar_width,
             alpha=ahpla + (idx * ahpla),
-            color='g',
+            color='r',
             align='edge'
             )
 
@@ -169,7 +169,7 @@ def main():
   if OPTION in ['-m', '-M', '-y', '-Y', '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_vs_month.png',
                fetch_last_months(),
-               f"Verbruik per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+               f"Stroomverbruik/levering per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
 
 
