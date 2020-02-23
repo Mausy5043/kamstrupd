@@ -79,6 +79,7 @@ def get_opwekking(grouping, period, timeframe, from_start_of_year=False):
     ret_data.append(row[1] / 1000)  # convert Wh to kWh
     ret_lbls.append(row[0])
 
+  ret_data = ret_data[-len(ret_lbls):]
   return ret_data[-period * 24:], ret_lbls[-period * 24:]
 
 
@@ -103,7 +104,7 @@ def fetch_avg_day():
   """
     ...
     """
-  opwekking, data_lbls = reshape_to_hourly(*get_opwekking(2, 'year', from_start_of_year=True))
+  opwekking, data_lbls = reshape_to_hourly(*get_opwekking('%Y %j %Hh', 2, 'year', from_start_of_year=True))
   import_lo, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 2, 'year', 'T1in', from_start_of_year=True))
   import_hi, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 2, 'year', 'T2in', from_start_of_year=True))
   export_lo, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 2, 'year', 'T1out', from_start_of_year=True))
