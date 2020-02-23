@@ -57,8 +57,8 @@ def get_opwekking(grouping, period, timeframe, from_start_of_year=False):
   """
     Fetch historic data from SOLAREDGE site
     """
-  ret_data = [0] * period
-  ret_lbls = [] * period
+  ret_data = [0] * period * 12
+  ret_lbls = [] * period * 12
   if from_start_of_year:
     interval = f"datetime(datetime(\'now\', \'-{period} {timeframe}\'), \'start of year\')"
   else:
@@ -104,13 +104,15 @@ def plot_graph(output_file, data_tuple, plot_title):
   data_lbls = data_tuple[0]
   import_lo = data_tuple[1]
   import_hi = data_tuple[2]
-  opwekking = data_tuple[3]
+  # opwekking is coming from a different source so length may not match. Match it here.
+  opwekking = data_tuple[3][-len(data_lbls):]
   export_lo = data_tuple[4]
   export_hi = data_tuple[5]
   own_usage = [x - y - z for x, y, z in zip(opwekking, export_hi, export_lo)]
   # own_usage = [sum(x) for x in zip(data_tuple[3], data_tuple[5], data_tuple[4])]
   total_use = [sum(x) for x in zip(own_usage, import_lo, import_hi)]
   total_out = [sum(x) for x in zip(export_lo, export_hi)]
+
   data_lbls, total_use_arr, total_out_arr = kam41.build_arrays44(data_lbls, total_use, total_out)
 
   # Set the bar width
