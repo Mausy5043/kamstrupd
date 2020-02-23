@@ -212,15 +212,22 @@ def main():
   if OPTION in ['-u', '-U', '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_avg_day_u.png',
                fetch_avg_day(),
-               f"Typisch uurverbruik ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+               f"Typisch stroomgebruik per uur ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                imorex="u"
                )
 
   if OPTION in ['-p', '-P', '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_avg_day_p.png',
                fetch_avg_day(),
-               f"Typische uurproductie ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+               f"Typische opwekking per uur ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                imorex="p"
+               )
+
+  if OPTION in ['-s', '-S', '-a', '-A']:
+    plot_graph('/tmp/kamstrupd/site/img/kam_avg_day_s.png',
+               fetch_avg_day(),
+               f"Typisch overschot per uur ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+               imorex="s"
                )
 
 
