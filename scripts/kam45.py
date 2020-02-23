@@ -119,6 +119,13 @@ def contract(array1, array2):
   return result
 
 
+def distract(array1, array2):
+  result = []
+  for idx_hr in range(0, len(array1)):
+    result.append([x - y for x, y in zip(array1[idx_hr], array2[idx_hr])])
+  return result
+
+
 def plot_graph(output_file, data_tuple, plot_title, imorex):
   """
     ...
@@ -127,16 +134,17 @@ def plot_graph(output_file, data_tuple, plot_title, imorex):
   data_lbls = data_tuple[0]
   import_lo = data_tuple[1]
   import_hi = data_tuple[2]
-  imprt = contract(import_lo, import_hi)
   opwekking = data_tuple[3]
   export_lo = data_tuple[4]
   export_hi = data_tuple[5]
+  imprt = contract(import_lo, import_hi)
   exprt = contract(export_lo, export_hi)
+  own_usage = distract(opwekking, exprt)
+  usage = contract(own_usage, imprt)
   if imorex == "u":
-    x_data = imprt
+    x_data = usage
   if imorex == "p":
     x_data = exprt
-  # own_usage = [x - y - z for x, y, z in zip(opwekking, export_hi, export_lo)]
 
   # Set the bar width
   bar_width = 0.75
