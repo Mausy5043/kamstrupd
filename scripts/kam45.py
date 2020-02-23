@@ -22,7 +22,7 @@ def get_cli_params(expected_amount):
 
 def get_historic_data(grouping, period, timeframe, telwerk, from_start_of_year=False):
   """
-    Fetch import data LO
+    Fetch historic data from KAMSTRUP meter
     """
   ret_data = []
   ret_lbls = []
@@ -51,12 +51,35 @@ def get_historic_data(grouping, period, timeframe, telwerk, from_start_of_year=F
   return ret_data, ret_lbls
 
 
-def get_opwekking(period, timeframe, from_start_of_year=False):
+def get_opwekking(grouping, period, timeframe, from_start_of_year=False):
   """
-    Fetch production data
+    Fetch historic data from SOLAREDGE site
     """
-  ret_data = [[0] * 24]
-  return ret_data
+  ret_data = [0] * period * 24
+  ret_lbls = [] * period * 24
+  if from_start_of_year:
+    interval = f"datetime(datetime(\'now\', \'-{period} {timeframe}\'), \'start of year\')"
+  else:
+    interval = f"datetime(\'now\', \'-{period} {timeframe}\')"
+  db_con = s3.connect(DATABASE)
+  with db_con:
+    db_cur = db_con.cursor()
+    db_cur.execute(f"SELECT strftime('{grouping}',sample_time) as grouped, \
+                     MAX(energy)-MIN(energy), \
+                     MIN(sample_epoch) as t \
+                     FROM production \
+                     WHERE (sample_time >= {interval}) \
+                     GROUP BY grouped \
+                     ORDER BY t ASC \
+                     ;"
+                   )
+    db_data = db_cur.fetchall()
+
+  for row in db_data:
+    ret_data.append(row[1] / 1000)  # convert Wh to kWh
+    ret_lbls.append(row[0])
+
+  return ret_data[-period * 24:], ret_lbls[-period * 24:]
 
 
 def reshape_to_hourly(data, labels):
@@ -80,11 +103,11 @@ def fetch_avg_day():
   """
     ...
     """
+  opwekking, data_lbls = reshape_to_hourly(*get_opwekking(2, 'year', from_start_of_year=True))
   import_lo, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 2, 'year', 'T1in', from_start_of_year=True))
   import_hi, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 2, 'year', 'T2in', from_start_of_year=True))
   export_lo, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 2, 'year', 'T1out', from_start_of_year=True))
   export_hi, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 2, 'year', 'T2out', from_start_of_year=True))
-  opwekking = get_opwekking(1, 'year', from_start_of_year=True)
   return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
