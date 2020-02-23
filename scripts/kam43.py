@@ -156,7 +156,7 @@ def plot_graph(output_file, data_tuple, plot_title):
   # Create a bar plot of import_lo
   ax1.bar(tick_pos, import_hi,
           width=bar_width,
-          label='Import (T2)',
+          label='Inkoop (normaal)',
           alpha=ahpla,
           color='y',
           align='center',
@@ -165,16 +165,16 @@ def plot_graph(output_file, data_tuple, plot_title):
   # Create a bar plot of import_hi
   ax1.bar(tick_pos, import_lo,
           width=bar_width,
-          label='Import (T1)',
+          label='Inkoop (dal)',
           alpha=ahpla,
           color='b',
           align='center',
           bottom=own_usage
           )
-  # Create a bar plot of usage_slf
+  # Create a bar plot of own_usage
   ax1.bar(tick_pos, own_usage,
           width=bar_width,
-          label='Self',
+          label='Eigen gebruik',
           alpha=ahpla,
           color='g',
           align='center'
@@ -183,7 +183,7 @@ def plot_graph(output_file, data_tuple, plot_title):
   # Create a bar plot of export_lo
   ax1.bar(tick_pos, [-1 * i for i in export_lo],
           width=bar_width,
-          label='Export (T1)',
+          label='Verkoop (normaal)',
           alpha=ahpla,
           color='c',
           align='center'
@@ -191,7 +191,7 @@ def plot_graph(output_file, data_tuple, plot_title):
   # Create a bar plot of export_hi
   ax1.bar(tick_pos, [-1 * i for i in export_hi],
           width=bar_width,
-          label='Export (T2)',
+          label='Verkoop (dal)',
           alpha=ahpla,
           color='r',
           align='center',
@@ -223,23 +223,23 @@ def main():
   if OPTION in ['-d', '-D', '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_pastday.png',
                fetch_last_day(),
-               f"Verbruikstrend per uur ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+               f"Energietrend per uur ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
 
   if OPTION in ['-m', '-M', '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_pastmonth.png',
                fetch_last_month(),
-               f"Verbruikstrend per dag afgelopen maand ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+               f"Energietrend per dag afgelopen maand ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
 
   if OPTION in ['-y', '-Y', '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_pastyear.png',
                fetch_last_year(),
-               f"Verbruikstrend per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+               f"Energietrend per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
     plot_graph('/tmp/kamstrupd/site/img/kam_vs_year.png',
                fetch_last_years(),
-               f"Verbruikstrend per jaar afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+               f"Energietrend per jaar afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
 
 
