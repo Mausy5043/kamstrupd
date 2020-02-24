@@ -92,7 +92,8 @@ def fetch_last_day():
   export_lo, data_lbls = get_historic_data('%d %Hh', 50, 'hour', 'T1out')
   export_hi, data_lbls = get_historic_data('%d %Hh', 50, 'hour', 'T2out')
   # production data may not yet have caught up to the current hour
-  if prod_lbls[-1] is not data_lbls[-1]:
+  if not (prod_lbls[-1] == data_lbls[-1]):
+    opwekking.pop(0)
     opwekking.append(0)
   return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
