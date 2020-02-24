@@ -31,7 +31,7 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
 
 ./scripts/kam43.py -y
 ./scripts/kam44.py -m
-./scripts/kam33.py -y
+#./scripts/kam33.py -y
 ./scripts/kam34.py -m
 ./scripts/upload.sh --upload
 

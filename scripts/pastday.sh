@@ -29,7 +29,7 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
 # fi
 
 ./scripts/kam43.py -d
-./scripts/kam33.py -d
+#./scripts/kam33.py -d
 ./scripts/upload.sh --upload
 
 # # drop datafile
