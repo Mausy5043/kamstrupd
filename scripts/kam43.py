@@ -183,7 +183,7 @@ def plot_graph(output_file, data_tuple, plot_title):
   # Create a bar plot of export_lo
   ax1.bar(tick_pos, [-1 * i for i in export_lo],
           width=bar_width,
-          label='Verkoop (normaal)',
+          label='Verkoop (dal)',
           alpha=ahpla,
           color='c',
           align='center'
@@ -191,7 +191,7 @@ def plot_graph(output_file, data_tuple, plot_title):
   # Create a bar plot of export_hi
   ax1.bar(tick_pos, [-1 * i for i in export_hi],
           width=bar_width,
-          label='Verkoop (dal)',
+          label='Verkoop (normaal)',
           alpha=ahpla,
           color='r',
           align='center',
