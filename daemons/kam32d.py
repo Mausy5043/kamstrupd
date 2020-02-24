@@ -139,6 +139,7 @@ def do_work():
 def gettelegram():
   """Fetch current weather from website."""
   retries = 4
+  stns = {}
   while True:
     try:
       response = urllib.request.urlopen(URL)
@@ -199,7 +200,6 @@ def epoch_is_present_in_database(db_cur, epoch):
   Test if results is already present in the database
   :param db_cur: object database-cursor
   :param epoch: int
-  :param site_id: int
   :return: boolean  (true if data is present in the database for the given site at or after the given epoch)
   """
   db_cur.execute(f"SELECT MAX(sample_epoch) \
