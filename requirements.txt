@@ -1,6 +1,5 @@
 matplotlib
 numpy
-pandas
 pyserial
 python-dateutil
 pytz
