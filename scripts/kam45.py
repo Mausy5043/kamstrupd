@@ -116,8 +116,8 @@ def fetch_avg_day():
 def contract(arr1, arr2):
   """
   Add two arrays together.
-  :param arr1:   list
-  :param arr2:   list
+  :param arr1:   list of 24 lists
+  :param arr2:   list of 24 lists
   :return:   list
   """
   result = []
