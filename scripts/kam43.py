@@ -56,7 +56,7 @@ def get_opwekking(grouping, period, timeframe, from_start_of_year=False):
   """
     Fetch historic data from SOLAREDGE site
     """
-  ret_data = [0.0] * period
+  ret_data = [] * period
   ret_lbls = [] * period
   if from_start_of_year:
     interval = f"datetime(datetime(\'now\', \'-{period} {timeframe}\'), \'start of year\')"
@@ -151,16 +151,13 @@ def contract(arr1, arr2):
   """
   Add two arrays together.
   """
-  result = []
-  for idx_hr in range(0, len(arr1)):
-    result.append(list(reversed([sum(filter(None, [x, y]))
-                                 for x, y in it.zip_longest(list(reversed(arr1[idx_hr])),
-                                                            list(reversed(arr2[idx_hr]))
-                                                            )
-                                 ]
-                                )
-                       )
-                  )
+  result = list(reversed([sum(filter(None, [x, y]))
+                          for x, y in it.zip_longest(list(reversed(arr1)),
+                                                     list(reversed(arr2))
+                                                     )
+                          ]
+                         )
+                )
   return result
 
 
@@ -169,18 +166,15 @@ def distract(arr1, arr2):
   Subtract two arrays.
   Note: order is important!
   """
-  result = []
+  result = list(reversed([sum(filter(None, [x, -1 * y]))
+                          for x, y in it.zip_longest(list(reversed(arr1)),
+                                                     list(reversed(arr2))
+                                                     )
+                          ]
+                         )
+                )
   # array1 = list(reversed(arr1))
   # array2 = list(reversed(arr2))
-  for idx_hr in range(0, len(arr1)):
-    result.append(list(reversed([sum(filter(None, [x, -1 * y]))
-                                 for x, y in it.zip_longest(list(reversed(arr1[idx_hr])),
-                                                            list(reversed(arr2[idx_hr]))
-                                                            )
-                                 ]
-                                )
-                       )
-                  )
   return result
 
 
@@ -244,8 +238,8 @@ def plot_graph(output_file, data_tuple, plot_title):
           color='g',
           align='center'
           )
-  for i, v in enumerate(own_usage):
-    ax1.text(tick_pos[i], 0.1, str(v), {'ha': 'center', 'va': 'bottom'}, rotation=-90)
+  # for i, v in enumerate(own_usage):
+  #  ax1.text(tick_pos[i], 0.1, str(v), {'ha': 'center', 'va': 'bottom'}, rotation=-90)
   # Exports hang below the y-axis
   # Create a bar plot of export_lo
   ax1.bar(tick_pos, [-1 * i for i in export_lo],
@@ -264,8 +258,8 @@ def plot_graph(output_file, data_tuple, plot_title):
           align='center',
           bottom=[-1 * i for i in export_lo]
           )
-  for i, v in enumerate(exprt_tot):
-    ax1.text(tick_pos[i], -0.1, str(v), {'ha': 'center', 'va': 'top'}, rotation=-90)
+  # for i, v in enumerate(exprt_tot):
+  #   ax1.text(tick_pos[i], -0.1, str(v), {'ha': 'center', 'va': 'top'}, rotation=-90)
 
   # Set Axes stuff
   ax1.set_ylabel("[kWh]")
