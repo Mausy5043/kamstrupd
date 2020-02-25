@@ -240,7 +240,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=False):
           )
   if show_data:
     for i, v in enumerate(own_usage):
-      ax1.text(tick_pos[i], 0.1, str(v), {'ha': 'center', 'va': 'bottom'}, rotation=-90)
+      ax1.text(tick_pos[i], 0.1, "{:7.3f}".format(v), {'ha': 'center', 'va': 'bottom'}, rotation=-90)
   # Exports hang below the y-axis
   # Create a bar plot of export_lo
   ax1.bar(tick_pos, [-1 * i for i in export_lo],
@@ -261,7 +261,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=False):
           )
   if show_data:
     for i, v in enumerate(exprt):
-      ax1.text(tick_pos[i], -0.1, str(v), {'ha': 'center', 'va': 'top'}, rotation=-90)
+      ax1.text(tick_pos[i], -0.1, "{:7.3f}".format(v), {'ha': 'center', 'va': 'top'}, rotation=-90)
 
   # Set Axes stuff
   ax1.set_ylabel("[kWh]")
