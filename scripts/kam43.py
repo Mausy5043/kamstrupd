@@ -55,7 +55,7 @@ def get_opwekking(grouping, period, timeframe, from_start_of_year=False):
   """
     Fetch historic data from SOLAREDGE site
     """
-  ret_data = [0] * period
+  ret_data = [0.0] * period
   ret_lbls = [] * period
   if from_start_of_year:
     interval = f"datetime(datetime(\'now\', \'-{period} {timeframe}\'), \'start of year\')"
@@ -94,7 +94,7 @@ def fetch_last_day():
   # production data may not yet have caught up to the current hour
   if not (prod_lbls[-1] == data_lbls[-1]):
     opwekking.pop(0)
-    opwekking.append(0)
+    opwekking.append(0.0)
   return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
@@ -102,11 +102,15 @@ def fetch_last_month():
   """
     ...
     """
-  opwekking, data_lbls = get_opwekking('%m-%d', 33, 'day')
+  opwekking, prod_lbls = get_opwekking('%m-%d', 33, 'day')
   import_lo, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T1in')
   import_hi, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T2in')
   export_lo, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T1out')
   export_hi, data_lbls = get_historic_data('%m-%d', 33, 'day', 'T2out')
+  # production data may not yet have caught up to the current hour
+  if not (prod_lbls[-1] == data_lbls[-1]):
+    opwekking.pop(0)
+    opwekking.append(0.0)
   return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
@@ -114,11 +118,15 @@ def fetch_last_year():
   """
     ...
     """
-  opwekking, data_lbls = get_opwekking('%Y-%m', 61, 'month')
+  opwekking, prod_lbls = get_opwekking('%Y-%m', 61, 'month')
   import_lo, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T1in')
   import_hi, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T2in')
   export_lo, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T1out')
   export_hi, data_lbls = get_historic_data('%Y-%m', 61, 'month', 'T2out')
+  # production data may not yet have caught up to the current hour
+  if not (prod_lbls[-1] == data_lbls[-1]):
+    opwekking.pop(0)
+    opwekking.append(0.0)
   return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
@@ -126,11 +134,15 @@ def fetch_last_years():
   """
     ...
     """
-  opwekking, data_lbls = get_opwekking('%Y', 6, 'year', from_start_of_year=True)
+  opwekking, prod_lbls = get_opwekking('%Y', 6, 'year', from_start_of_year=True)
   import_lo, data_lbls = get_historic_data('%Y', 6, 'year', 'T1in', from_start_of_year=True)
   import_hi, data_lbls = get_historic_data('%Y', 6, 'year', 'T2in', from_start_of_year=True)
   export_lo, data_lbls = get_historic_data('%Y', 6, 'year', 'T1out', from_start_of_year=True)
   export_hi, data_lbls = get_historic_data('%Y', 6, 'year', 'T2out', from_start_of_year=True)
+  # production data may not yet have caught up to the current hour
+  if not (prod_lbls[-1] == data_lbls[-1]):
+    opwekking.pop(0)
+    opwekking.append(0.0)
   return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
@@ -146,6 +158,7 @@ def plot_graph(output_file, data_tuple, plot_title):
   export_hi = data_tuple[5]
   own_usage = [x - y - z for x, y, z in zip(opwekking, export_hi, export_lo)]
   own_usage = [0 if x < 0 else x for x in own_usage]
+  exprt_tot = [x + y for x, y in zip(export_lo, export_hi)]
   # print("own_usage: ",own_usage[-5:])
   # print("opwekking: ",opwekking[-5:])
   # print("export_hi: ",export_hi[-5:])
@@ -190,6 +203,8 @@ def plot_graph(output_file, data_tuple, plot_title):
           color='g',
           align='center'
           )
+  for i, v in enumerate(own_usage):
+    ax1.text(tick_pos[i], 0.1, str(v), rotation=-90, props={'ha': 'center', 'va': 'bottom'})
   # Exports hang below the y-axis
   # Create a bar plot of export_lo
   ax1.bar(tick_pos, [-1 * i for i in export_lo],
@@ -208,6 +223,8 @@ def plot_graph(output_file, data_tuple, plot_title):
           align='center',
           bottom=[-1 * i for i in export_lo]
           )
+  for i, v in enumerate(exprt_tot):
+    ax1.text(tick_pos[i], -0.1, str(v), rotation=-90, props={'ha': 'center', 'va': 'top'})
 
   # Set Axes stuff
   ax1.set_ylabel("[kWh]")
@@ -243,11 +260,13 @@ def main():
                f"Energietrend per dag afgelopen maand ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
 
-  if OPTION in ['-y', '-Y', '-a', '-A']:
+  if OPTION in ['-y', '-Y', '-y1', '-Y1' '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_pastyear.png',
                fetch_last_year(),
                f"Energietrend per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                )
+
+  if OPTION in ['-y', '-Y', '-y2', '-Y2' '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_vs_year.png',
                fetch_last_years(),
                f"Energietrend per jaar afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
