@@ -145,7 +145,14 @@ def plot_graph(output_file, data_tuple, plot_title):
   export_lo = data_tuple[4]
   export_hi = data_tuple[5]
   own_usage = [x - y - z for x, y, z in zip(opwekking, export_hi, export_lo)]
-
+  own_usage = [0 if x < 0 else x for x in own_usage]
+  # print("own_usage: ",own_usage[-5:])
+  # print("opwekking: ",opwekking[-5:])
+  # print("export_hi: ",export_hi[-5:])
+  # print("export_lo: ",export_lo[-5:])
+  # print(" ")
+  # print("import_hi: ",import_hi[-5:])
+  # print("import_lo: ",import_lo[-5:])
   # Set the bar width
   bar_width = 0.75
   # Set the color alpha
