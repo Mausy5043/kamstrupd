@@ -197,7 +197,7 @@ def plot_graph(output_file, data_tuple, plot_title):
   imprt = contract(import_lo, import_hi)
   exprt = contract(export_lo, export_hi)
   own_usage = distract(opwekking, exprt)
-  usage = contract(own_usage, imprt)
+  # usage = contract(own_usage, imprt)
   own_usage = [0.0 if x < 0.0 else x for x in own_usage]
   btm_hi = contract(import_lo, own_usage)
   # print("own_usage: ",own_usage[-5:])
