@@ -2,6 +2,7 @@
 
 """Create trendbargraphs for various periods of electricity use and production."""
 
+import itertools as it
 import os
 import sqlite3 as s3
 import sys
@@ -146,6 +147,43 @@ def fetch_last_years():
   return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
+def contract(arr1, arr2):
+  """
+  Add two arrays together.
+  """
+  result = []
+  for idx_hr in range(0, len(arr1)):
+    result.append(list(reversed([sum(filter(None, [x, y]))
+                                 for x, y in it.zip_longest(list(reversed(arr1[idx_hr])),
+                                                            list(reversed(arr2[idx_hr]))
+                                                            )
+                                 ]
+                                )
+                       )
+                  )
+  return result
+
+
+def distract(arr1, arr2):
+  """
+  Subtract two arrays.
+  Note: order is important!
+  """
+  result = []
+  # array1 = list(reversed(arr1))
+  # array2 = list(reversed(arr2))
+  for idx_hr in range(0, len(arr1)):
+    result.append(list(reversed([sum(filter(None, [x, -1 * y]))
+                                 for x, y in it.zip_longest(list(reversed(arr1[idx_hr])),
+                                                            list(reversed(arr2[idx_hr]))
+                                                            )
+                                 ]
+                                )
+                       )
+                  )
+  return result
+
+
 def plot_graph(output_file, data_tuple, plot_title):
   """
     ...
@@ -156,9 +194,12 @@ def plot_graph(output_file, data_tuple, plot_title):
   opwekking = data_tuple[3]
   export_lo = data_tuple[4]
   export_hi = data_tuple[5]
-  own_usage = [x - y - z for x, y, z in zip(opwekking, export_hi, export_lo)]
-  own_usage = [0 if x < 0 else x for x in own_usage]
-  exprt_tot = [x + y for x, y in zip(export_lo, export_hi)]
+  imprt = contract(import_lo, import_hi)
+  exprt = contract(export_lo, export_hi)
+  own_usage = distract(opwekking, exprt)
+  usage = contract(own_usage, imprt)
+  own_usage = [0.0 if x < 0.0 else x for x in own_usage]
+  btm_hi = contract(import_lo, own_usage)
   # print("own_usage: ",own_usage[-5:])
   # print("opwekking: ",opwekking[-5:])
   # print("export_hi: ",export_hi[-5:])
@@ -184,7 +225,7 @@ def plot_graph(output_file, data_tuple, plot_title):
           alpha=ahpla,
           color='y',
           align='center',
-          bottom=[sum(i) for i in zip(import_lo, own_usage)]
+          bottom=btm_hi  # [sum(i) for i in zip(import_lo, own_usage)]
           )
   # Create a bar plot of import_hi
   ax1.bar(tick_pos, import_lo,
@@ -204,7 +245,7 @@ def plot_graph(output_file, data_tuple, plot_title):
           align='center'
           )
   for i, v in enumerate(own_usage):
-    ax1.text(tick_pos[i], 0.1, str(v), rotation=-90, props={'ha': 'center', 'va': 'bottom'})
+    ax1.text(tick_pos[i], 0.1, str(v), {'ha': 'center', 'va': 'bottom'}, rotation=-90)
   # Exports hang below the y-axis
   # Create a bar plot of export_lo
   ax1.bar(tick_pos, [-1 * i for i in export_lo],
@@ -224,7 +265,7 @@ def plot_graph(output_file, data_tuple, plot_title):
           bottom=[-1 * i for i in export_lo]
           )
   for i, v in enumerate(exprt_tot):
-    ax1.text(tick_pos[i], -0.1, str(v), rotation=-90, props={'ha': 'center', 'va': 'top'})
+    ax1.text(tick_pos[i], -0.1, str(v), {'ha': 'center', 'va': 'top'}, rotation=-90)
 
   # Set Axes stuff
   ax1.set_ylabel("[kWh]")
