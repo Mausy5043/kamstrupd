@@ -178,7 +178,7 @@ def distract(arr1, arr2):
   return result
 
 
-def plot_graph(output_file, data_tuple, plot_title):
+def plot_graph(output_file, data_tuple, plot_title, show_data=False):
   """
     ...
     """
@@ -238,8 +238,9 @@ def plot_graph(output_file, data_tuple, plot_title):
           color='g',
           align='center'
           )
-  # for i, v in enumerate(own_usage):
-  #  ax1.text(tick_pos[i], 0.1, str(v), {'ha': 'center', 'va': 'bottom'}, rotation=-90)
+  if show_data:
+    for i, v in enumerate(own_usage):
+      ax1.text(tick_pos[i], 0.1, str(v), {'ha': 'center', 'va': 'bottom'}, rotation=-90)
   # Exports hang below the y-axis
   # Create a bar plot of export_lo
   ax1.bar(tick_pos, [-1 * i for i in export_lo],
@@ -258,8 +259,9 @@ def plot_graph(output_file, data_tuple, plot_title):
           align='center',
           bottom=[-1 * i for i in export_lo]
           )
-  # for i, v in enumerate(exprt_tot):
-  #   ax1.text(tick_pos[i], -0.1, str(v), {'ha': 'center', 'va': 'top'}, rotation=-90)
+  if show_data:
+    for i, v in enumerate(exprt):
+      ax1.text(tick_pos[i], -0.1, str(v), {'ha': 'center', 'va': 'top'}, rotation=-90)
 
   # Set Axes stuff
   ax1.set_ylabel("[kWh]")
@@ -298,7 +300,8 @@ def main():
   if OPTION in ['-y', '-Y', '-y1', '-Y1' '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_pastyear.png',
                fetch_last_year(),
-               f"Energietrend per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+               f"Energietrend per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+               show_data=True
                )
 
   if OPTION in ['-y', '-Y', '-y2', '-Y2' '-a', '-A']:
