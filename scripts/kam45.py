@@ -171,6 +171,13 @@ def plot_graph(output_file, data_tuple, plot_title, imorex="u"):
   exprt = contract(export_lo, export_hi)
   own_usage = distract(opwekking, exprt)
   usage = contract(own_usage, imprt)
+  # print("own_usage: ",own_usage[-5:])
+  # print("opwekking: ",opwekking[-5:])
+  # print("export_hi: ",export_hi[-5:])
+  # print("export_lo: ",export_lo[-5:])
+  # print(" ")
+  # print("import_hi: ",import_hi[-5:])
+  # print("import_lo: ",import_lo[-5:])
   if imorex == "u":
     x_data = usage
   if imorex == "p":
