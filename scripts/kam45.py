@@ -28,9 +28,9 @@ def get_historic_data(grouping, period, timeframe, telwerk, from_start_of_year=F
   ret_data = []
   ret_lbls = []
   if from_start_of_year:
-    interval = f"datetime(datetime(datetime(\'now\', \'start of day\'), \'-{period} {timeframe}\'), \'start of year\')"
+    interval = f"datetime(datetime(\'now\', \'-{period} {timeframe}\'), \'start of year\')"
   else:
-    interval = f"datetime(datetime(\'now\', \'start of day\'), \'-{period} {timeframe}\')"
+    interval = f"datetime(\'now\', \'-{period} {timeframe}\')"
   db_con = s3.connect(DATABASE)
   with db_con:
     db_cur = db_con.cursor()
@@ -39,6 +39,7 @@ def get_historic_data(grouping, period, timeframe, telwerk, from_start_of_year=F
                      MIN(sample_epoch) as t \
                      FROM kamstrup \
                      WHERE (sample_time >= {interval}) \
+                       AND (sample_time <= datetime(\'now\', \'-1 day\')) \
                      GROUP BY grouped \
                      ORDER BY t ASC \
                      ;"
@@ -59,9 +60,9 @@ def get_opwekking(grouping, period, timeframe, from_start_of_year=False):
   ret_data = [0] * period * 24
   ret_lbls = [] * period * 24
   if from_start_of_year:
-    interval = f"datetime(datetime(datetime(\'now\', \'start of day\'), \'-{period} {timeframe}\'), \'start of year\')"
+    interval = f"datetime(datetime(\'now\', \'-{period} {timeframe}\'), \'start of year\')"
   else:
-    interval = f"datetime(datetime(\'now\', \'start of day\'), \'-{period} {timeframe}\')"
+    interval = f"datetime(\'now\', \'-{period} {timeframe}\')"
   db_con = s3.connect(DATABASE)
   with db_con:
     db_cur = db_con.cursor()
@@ -70,6 +71,7 @@ def get_opwekking(grouping, period, timeframe, from_start_of_year=False):
                      MIN(sample_epoch) as t \
                      FROM production \
                      WHERE (sample_time >= {interval}) \
+                       AND (sample_time <= datetime(\'now\', \'-1 day\')) \
                      GROUP BY grouped \
                      ORDER BY t ASC \
                      ;"
