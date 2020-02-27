@@ -144,8 +144,6 @@ def distract(arr1, arr2):
   :return:  list
   """
   result = []
-  # array1 = list(reversed(arr1))
-  # array2 = list(reversed(arr2))
   for idx_hr in range(0, len(arr1)):
     result.append(list(reversed([sum(filter(None, [x, -1 * y]))
                                  for x, y in zip(list(reversed(arr1[idx_hr])),
@@ -172,6 +170,10 @@ def plot_graph(output_file, data_tuple, plot_title, imorex="u"):
   imprt = contract(import_lo, import_hi)
   exprt = contract(export_lo, export_hi)
   own_usage = distract(opwekking, exprt)
+  for hour in own_usage:
+    # don't show negative values.
+    # negative values are due to non-monotonic data coming from SolarEdge.
+    own_usage[hour] = [x if x > 0 else 0 for x in own_usage[hour]]
   usage = contract(own_usage, imprt)
   # hr =13
   # print("    usage: ",usage[hr][-5:])
