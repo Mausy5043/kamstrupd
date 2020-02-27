@@ -173,7 +173,8 @@ def plot_graph(output_file, data_tuple, plot_title, imorex="u"):
   for hr in range(0, len(own_usage)):
     # don't show negative values.
     # negative values are due to non-monotonic data coming from SolarEdge.
-    own_usage[hr] = [x if x > 0 else 0 for x in own_usage[hr]]
+    own_usage[hr] = [x if x > 0 else None for x in own_usage[hr]]
+    imprt[hr] = [x if x > 0 else None for x in imprt[hr]]
   usage = contract(own_usage, imprt)
   # hr =13
   # print("    usage: ",usage[hr][-5:])
