@@ -97,7 +97,23 @@ def do_work(api, site_list):
 
   for site in site_list:
     site_id = site['id']
-    data_dict = api.get_overview(site_id)['overview']
+    retries = 6
+    while True:
+      try:
+        data_dict = api.get_overview(site_id)['overview']
+      except api.HTTPError:
+        mf.syslog_trace("Request was unsuccesful.", syslog.LOG_CRIT, DEBUG)
+        mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+        retries -= 1
+        if retries:
+          mf.syslog_trace("Retrying in 59s...", syslog.LOG_CRIT, DEBUG)
+          time.sleep(59)
+          continue
+        else:
+          mf.syslog_trace("Aborting!", syslog.LOG_CRIT, DEBUG)
+          raise
+      break
+
     """
     data_dict looks like this:
     { 'currentPower': {'power': 353.82956},
