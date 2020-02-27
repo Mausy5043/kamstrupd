@@ -146,9 +146,9 @@ def distract(arr1, arr2):
   # array2 = list(reversed(arr2))
   for idx_hr in range(0, len(arr1)):
     result.append(list(reversed([sum(filter(None, [x, -1 * y]))
-                                 for x, y in it.zip_longest(list(reversed(arr1[idx_hr])),
-                                                            list(reversed(arr2[idx_hr]))
-                                                            )
+                                 for x, y in zip(list(reversed(arr1[idx_hr])),
+                                                 list(reversed(arr2[idx_hr]))
+                                                 )
                                  ]
                                 )
                        )
@@ -171,11 +171,14 @@ def plot_graph(output_file, data_tuple, plot_title, imorex="u"):
   exprt = contract(export_lo, export_hi)
   own_usage = distract(opwekking, exprt)
   usage = contract(own_usage, imprt)
+  # print("    usage: ",usage[-5:])
   # print("own_usage: ",own_usage[-5:])
   # print("opwekking: ",opwekking[-5:])
+  # print("    exprt: ",exprt[-5:])
   # print("export_hi: ",export_hi[-5:])
   # print("export_lo: ",export_lo[-5:])
   # print(" ")
+  # print("    imprt: ",imprt[-5:])
   # print("import_hi: ",import_hi[-5:])
   # print("import_lo: ",import_lo[-5:])
   if imorex == "u":
