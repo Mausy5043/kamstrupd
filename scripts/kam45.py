@@ -28,9 +28,9 @@ def get_historic_data(grouping, period, timeframe, telwerk, from_start_of_year=F
   ret_data = []
   ret_lbls = []
   if from_start_of_year:
-    interval = f"datetime(datetime(\'now\', \'-{period} {timeframe}\'), \'start of year\')"
+    interval = f"datetime(datetime(datetime(\'now\', \'start of day\'), \'-{period} {timeframe}\'), \'start of year\')"
   else:
-    interval = f"datetime(\'now\', \'-{period} {timeframe}\')"
+    interval = f"datetime(datetime(\'now\', \'start of day\'), \'-{period} {timeframe}\')"
   db_con = s3.connect(DATABASE)
   with db_con:
     db_cur = db_con.cursor()
@@ -59,9 +59,9 @@ def get_opwekking(grouping, period, timeframe, from_start_of_year=False):
   ret_data = [0] * period * 24
   ret_lbls = [] * period * 24
   if from_start_of_year:
-    interval = f"datetime(datetime(\'now\', \'-{period} {timeframe}\'), \'start of year\')"
+    interval = f"datetime(datetime(datetime(\'now\', \'start of day\'), \'-{period} {timeframe}\'), \'start of year\')"
   else:
-    interval = f"datetime(\'now\', \'-{period} {timeframe}\')"
+    interval = f"datetime(datetime(\'now\', \'start of day\'), \'-{period} {timeframe}\')"
   db_con = s3.connect(DATABASE)
   with db_con:
     db_cur = db_con.cursor()
@@ -171,16 +171,17 @@ def plot_graph(output_file, data_tuple, plot_title, imorex="u"):
   exprt = contract(export_lo, export_hi)
   own_usage = distract(opwekking, exprt)
   usage = contract(own_usage, imprt)
-  # print("    usage: ",usage[-5:])
-  # print("own_usage: ",own_usage[-5:])
-  # print("opwekking: ",opwekking[-5:])
-  # print("    exprt: ",exprt[-5:])
-  # print("export_hi: ",export_hi[-5:])
-  # print("export_lo: ",export_lo[-5:])
+  # hr =13
+  # print("    usage: ",usage[hr][-5:])
+  # print("own_usage: ",own_usage[hr][-5:])
+  # print("opwekking: ",opwekking[hr][-5:])
+  # print("    exprt: ",exprt[hr][-5:])
+  # print("export_hi: ",export_hi[hr][-5:])
+  # print("export_lo: ",export_lo[hr][-5:])
   # print(" ")
-  # print("    imprt: ",imprt[-5:])
-  # print("import_hi: ",import_hi[-5:])
-  # print("import_lo: ",import_lo[-5:])
+  # print("    imprt: ",imprt[hr][-5:])
+  # print("import_hi: ",import_hi[hr][-5:])
+  # print("import_lo: ",import_lo[hr][-5:])
   if imorex == "u":
     x_data = usage
   if imorex == "p":
