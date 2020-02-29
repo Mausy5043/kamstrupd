@@ -217,7 +217,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=False):
           width=bar_width,
           label='Inkoop (normaal)',
           alpha=ahpla,
-          color='y',
+          color='orange',
           align='center',
           bottom=btm_hi  # [sum(i) for i in zip(import_lo, own_usage)]
           )
