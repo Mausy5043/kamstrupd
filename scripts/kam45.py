@@ -2,88 +2,16 @@
 
 """."""
 
-import itertools as it
 import os
-import sqlite3 as s3
-import sys
+import warnings
 from datetime import datetime as dt
 
+# noinspection PyUnresolvedReferences
+import kamlib as kl
 import matplotlib.pyplot as plt
+import numpy as np
 
 DATABASE = os.environ['HOME'] + "/.sqlite3/electriciteit.sqlite3"
-
-
-def get_cli_params(expected_amount):
-  """Check for presence of a CLI parameter."""
-  if len(sys.argv) != (expected_amount + 1):
-    print(f"{expected_amount} arguments expected, {len(sys.argv) - 1} received.")
-    sys.exit(0)
-  return sys.argv[1]
-
-
-def get_historic_data(grouping, period, timeframe, telwerk, from_start_of_year=False):
-  """
-    Fetch historic data from KAMSTRUP meter
-    """
-  ret_data = []
-  ret_lbls = []
-  if from_start_of_year:
-    interval = f"datetime(datetime(\'now\', \'-{period} {timeframe}\'), \'start of year\')"
-  else:
-    interval = f"datetime(\'now\', \'-{period} {timeframe}\')"
-  db_con = s3.connect(DATABASE)
-  with db_con:
-    db_cur = db_con.cursor()
-    db_cur.execute(f"SELECT strftime('{grouping}',sample_time) as grouped, \
-                     MAX({telwerk})-MIN({telwerk}), \
-                     MIN(sample_epoch) as t \
-                     FROM kamstrup \
-                     WHERE (sample_time >= {interval}) \
-                       AND (sample_time <= datetime(\'now\', \'-1 day\')) \
-                     GROUP BY grouped \
-                     ORDER BY t ASC \
-                     ;"
-                   )
-    db_data = db_cur.fetchall()
-
-  for row in db_data:
-    ret_data.append(row[1] / 1000)  # convert Wh to kWh
-    ret_lbls.append(row[0])
-
-  return ret_data, ret_lbls
-
-
-def get_opwekking(grouping, period, timeframe, from_start_of_year=False):
-  """
-    Fetch historic data from SOLAREDGE site
-    """
-  ret_data = [0] * period * 24
-  ret_lbls = [] * period * 24
-  if from_start_of_year:
-    interval = f"datetime(datetime(\'now\', \'-{period} {timeframe}\'), \'start of year\')"
-  else:
-    interval = f"datetime(\'now\', \'-{period} {timeframe}\')"
-  db_con = s3.connect(DATABASE)
-  with db_con:
-    db_cur = db_con.cursor()
-    db_cur.execute(f"SELECT strftime('{grouping}',sample_time) as grouped, \
-                     MAX(energy)-MIN(energy), \
-                     MIN(sample_epoch) as t \
-                     FROM production \
-                     WHERE (sample_time >= {interval}) \
-                       AND (sample_time <= datetime(\'now\', \'-1 day\')) \
-                     GROUP BY grouped \
-                     ORDER BY t ASC \
-                     ;"
-                   )
-    db_data = db_cur.fetchall()
-
-  for row in db_data:
-    ret_data.append(row[1] / 1000)  # convert Wh to kWh
-    ret_lbls.append(row[0])
-
-  ret_data = ret_data[-len(ret_lbls):]
-  return ret_data[-period * 24:], ret_lbls[-period * 24:]
 
 
 def reshape_to_hourly(data, labels):
@@ -96,64 +24,35 @@ def reshape_to_hourly(data, labels):
               '20h', '21h', '22h', '23h'
               ]
   for data_idx in range(0, len(data)):
-    datum_num = data[data_idx]
+    datum_val = data[data_idx]
     datum_tim = labels[data_idx].split(' ')[2]
     datum_ptr = ret_lbls.index(datum_tim)
-    ret_data[datum_ptr].append(datum_num)
-  return ret_data, ret_lbls
+    ret_data[datum_ptr].append(datum_val)
+  return np.array(ret_data), np.array(ret_lbls)
 
 
 def fetch_avg_day():
   """
     ...
     """
-  opwekking, data_lbls = reshape_to_hourly(*get_opwekking('%Y %j %Hh', 2, 'year', from_start_of_year=True))
-  import_lo, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 2, 'year', 'T1in', from_start_of_year=True))
-  import_hi, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 2, 'year', 'T2in', from_start_of_year=True))
-  export_lo, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 2, 'year', 'T1out', from_start_of_year=True))
-  export_hi, data_lbls = reshape_to_hourly(*get_historic_data('%Y %j %Hh', 2, 'year', 'T2out', from_start_of_year=True))
+  config = {'grouping': '%Y %j %Hh',
+            'period': 24 * 366 * 2,
+            'timeframe': 'hour',
+            'database': DATABASE,
+            'table': 'production'
+            }
+  opwekking, prod_lbls = reshape_to_hourly(
+    *kl.get_historic_data(config, telwerk='energy', from_start_of_year=True, include_today=False))
+  config['table'] = 'kamstrup'
+  import_lo, data_lbls = reshape_to_hourly(
+    *kl.get_historic_data(config, telwerk='T1in', from_start_of_year=True, include_today=False))
+  import_hi, data_lbls = reshape_to_hourly(
+    *kl.get_historic_data(config, telwerk='T2in', from_start_of_year=True, include_today=False))
+  export_lo, data_lbls = reshape_to_hourly(
+    *kl.get_historic_data(config, telwerk='T1out', from_start_of_year=True, include_today=False))
+  export_hi, data_lbls = reshape_to_hourly(
+    *kl.get_historic_data(config, telwerk='T2out', from_start_of_year=True, include_today=False))
   return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
-
-
-def contract(arr1, arr2):
-  """
-  Add two arrays together.
-  :param arr1:   list of 24 lists
-  :param arr2:   list of 24 lists
-  :return:   list
-  """
-  result = []
-  for idx_hr in range(0, len(arr1)):
-    result.append(list(reversed([sum(filter(None, [x, y]))
-                                 for x, y in it.zip_longest(list(reversed(arr1[idx_hr])),
-                                                            list(reversed(arr2[idx_hr]))
-                                                            )
-                                 ]
-                                )
-                       )
-                  )
-  return result
-
-
-def distract(arr1, arr2):
-  """
-  Subtract two arrays.
-  Note: order is important!
-  :param arr1:  list of 24 lists
-  :param arr2:  list of 24 lists
-  :return:  list
-  """
-  result = []
-  for idx_hr in range(0, len(arr1)):
-    result.append(list(reversed([sum(filter(None, [x, -1 * y]))
-                                 for x, y in zip(list(reversed(arr1[idx_hr])),
-                                                 list(reversed(arr2[idx_hr]))
-                                                 )
-                                 ]
-                                )
-                       )
-                  )
-  return result
 
 
 def plot_graph(output_file, data_tuple, plot_title, imorex="u"):
@@ -167,32 +66,44 @@ def plot_graph(output_file, data_tuple, plot_title, imorex="u"):
   opwekking = data_tuple[3]
   export_lo = data_tuple[4]
   export_hi = data_tuple[5]
-  imprt = contract(import_lo, import_hi)
-  exprt = contract(export_lo, export_hi)
-  own_usage = distract(opwekking, exprt)
-  for hr in range(0, len(own_usage)):
-    # don't show negative values.
-    # negative values are due to non-monotonic data coming from SolarEdge.
-    own_usage[hr] = [x if x > 0 else None for x in own_usage[hr]]
-    imprt[hr] = [x if x > 0 else None for x in imprt[hr]]
-  usage = contract(own_usage, imprt)
-  # hr =13
-  # print("    usage: ",usage[hr][-5:])
-  # print("own_usage: ",own_usage[hr][-5:])
-  # print("opwekking: ",opwekking[hr][-5:])
-  # print("    exprt: ",exprt[hr][-5:])
-  # print("export_hi: ",export_hi[hr][-5:])
-  # print("export_lo: ",export_lo[hr][-5:])
-  # print(" ")
-  # print("    imprt: ",imprt[hr][-5:])
-  # print("import_hi: ",import_hi[hr][-5:])
-  # print("import_lo: ",import_lo[hr][-5:])
+  imprt = kl.contract24(import_lo, import_hi)
+  exprt = kl.contract24(export_lo, export_hi)
+  own_usage = kl.distract24(opwekking, exprt)
+  usage = kl.contract24(own_usage, imprt)
+  """
+  --- Start debugging:
+  np.set_printoptions(precision=3)
+  hr = 13
+  print("data_lbls: ", np.size(data_lbls), data_lbls[hr][-5:])
+  print(" ")
+  print("opwekking: ", np.size(opwekking), opwekking[hr][-5:])
+  print(" ")
+  print("export_hi: ", np.size(export_hi), export_hi[hr][-5:])
+  print("export_lo: ", np.size(export_lo), export_lo[hr][-5:])
+  print("exprt    : ", np.size(exprt), exprt[hr][-5:])
+  print(" ")
+  print("import_hi: ", np.size(import_hi), import_hi[hr][-5:])
+  print("import_lo: ", np.size(import_lo), import_lo[hr][-5:])
+  print("imprt    : ", np.size(imprt), imprt[hr][-5:])
+  print(" ")
+  print("own_usage: ", np.size(own_usage), own_usage[hr][-5:])
+  print("usage    : ", np.size(usage), usage[hr][-5:])
+  print(" ")
+  --- End debugging.
+  """
   if imorex == "u":
     x_data = usage
   if imorex == "p":
     x_data = opwekking
   if imorex == "s":
-    x_data = exprt
+    x_data = []
+    for row in exprt:
+      ax = np.array(row)
+      with warnings.catch_warnings():
+        warnings.filterwarnings('ignore')
+        ax[ax == 0] = np.nan
+        x_data.append(np.nanmedian(ax))
+    x_data = np.array(x_data)
 
   # Set the bar width
   bar_width = 0.75
@@ -205,18 +116,25 @@ def plot_graph(output_file, data_tuple, plot_title, imorex="u"):
   plt.rc('font', size=13)
   dummy, ax1 = plt.subplots(1, figsize=(20, 7))
 
-  # for x_data in imprt:
-  ax1.boxplot(x_data,
-              patch_artist=True,
-              notch=False,
-              showbox=True,
-              boxprops=dict(facecolor='b', alpha=ahpla),
-              showcaps=True,
-              showfliers=False,
-              showmeans=True,
-              meanprops=dict(markerfacecolor='k', marker='o'),
-              medianprops=dict(color='k')
-              )
+  if imorex == "s":
+    ax1.bar(tick_pos, x_data,
+            width=bar_width,
+            alpha=ahpla,
+            color='b',
+            align='center',
+            )
+  else:
+    ax1.boxplot(x_data,
+                patch_artist=True,
+                notch=False,
+                showbox=True,
+                boxprops=dict(facecolor='b', alpha=ahpla),
+                showcaps=True,
+                showfliers=False,
+                showmeans=True,
+                meanprops=dict(markerfacecolor='k', marker='o'),
+                medianprops=dict(color='k')
+                )
 
   # Set Axes stuff
   ax1.set_ylabel("[kWh]")
@@ -237,7 +155,7 @@ def main():
   """
     This is the main loop
     """
-  OPTION = get_cli_params(1)
+  OPTION = kl.get_cli_params(1)
   avg_day = fetch_avg_day()
   if OPTION in ['-u', '-U', '-a', '-A']:
     plot_graph('/tmp/kamstrupd/site/img/kam_avg_day_u.png',
