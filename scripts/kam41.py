@@ -8,21 +8,15 @@ import syslog
 
 import numpy as np
 
+# noinspection PyUnresolvedReferences
+import kamlib as kl
+
 # constants
 DEBUG = False
 IS_JOURNALD = os.path.isfile('/bin/journalctl')
 MYID = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split('/')[-1])))
 MYAPP = os.path.realpath(__file__).split('/')[-3]
 NODE = os.uname()[1]
-
-
-def get_cli_params(expected_amount):
-  """Check for presence of a CLI parameter."""
-  if len(sys.argv) != (expected_amount + 1):
-    print(f"{expected_amount} arguments expected, {len(sys.argv) - 1} received.")
-    sys.exit(0)
-  # 1 parameter required = filename to be processed
-  return sys.argv[1]
 
 
 def read_file(file_to_read_from):
@@ -79,35 +73,11 @@ def build_arrays(lines_to_process):
   return production, usage
 
 
-def build_arrays44(lbls, use_data, expo_data):
-  """Use the input to build two arrays and return them.
-
-     example input line : "2015-01; 329811; 0"  : YYYY-MM; T1; T2
-     the list comes ordered by the first field
-     the first line and last line can be inspected to find
-     the first and last year in the dataset.
-    """
-  first_year = int(lbls[0].split('-')[0])
-  last_year = int(lbls[-1].split('-')[0]) + 1
-  num_years = last_year - first_year
-
-  label_lists = [np.arange(first_year, last_year), np.arange(1, 13)]
-  usage = np.zeros((num_years, 12))
-  exprt = np.zeros((num_years, 12))
-
-  for data_point in zip(lbls, use_data, expo_data):
-    [year, month] = data_point[0].split('-')
-    col_idx = int(month) - 1
-    row_idx = int(year) - first_year
-    usage[row_idx][col_idx] = data_point[1]
-    exprt[row_idx][col_idx] = data_point[2]
-  return label_lists, usage, exprt
-
 
 if __name__ == "__main__":
   # initialise logging
   syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
-  IFILE = get_cli_params(1)
+  IFILE = kl.get_cli_params(1)
   FILE_LINES = read_file(IFILE)
   PRODUCTION_ARRAY, USAGE_ARRAY = build_arrays(FILE_LINES)
 

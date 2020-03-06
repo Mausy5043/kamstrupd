@@ -6,21 +6,15 @@ import os
 import sys
 import syslog
 
+# noinspection PyUnresolvedReferences
+import kamlib as kl
+
 # constants
 DEBUG = False
 IS_JOURNALD = os.path.isfile('/bin/journalctl')
 MYID = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split('/')[-1])))
 MYAPP = os.path.realpath(__file__).split('/')[-3]
 NODE = os.uname()[1]
-
-
-def get_cli_params(expected_amount):
-  """Check for presence of a CLI parameter."""
-  if len(sys.argv) != (expected_amount + 1):
-    print(f"{expected_amount} arguments expected, {len(sys.argv) - 1} received.")
-    sys.exit(0)
-  # 1 parameter required = filename to be processed
-  return sys.argv[1]
 
 
 def read_file(file_to_read_from):
@@ -87,7 +81,7 @@ def build_arrays(lines_to_process):
 if __name__ == "__main__":
   # initialise logging
   syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
-  IFILE = get_cli_params(1)
+  IFILE = kl.get_cli_params(1)
   FILE_LINES = read_file(IFILE)
   PRODUCTION_ARRAY, USAGE_ARRAY = build_arrays(FILE_LINES)
 
