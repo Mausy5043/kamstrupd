@@ -52,7 +52,7 @@ class MyDaemon(Daemon):
     report_time = iniconf.getint(MYID, "reporttime")
     fdatabase = f"{os.environ['HOME']}/{iniconf.get(MYID, 'databasefile')}"
     sqlcmd = iniconf.get(MYID, 'sqlcmd')
-    samples_averaged = iniconf.getint(MYID, 'samplespercycle') * iniconf.getint(MYID, 'cycles')
+    # samples_averaged = iniconf.getint(MYID, 'samplespercycle') * iniconf.getint(MYID, 'cycles')
     sample_time = report_time / iniconf.getint(MYID, 'samplespercycle')
     data = []
 
@@ -146,7 +146,7 @@ def gettelegram():
       data = json.loads(response.read())
       # only return current station info
       stns = data['buienradarnl']['weergegevens']['actueel_weer']['weerstations']['weerstation']
-    except:
+    except (urllib.error.URLError, json.JSONDecodeError):
       retries -= 1
       if retries:
         time.sleep(30)
@@ -202,10 +202,7 @@ def epoch_is_present_in_database(db_cur, epoch):
   :param epoch: int
   :return: boolean  (true if data is present in the database for the given site at or after the given epoch)
   """
-  db_cur.execute(f"SELECT MAX(sample_epoch) \
-                   FROM weather \
-                   ;"
-                 )
+  db_cur.execute("SELECT MAX(sample_epoch) FROM weather;")
   db_epoch = db_cur.fetchone()[0]
   if db_epoch >= epoch:
     return True

@@ -17,12 +17,12 @@ def fetch_last_months():
   """
     ...
     """
-  config = {'grouping': '%Y-%m',
-            'period': 61,
-            'timeframe': 'month',
-            'database': DATABASE,
-            'table': 'production'
-            }
+  config = kl.add_time_line({'grouping': '%Y-%m',
+                             'period': 61,
+                             'timeframe': 'month',
+                             'database': DATABASE,
+                             'table': 'production'
+                             })
   opwekking, prod_lbls = kl.get_historic_data(config, telwerk='energy', from_start_of_year=True)
   config['table'] = 'kamstrup'
   import_lo, data_lbls = kl.get_historic_data(config, telwerk='T1in', from_start_of_year=True)

@@ -17,12 +17,13 @@ def fetch_last_day():
   """
     ...
     """
-  config = {'grouping': '%d %Hh',
-            'period': 50,
-            'timeframe': 'hour',
-            'database': DATABASE,
-            'table': 'production'
-            }
+  config = kl.add_time_line({'grouping': '%m-%d %Hh',
+                             'period': 50,
+                             'timeframe': 'hour',
+                             'database': DATABASE,
+                             'table': 'production'
+                             })
+
   opwekking, prod_lbls = kl.get_historic_data(config, telwerk='energy')
   config['table'] = 'kamstrup'
   import_lo, data_lbls = kl.get_historic_data(config, telwerk='T1in')
@@ -40,12 +41,12 @@ def fetch_last_month():
   """
     ...
     """
-  config = {'grouping': '%m-%d',
-            'period': 33,
-            'timeframe': 'day',
-            'database': DATABASE,
-            'table': 'production'
-            }
+  config = kl.add_time_line({'grouping': '%m-%d',
+                             'period': 50,
+                             'timeframe': 'day',
+                             'database': DATABASE,
+                             'table': 'production'
+                             })
   opwekking, prod_lbls = kl.get_historic_data(config, telwerk='energy')
   config['table'] = 'kamstrup'
   import_lo, data_lbls = kl.get_historic_data(config, telwerk='T1in')
@@ -63,12 +64,12 @@ def fetch_last_year():
   """
     ...
     """
-  config = {'grouping': '%Y-%m',
-            'period': 61,
-            'timeframe': 'month',
-            'database': DATABASE,
-            'table': 'production'
-            }
+  config = kl.add_time_line({'grouping': '%Y-%m',
+                             'period': 38,
+                             'timeframe': 'month',
+                             'database': DATABASE,
+                             'table': 'production'
+                             })
   opwekking, prod_lbls = kl.get_historic_data(config, telwerk='energy', from_start_of_year=True)
   config['table'] = 'kamstrup'
   import_lo, data_lbls = kl.get_historic_data(config, telwerk='T1in', from_start_of_year=True)
@@ -86,12 +87,12 @@ def fetch_last_years():
   """
     ...
     """
-  config = {'grouping': '%Y',
-            'period': 6,
-            'timeframe': 'year',
-            'database': DATABASE,
-            'table': 'production'
-            }
+  config = kl.add_time_line({'grouping': '%Y',
+                             'period': 6,
+                             'timeframe': 'year',
+                             'database': DATABASE,
+                             'table': 'production'
+                             })
   opwekking, prod_lbls = kl.get_historic_data(config, telwerk='energy', from_start_of_year=True)
   config['table'] = 'kamstrup'
   import_lo, data_lbls = kl.get_historic_data(config, telwerk='T1in', from_start_of_year=True)
@@ -115,10 +116,10 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=False):
   opwekking = data_tuple[3]
   export_lo = data_tuple[4]
   export_hi = data_tuple[5]
-  imprt = kl.contract(import_lo, import_hi)
+  # imprt = kl.contract(import_lo, import_hi)
   exprt = kl.contract(export_lo, export_hi)
   own_usage = kl.distract(opwekking, exprt)
-  usage = kl.contract(own_usage, imprt)
+  # usage = kl.contract(own_usage, imprt)
   btm_hi = kl.contract(import_lo, own_usage)
   """
   --- Start debugging:

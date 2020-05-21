@@ -51,7 +51,7 @@ class MyDaemon(Daemon):
     report_time = iniconf.getint(MYID, "reporttime")
     fdatabase = f"{os.environ['HOME']}/{iniconf.get(MYID, 'databasefile')}"
     sqlcmd = iniconf.get(MYID, 'sqlcmd')
-    samples_averaged = iniconf.getint(MYID, 'samplespercycle') * iniconf.getint(MYID, 'cycles')
+    # samples_averaged = iniconf.getint(MYID, 'samplespercycle') * iniconf.getint(MYID, 'cycles')
     sample_time = report_time / iniconf.getint(MYID, 'samplespercycle')
     data = []
 
@@ -94,6 +94,7 @@ def do_work(api, site_list):
   """Extract the data from the dict(s)."""
   dt_format = '%Y-%m-%d %H:%M:%S'
   data_list = list()
+  data_dict = dict()
 
   for site in site_list:
     site_id = site['id']
@@ -101,15 +102,15 @@ def do_work(api, site_list):
     while True:
       try:
         data_dict = api.get_overview(site_id)['overview']
-      except:
-        mf.syslog_trace("Request was unsuccesful.", syslog.LOG_CRIT, DEBUG)
-        mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+      except api.HTTPError:
+        mf.syslog_trace("Request was unsuccesful.", syslog.LOG_WARNING, DEBUG)
         retries -= 1
         if retries:
-          mf.syslog_trace("Retrying in 59s...", syslog.LOG_CRIT, DEBUG)
+          mf.syslog_trace("Retrying in 59s...", syslog.LOG_WARNING, DEBUG)
           time.sleep(59)
           continue
         else:
+          mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
           mf.syslog_trace("Aborting!", syslog.LOG_CRIT, DEBUG)
           raise
       break
@@ -134,10 +135,12 @@ def do_work(api, site_list):
     except TypeError:
       # ignore empty sites
       continue
+    """
     except:
       mf.syslog_trace(f"****: {site_id} ", False, DEBUG)
       mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
       continue
+    """
 
   return data_list
 
