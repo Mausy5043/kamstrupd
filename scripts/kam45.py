@@ -35,12 +35,12 @@ def fetch_avg_day():
   """
     ...
     """
-  config = {'grouping': '%Y %j %Hh',
-            'period': 24 * 366 * 2,
-            'timeframe': 'hour',
-            'database': DATABASE,
-            'table': 'production'
-            }
+  config = kl.add_time_line({'grouping': '%Y %j %Hh',
+                             'period': 24 * 366 * 2,
+                             'timeframe': 'hour',
+                             'database': DATABASE,
+                             'table': 'production'
+                             })
   opwekking, prod_lbls = reshape_to_hourly(
     *kl.get_historic_data(config, telwerk='energy', from_start_of_year=True, include_today=False))
   config['table'] = 'kamstrup'

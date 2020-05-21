@@ -6,8 +6,6 @@ import os
 import sys
 import syslog
 
-import numpy as np
-
 # noinspection PyUnresolvedReferences
 import kamlib as kl
 
@@ -71,7 +69,6 @@ def build_arrays(lines_to_process):
     usage[row_idx][col_idx] = int(data[1])
     production[row_idx][col_idx] = int(data[2])
   return production, usage
-
 
 
 if __name__ == "__main__":

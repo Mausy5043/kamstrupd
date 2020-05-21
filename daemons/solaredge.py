@@ -2,6 +2,7 @@
 
 import datetime as dt
 import functools
+from itertools import tee
 
 import dateutil.parser
 import pytz
@@ -398,9 +399,6 @@ class Solaredge:
     res = sorted(set(res))
     res = pairwise(res)
     return res
-
-
-from itertools import tee
 
 
 def urljoin(*parts):

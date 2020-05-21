@@ -7,7 +7,7 @@ pushd "${HOME}/kamstrupd" >/dev/null || exit 1
 ./scripts/kam43.py -y1
 ./scripts/kam43.py -y2
 ./scripts/kam44.py -m
-./scripts/avgday.sh
+# ./scripts/avgday.sh
 
 ./scripts/upload.sh --upload
 

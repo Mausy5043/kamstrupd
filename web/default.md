@@ -15,4 +15,4 @@ A Raspberry Pi reads the measurement data via the serialport of the meter.
 ![A GNUplot image should be here: avgdayP](img/kam_avg_day_p.png)
 ![A GNUplot image should be here: avgdayS](img/kam_avg_day_s.png)
 
-Electricity production is achieved using LG NeONR LG-365Q1C-A5 (365Wp) panels with SolarEdge optimizers & SE5000 HD Wave inverter.
+Electricity production is achieved using LG NeONR LG-370Q1C-V5 (370Wp) panels with SolarEdge optimizers & SE5000 HD Wave inverter.
