@@ -102,7 +102,7 @@ def do_work(api, site_list):
     while True:
       try:
         data_dict = api.get_overview(site_id)['overview']
-      except api.HTTPError:
+      except api.requests.exceptions.HTTPError:
         mf.syslog_trace("Request was unsuccesful.", syslog.LOG_WARNING, DEBUG)
         retries -= 1
         if retries:
