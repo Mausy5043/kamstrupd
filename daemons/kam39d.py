@@ -98,7 +98,7 @@ def do_work(api, site_list):
 
   for site in site_list:
     site_id = site['id']
-    retries = 6
+    retries = 2
     while True:
       try:
         data_dict = api.get_overview(site_id)['overview']

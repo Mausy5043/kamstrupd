@@ -2,6 +2,7 @@
 
 import datetime as dt
 import functools
+import time
 from itertools import tee
 
 import dateutil.parser
@@ -171,8 +172,19 @@ class Solaredge:
     params = {
       'api_key': self.token
     }
-    r = requests.get(url, params, headers={"content-type": "application/json"})
-    r.raise_for_status()
+    retries = 6
+    while True:
+      try:
+        r = requests.get(url, params, headers={"content-type": "application/json"})
+        r.raise_for_status()
+      except requests.exceptions.HTTPError:
+        retries -= 1
+        if retries:
+          time.sleep(59)
+          continue
+        else:
+          raise
+      break
     return r.json()
 
   def get_power_details(self, site_id, start_time, end_time, meters=None):
