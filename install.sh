@@ -70,6 +70,7 @@ python3 -m pip install --upgrade pip setuptools wheel
 sudo pip3 install -r requirements.txt
 
 getfilefromserver ".my.kam.cnf" "0740"
+getfilefromserver ".config" "0740"
 
 commonlibversion=$(pip3 freeze | grep mausy5043 | cut -c 26-)
 if [ "${commonlibversion}" != "${required_commonlibversion}" ]; then
