@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 DBFILE_1="electriciteit.sqlite3"
-DBFILE_2="weerdata.sqlite3"
+DBFILE_2="electriciteit.sqlite3"
 
 install_database_files() {
   mkdir -p "${HOME}/.sqlite3"
@@ -9,10 +9,10 @@ install_database_files() {
   if [ ! -e "${HOME}/.sqlite3/${DBFILE_1}" ]; then
     create_database_file "idf1"
   fi
-  recover_database_file ${DBFILE_2}
-  if [ ! -e "${HOME}/.sqlite3/${DBFILE_2}" ]; then
-    create_database_file "idf2"
-  fi
+  #recover_database_file ${DBFILE_2}
+  #if [ ! -e "${HOME}/.sqlite3/${DBFILE_2}" ]; then
+  #  create_database_file "idf2"
+  #fi
 }
 
 backup_database_file() {
@@ -56,11 +56,11 @@ for i in "$@"; do
     ;;
   -b | --backup)
     backup_database_file ${DBFILE_1}
-    backup_database_file ${DBFILE_2}
+    # backup_database_file ${DBFILE_2}
     ;;
   -r | --recover)
     recover_database_file ${DBFILE_1}
-    recover_database_file ${DBFILE_2}
+    # recover_database_file ${DBFILE_2}
     ;;
   *)
     # unknown option

@@ -56,11 +56,6 @@ install_package "libatlas-base-dev"
 install_package "picocom"
 install_package "python3-serial"
 
-# gnuPlot packages
-#install_package "python-numpy"
-install_package "gnuplot"
-install_package "gnuplot-nox"
-
 # SQLite3 support (incl python3)
 install_package "sqlite3"
 

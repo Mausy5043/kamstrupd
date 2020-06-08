@@ -12,6 +12,7 @@ import numpy as np
 def add_time_line(config):
   final_epoch = int(dt.datetime.now().timestamp())
   step_epoch = 10 * 60
+  multi = 3600
   if config['timeframe'] == 'hour':
     multi = 3600
   if config['timeframe'] == 'day':
