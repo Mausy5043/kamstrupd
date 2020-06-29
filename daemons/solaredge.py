@@ -172,7 +172,7 @@ class Solaredge:
     params = {
       'api_key': self.token
     }
-    retries = 6
+    retries = 3
     while True:
       try:
         r = requests.get(url, params, headers={"content-type": "application/json"})
