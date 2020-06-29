@@ -98,22 +98,12 @@ def do_work(api, site_list):
 
   for site in site_list:
     site_id = site['id']
-    retries = 2
-    while True:
-      try:
-        data_dict = api.get_overview(site_id)['overview']
-      except Exception:
-        mf.syslog_trace("Request was unsuccesful.", syslog.LOG_WARNING, DEBUG)
-        retries -= 1
-        if retries:
-          mf.syslog_trace("Retrying in 59s...", syslog.LOG_WARNING, DEBUG)
-          time.sleep(59)
-          continue
-        else:
-          mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
-          mf.syslog_trace("Aborting!", syslog.LOG_CRIT, DEBUG)
-          raise
-      break
+    try:
+      data_dict = api.get_overview(site_id)['overview']
+    except:
+      mf.syslog_trace("Request was unsuccesful.", syslog.LOG_WARNING, DEBUG)
+      mf.syslog_trace(traceback.format_exc(), syslog.LOG_WARNING, DEBUG)
+      mf.syslog_trace("Maybe next time...", syslog.LOG_WARNING, DEBUG)
 
     """
     data_dict looks like this:
