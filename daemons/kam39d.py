@@ -58,36 +58,36 @@ class MyDaemon(Daemon):
     test_db_connection(fdatabase)
 
     api = solaredge.Solaredge(api_key)
-
-    try:
-      site_list = api.get_list()['sites']['site']
-    except Exception:
-      mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
-      mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
-      raise
+    site_list = []
 
     while True:
       try:
-        start_time = time.time()
-        data = do_work(api, site_list)
-        if data:
-          mf.syslog_trace(f"Data to add : {data}", False, DEBUG)
-          do_add_to_database(data, fdatabase, sqlcmd)
-
-        pause_time = (sample_time
-                      - (time.time() - start_time)
-                      - (start_time % sample_time))
-        if pause_time > 0:
-          mf.syslog_trace(f"Waiting  : {pause_time}s", False, DEBUG)
-          mf.syslog_trace("................................", False, DEBUG)
-          time.sleep(pause_time)
-        else:
-          mf.syslog_trace(f"Behind   : {pause_time}s", False, DEBUG)
-          mf.syslog_trace("................................", False, DEBUG)
+        site_list = api.get_list()['sites']['site']
       except Exception:
-        mf.syslog_trace("Unexpected error in run()", syslog.LOG_CRIT, DEBUG)
+        mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
         mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
-        raise
+
+      if site_list:
+        try:
+          start_time = time.time()
+          data = do_work(api, site_list)
+          if data:
+            mf.syslog_trace(f"Data to add : {data}", False, DEBUG)
+            do_add_to_database(data, fdatabase, sqlcmd)
+        except Exception:
+          mf.syslog_trace("Unexpected error in run()", syslog.LOG_CRIT, DEBUG)
+          mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+
+      pause_time = (sample_time
+                    - (time.time() - start_time)
+                    - (start_time % sample_time))
+      if pause_time > 0:
+        mf.syslog_trace(f"Waiting  : {pause_time}s", False, DEBUG)
+        mf.syslog_trace("................................", False, DEBUG)
+        time.sleep(pause_time)
+      else:
+        mf.syslog_trace(f"Behind   : {pause_time}s", False, DEBUG)
+        mf.syslog_trace("................................", False, DEBUG)
 
 
 def do_work(api, site_list):
