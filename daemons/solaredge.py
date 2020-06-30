@@ -31,11 +31,8 @@ class Solaredge:
     self.token = api_token
 
   @functools.lru_cache(maxsize=128, typed=False)
-  def get_list(self,
-               size=100, start_index=0,
-               search_text="",
-               sort_property="", sort_order='ASC',
-               status='Active,Pending'):
+  def get_list(self, size=100, start_index=0, search_text="",
+               sort_property="", sort_order='ASC', status='Active,Pending'):
     """
     Request a list of all sites
 
