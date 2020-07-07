@@ -19,6 +19,7 @@ import traceback
 
 # noinspection PyUnresolvedReferences
 import mausy5043funcs.fileops3 as mf
+# noinspection PyUnresolvedReferences
 import solaredge
 # noinspection PyUnresolvedReferences
 from mausy5043libs.libdaemon3 import Daemon
@@ -125,13 +126,10 @@ def do_work(api, site_list):
     except TypeError:
       # ignore empty sites
       continue
-    """
-    except:
-      mf.syslog_trace(f"****: {site_id} ", False, DEBUG)
+    except KeyError:
       mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
-      continue
-    """
-
+      mf.syslog_trace(f"site: {site_id}", syslog.LOG_CRIT, DEBUG)
+      mf.syslog_trace(f"data: {data_dict}", syslog.LOG_CRIT, DEBUG)
   return data_list
 
 
