@@ -63,7 +63,8 @@ class MyDaemon(Daemon):
 
     while True:
       try:
-        site_list = api.get_list()['sites']['site']
+        if not site_list:
+          site_list = api.get_list()['sites']['site']
       except Exception:
         mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
         mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
