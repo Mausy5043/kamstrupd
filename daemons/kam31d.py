@@ -16,6 +16,7 @@ import syslog
 import time
 import traceback
 
+# noinspection PyUnresolvedReferences
 import mausy5043funcs.fileops3 as mf
 import serial
 # noinspection PyUnresolvedReferences
