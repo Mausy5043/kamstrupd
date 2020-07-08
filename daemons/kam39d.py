@@ -62,12 +62,14 @@ class MyDaemon(Daemon):
     site_list = []
 
     while True:
-      try:
-        if not site_list:
+      if not site_list:
+        try:
           site_list = api.get_list()['sites']['site']
-      except Exception:
-        mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
-        mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+        except Exception:
+          mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
+          mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+          site_list = []
+          pass
 
       if site_list:
         try:
@@ -79,6 +81,7 @@ class MyDaemon(Daemon):
         except Exception:
           mf.syslog_trace("Unexpected error in run()", syslog.LOG_CRIT, DEBUG)
           mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+          raise
 
       pause_time = (sample_time
                     - (time.time() - start_time)
@@ -102,7 +105,7 @@ def do_work(api, site_list):
     site_id = site['id']
     try:
       data_dict = api.get_overview(site_id)['overview']
-    except:
+    except Exception:
       mf.syslog_trace("Request was unsuccesful.", syslog.LOG_WARNING, DEBUG)
       mf.syslog_trace(traceback.format_exc(), syslog.LOG_WARNING, DEBUG)
       mf.syslog_trace("Maybe next time...", syslog.LOG_WARNING, DEBUG)
