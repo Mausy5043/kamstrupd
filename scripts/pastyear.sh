@@ -4,10 +4,10 @@
 
 pushd "${HOME}/kamstrupd" >/dev/null || exit 1
 
-./scripts/kam43.py -y1
-./scripts/kam43.py -y2
-./scripts/kam44.py -m
+#./scripts/kam43.py -y1
+#./scripts/kam43.py -y2
+#./scripts/kam44.py -m
 
-./scripts/upload.sh --upload
+#./scripts/upload.sh --upload
 
 popd >/dev/null || exit
