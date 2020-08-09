@@ -62,27 +62,27 @@ install_package "sqlite3"
 echo
 echo "*********************************************************"
 python3 -m pip install --upgrade pip setuptools wheel
-sudo pip3 install -r requirements.txt
+python3 -m pip install -r requirements.txt
 
 getfilefromserver ".my.kam.cnf" "0740"
 getfilefromserver ".config" "0744"
 
-commonlibversion=$(pip3 freeze | grep mausy5043 | cut -c 26-)
+commonlibversion=$(python3 -m pip freeze | grep mausy5043 | cut -c 26-)
 if [ "${commonlibversion}" != "${required_commonlibversion}" ]; then
   echo
   echo "*********************************************************"
   echo "Install common python functions..."
-  sudo pip3 uninstall -y mausy5043-common-python
+  python3 -m pip uninstall -y mausy5043-common-python
   pushd /tmp || exit 1
-  git clone -b "${commonlibbranch}" https://gitlab.com/mausy5043-installer/mausy5043-common-python.git
-  pushd /tmp/mausy5043-common-python || exit 1
-  sudo ./setup.py install
-  popd || exit
-  sudo rm -rf mausy5043-common-python/
+    git clone -b "${commonlibbranch}" https://gitlab.com/mausy5043-installer/mausy5043-common-python.git
+    pushd /tmp/mausy5043-common-python || exit 1
+      python3 setup.py install --user
+    popd || exit
+    sudo rm -rf mausy5043-common-python/
   popd || exit
   echo
   echo -n "Installed: "
-  pip3 freeze | grep mausy5043
+  python3 -m pip freeze | grep mausy5043
   echo
 fi
 
