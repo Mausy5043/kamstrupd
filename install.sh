@@ -51,6 +51,11 @@ install_package "python3-pip"
 
 # Support for matplotlib & numpy
 install_package "libatlas-base-dev"
+install_package "libxcb1"
+# install_package "libpng16-16"
+# install_package "libjpeg62"
+# install_package "libopenjp2-7"
+install_package "libtiff5"
 
 # Support for serial port
 install_package "picocom"
