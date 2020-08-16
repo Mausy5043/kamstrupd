@@ -96,7 +96,7 @@ pushd "${HOME}/kamstrupd" || exit 1
 git config core.fileMode false
 # set the branch
 if [ ! -e "${HOME}/.kamstrupd.branch" ]; then
-  echo "v4" >"${HOME}/.kamstrupd.branch"
+  echo "v4-lite" >"${HOME}/.kamstrupd.branch"
 fi
 
 # Recover the database from the server
