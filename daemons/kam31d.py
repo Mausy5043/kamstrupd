@@ -89,7 +89,7 @@ class MyDaemon(Daemon):
           # no need to wait for the next cycles
           # the meter will pace the meaurements
           # any required waiting will be inside gettelegram()
-          # time.sleep(pause_time)
+          time.sleep(pause_time)
         else:
           mf.syslog_trace(f"Behind   : {pause_time}s", False, DEBUG)
           mf.syslog_trace("................................", False, DEBUG)
