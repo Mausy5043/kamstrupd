@@ -202,13 +202,14 @@ def do_add_to_database(result, fdatabase, sql_cmd):
   # Get the time and date in human-readable form and UN*X-epoch...
   conn = None
   cursor = None
+  dt_format = '%Y-%m-%d %H:%M:%S'
   out_date = dt.datetime.now()  # time.strftime('%Y-%m-%dT%H:%M:%S')
   out_epoch = int(out_date.timestamp())
-  results = (out_date, out_epoch,
+  results = (out_date.strftime(dt_format), out_epoch,
              result[0], result[1], result[2],
              result[3], result[4], result[5],
              result[6], result[7])
-  mf.syslog_trace(f"   @: {out_date}", False, DEBUG)
+  mf.syslog_trace(f"   @: {out_date.strftime(dt_format)}", False, DEBUG)
   mf.syslog_trace(f"    : {results}", False, DEBUG)
 
   err_flag = True
