@@ -113,8 +113,8 @@ def plot_graph(output_file, data_tuple, plot_title, imorex="u"):
   tick_pos = list(range(1, len(data_lbls) + 1))
 
   # Create the general plot and the bar
-  plt.rc('font', size=13)
-  dummy, ax1 = plt.subplots(1, figsize=(20, 7))
+  plt.rc('font', size=6.5)
+  dummy, ax1 = plt.subplots(1, figsize=(10, 3.5))
 
   if imorex == "s":
     ax1.bar(tick_pos, x_data,

@@ -150,8 +150,8 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=False):
   tick_pos = list(range(1, len(data_lbls) + 1))
 
   # Create the general plot and the bar
-  plt.rc('font', size=13)
-  dummy, ax1 = plt.subplots(1, figsize=(20, 7))
+  plt.rc('font', size=6.5)
+  dummy, ax1 = plt.subplots(1, figsize=(10, 3.5))
 
   # Create a bar plot of import_lo
   ax1.bar(tick_pos, import_hi,
