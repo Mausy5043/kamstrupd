@@ -107,9 +107,9 @@ sudo mkdir -p /etc/cron.d
 # Set up some cronjobs
 echo "# m h dom mon dow user  command" | sudo tee /etc/cron.d/kamstrupd
 echo "${minit}  * *   *   *   ${ME}    sleep 80; ${HOME}/kamstrupd/scripts/kamfile.sh --backup 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
-echo "#*/20 * *  *   *   ${ME}    sleep 61; ${HOME}/kamstrupd/scripts/pastday.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
-echo "#01 *  *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/pastmonth.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
-echo "#03 01 *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/pastyear.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
+echo "*/20 * *  *   *   ${ME}    sleep 61; ${HOME}/kamstrupd/scripts/pastday.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
+echo "04 *  *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/pastmonth.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
+echo "09 01 *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/pastyear.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
 # echo "13  01 *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/vsyear.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
 # echo "23  01 *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/vsmonth.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
 # @reboot we allow for 10s for the network to come up:
