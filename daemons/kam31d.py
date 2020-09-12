@@ -29,6 +29,15 @@ MYID = "".join(list(filter(str.isdigit, os.path.realpath(__file__).split('/')[-1
 MYAPP = os.path.realpath(__file__).split('/')[-3]
 NODE = os.uname()[1]
 
+electra1in = 0
+electra2in = 0
+powerin = 0
+electra1out = 0
+electra2out = 0
+powerout = 0
+tarif = 0
+swits = 1
+
 
 # noinspection PyUnresolvedReferences
 class MyDaemon(Daemon):
@@ -101,49 +110,56 @@ class MyDaemon(Daemon):
 
 def do_work():
   """Push the results out to a file."""
-  electra1in = 0
-  electra2in = 0
-  powerin = 0
-  electra1out = 0
-  electra2out = 0
-  powerout = 0
-  tarif = 0
-  swits = 1
+  global electra1in
+  global electra2in
+  global powerin
+  global electra1out
+  global electra2out
+  global powerout
+  global tarif
+  global swits
 
   telegram, status = gettelegram()
 
   if status == 1:
     for element in telegram:
-      line = re.split(r'[\(\*\)]', element)
-      # ['1-0:1.8.1', '00175.402', 'kWh', '']  T1 in
-      if line[0] == '1-0:1.8.1':
-        electra1in = int(float(line[1]) * 1000)
-      # ['1-0:1.8.2', '00136.043', 'kWh', '']  T2 in
-      if line[0] == '1-0:1.8.2':
-        electra2in = int(float(line[1]) * 1000)
-      # ['1-0:2.8.1', '00000.000', 'kWh', '']  T1 out
-      if line[0] == '1-0:2.8.1':
-        electra1out = int(float(line[1]) * 1000)
-      # ['1-0:2.8.2', '00000.000', 'kWh', '']  T2 out
-      if line[0] == '1-0:2.8.2':
-        electra2out = int(float(line[1]) * 1000)
-      # ['0-0:96.14.0', '0002', '']  tarif 1 or 2
-      if line[0] == '0-0:96.14.0':
-        tarif = int(line[1])
-      # ['1-0:1.7.0', '0000.32', 'kW', '']  power in
-      if line[0] == '1-0:1.7.0':
-        powerin = int(float(line[1]) * 1000)
-      # ['1-0:2.7.0', '0000.00', 'kW', ''] power out
-      if line[0] == '1-0:2.7.0':
-        powerout = int(float(line[1]) * 1000)
-      # ['0-0:17.0.0', '999', 'A', ''] unknown; not recorded
-      # ['0-0:96.3.10', '1', '']  powerusage (1) or powermanufacturing ()
-      if line[0] == '0-0:96.3.10':
-        swits = int(line[1])
-      # ['0-0:96.13.1', '', '']
-      # not recorded
-      # ['0-0:96.13.0', '', '']
-      # not recorded
+      try:
+        line = re.split(r'[\(\*\)]', element)           # noqa
+        # ['1-0:1.8.1', '00175.402', 'kWh', '']  T1 in
+        if line[0] == '1-0:1.8.1':
+          electra1in = int(float(line[1]) * 1000)
+        # ['1-0:1.8.2', '00136.043', 'kWh', '']  T2 in
+        if line[0] == '1-0:1.8.2':
+          electra2in = int(float(line[1]) * 1000)
+        # ['1-0:2.8.1', '00000.000', 'kWh', '']  T1 out
+        if line[0] == '1-0:2.8.1':
+          electra1out = int(float(line[1]) * 1000)
+        # ['1-0:2.8.2', '00000.000', 'kWh', '']  T2 out
+        if line[0] == '1-0:2.8.2':
+          electra2out = int(float(line[1]) * 1000)
+        # ['0-0:96.14.0', '0002', '']  tarif 1 or 2
+        if line[0] == '0-0:96.14.0':
+          tarif = int(line[1])
+        # ['1-0:1.7.0', '0000.32', 'kW', '']  power in
+        if line[0] == '1-0:1.7.0':
+          powerin = int(float(line[1]) * 1000)
+        # ['1-0:2.7.0', '0000.00', 'kW', ''] power out
+        if line[0] == '1-0:2.7.0':
+          powerout = int(float(line[1]) * 1000)
+        # ['0-0:17.0.0', '999', 'A', ''] unknown; not recorded
+        # ['0-0:96.3.10', '1', '']  powerusage (1) or powermanufacturing ()
+        if line[0] == '0-0:96.3.10':
+          swits = int(line[1])
+        # ['0-0:96.13.1', '', '']
+        # not recorded
+        # ['0-0:96.13.0', '', '']
+        # not recorded
+      except ValueError:
+        mf.syslog_trace("*** Conversion not possible for element:", syslog.LOG_CRIT, DEBUG)
+        mf.syslog_trace(f"    {element}", syslog.LOG_CRIT, DEBUG)
+        mf.syslog_trace("*** Extracted from telegram:", syslog.LOG_DEBUG, DEBUG)
+        mf.syslog_trace(f"    {telegram}", syslog.LOG_DEBUG, DEBUG)
+        pass
 
   return f'{electra1in}, {electra2in}, {powerin}, {electra1out}, {electra2out}, {powerout}, {tarif}, {swits}'
 
