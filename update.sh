@@ -71,6 +71,7 @@ pushd "${HERE}" || exit 1
     if [[ "${1}" == "--systemd" ]]; then
         echo "" > /dev/null
     else
+        echo "Updating trendgraph..."
         sudo systemctl start kamstrup.trend.day.service
     fi
 popd || exit
