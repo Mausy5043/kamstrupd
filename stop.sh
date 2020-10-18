@@ -9,7 +9,7 @@ pushd "${HERE}" || exit 1
     # shellcheck disable=SC1091
     source ./includes
 
-    sudo systemctl stop kamstrup.elec.service
+    sudo systemctl stop kamstrup.kamstrup.service
     sudo systemctl stop kamstrup.solaredge.service
 
     sudo systemctl stop kamstrup.backupdb.timer

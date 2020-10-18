@@ -117,7 +117,7 @@ pushd "${HERE}" || exit 1
     sudo systemctl enable kamstrup.trend.year.timer
     sudo systemctl enable kamstrup.update.timer
 
-    sudo systemctl enable kamstrup.elec.service
+    sudo systemctl enable kamstrup.kamstrup.service
     sudo systemctl enable kamstrup.solaredge.service
     #
     sudo systemctl start kamstrup.backupdb.timer
@@ -126,7 +126,7 @@ pushd "${HERE}" || exit 1
     sudo systemctl start kamstrup.trend.year.timer
     sudo systemctl start kamstrup.update.timer    # this will also start the daemon!
 
-    sudo systemctl start kamstrup.elec.service
+    sudo systemctl start kamstrup.kamstrup.service
     sudo systemctl start kamstrup.solaredge.service
 
 popd || exit

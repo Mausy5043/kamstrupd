@@ -57,14 +57,14 @@ pushd "${HERE}" || exit 1
         echo "  o Reinstalling timers"
         sudo cp ./services/*.timer /etc/systemd/system/
         sudo systemctl daemon-reload
-        sudo systemctl restart kamstrup.elec.service
+        sudo systemctl restart kamstrup.kamstrup.service
         sudo systemctl restart kamstrup.solaredge.service
     fi
 
     if [[ changed_config -eq 1 ]] || [[ changed_daemon -eq 1 ]]; then
         echo "  ! Daemon or configuration changed"
         echo "  o Restarting daemon"
-        sudo systemctl restart kamstrup.elec.service
+        sudo systemctl restart kamstrup.kamstrup.service
         sudo systemctl restart kamstrup.solaredge.service
     fi
 

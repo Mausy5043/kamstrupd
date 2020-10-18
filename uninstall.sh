@@ -17,7 +17,7 @@ pushd "${HERE}" || exit 1
     # allow user to abort
     sleep 10
 
-    sudo systemctl disable kamstrup.elec.service
+    sudo systemctl disable kamstrup.kamstrup.service
     sudo systemctl disable kamstrup.solaredge.service
 
     sudo systemctl disable kamstrup.backupdb.timer
