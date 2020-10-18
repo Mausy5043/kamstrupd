@@ -1,0 +1,15 @@
+# This service is for updating the repository clone
+
+[Unit]
+Description=kamstrup update service
+After=multi-user.target
+Wants=multi-user.target
+Wants=kamstrup.update.timer
+
+[Service]
+Type=oneshot
+User=pi
+ExecStart=/home/pi/kamstrup/update.sh --systemd
+
+# [Install]
+# WantedBy=multi-user.target

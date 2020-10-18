@@ -1,79 +1,76 @@
 #!/bin/bash
 
-# update.sh is run periodically by a cronjob.
-# * It synchronises the local copy of kamstrupd with the current GitLab branch
+# update.sh is run periodically by a service.
+# * It synchronises the local copy of ${app_name} with the current GitLab branch
 # * It checks the state of and (re-)starts daemons if they are not (yet) running.
 
-HOSTNAME="$(hostname)"
-branch="$(<"${HOME}/.kamstrupd.branch")"
 
-# Wait for the daemons to finish their job. Prevents stale locks when restarting.
-#echo "Waiting 30s..."
-#sleep 30
+HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
 
-# make sure working tree exists
-if [ ! -d /tmp/kamstrupd/site/img ]; then
-  mkdir -p /tmp/kamstrupd/site/img
-  chmod -R 755 /tmp/kamstrupd
-fi
-# make sure working tree exists
-if [ ! -d /tmp/kamstrupd/mysql ]; then
-  mkdir -p /tmp/kamstrupd/mysql
-  chmod -R 755 /tmp/kamstrupd
-fi
+pushd "${HERE}" || exit 1
+    # shellcheck disable=SC1091
+    source ./includes
 
-pushd "${HOME}/kamstrupd" || exit 1
-# shellcheck disable=SC1091
-source ./includes
-git fetch origin
-# Check which files have changed
-DIFFLIST=$(git --no-pager diff --name-only "$branch..origin/${branch}")
-git pull
-git fetch origin
-git checkout "${branch}"
-git reset --hard "origin/${branch}" && git clean -f -d
-# Set permissions
-# chmod -R 744 ./*
-
-for fname in $DIFFLIST; do
-  echo ">   ${fname} was updated from GIT"
-  f5l4="${fname:0:11}${fname:${#fname}-4}"
-
-  # Detect changes
-  if [[ "${f5l4}" == "daemons/kamd.py" ]]; then
-    echo "  ! Domotica daemon changed"
-    eval "./${fname} stop"
-  fi
-
-  #CONFIG.INI changed
-  if [[ "${fname}" == "config.ini" ]]; then
-    echo "  ! Configuration file changed"
-    echo "  o Restarting all daemons"
     # shellcheck disable=SC2154
-    for daemon in ${runlist}; do
-      echo "  +- Restart kam${daemon}"
-      eval "./daemons/kam${daemon}d.py restart"
-    done
-  fi
-done
+    branch=$(<"${HOME}/.${app_name}.branch")
 
-# Check if daemons are running
-# shellcheck disable=SC2154
-for daemon in ${runlist}; do
-  if [ -e "/tmp/kamstrupd/${daemon}.pid" ]; then
-    if ! kill -0 "$(<"/tmp/kamstrupd/${daemon}.pid")" >/dev/null 2>&1; then
-      logger -p user.err -t kamstrupd "  * Stale daemon ${daemon} pid-file found."
-      rm "/tmp/kamstrupd/${daemon}.pid"
-      echo "  * Start kam${daemon}"
-      eval "./daemons/kam${daemon}d.py start"
+    # make sure working tree exists
+    if [ ! -d "/tmp/${app_name}/site/img" ]; then
+        mkdir -p "/tmp/${app_name}/site/img"
+        chmod -R 755 "/tmp/${app_name}"
     fi
-  else
-    logger -p user.warn -t kamstrupd "Found kam${daemon} not running."
-    echo "  * Start kam${daemon}"
-    eval "./daemons/kam${daemon}d.py start"
-  fi
-done
 
-scripts/upload.sh --all
+    git fetch origin || sleep 60; git fetch origin
+    # Check which files have changed
+    DIFFLIST=$(git --no-pager diff --name-only "${branch}..origin/${branch}")
+    git pull
+    git fetch origin
+    git checkout "${branch}"
+    git reset --hard "origin/${branch}" && git clean -f -d
 
+    changed_config=0
+    changed_service=0
+    changed_daemon=0
+    changed_lib=0
+    for fname in $DIFFLIST; do
+        if [[ "${fname}" == "config.ini" ]]; then
+            changed_config=1
+        fi
+        if [[ "${fname:0:9}" == "services/" ]]; then
+            changed_service=1
+        fi
+        if [[ "${fname}" == "bin/kamstrup.py" ]]; then
+            changed_daemon=1
+        fi
+        if [[ "${fname}" == "bin/solaredge.py" ]]; then
+            changed_daemon=1
+        fi
+        if [[ "${fname:${#fname}-6}" == "lib.py" ]]; then
+            changed_lib=1
+        fi
+    done
+
+    if [[ changed_service -eq 1 ]] || [[ changed_lib -eq 1 ]]; then
+        echo "  ! Service or timer changed"
+        echo "  o Reinstalling services"
+        sudo cp ./services/*.service /etc/systemd/system/
+        echo "  o Reinstalling timers"
+        sudo cp ./services/*.timer /etc/systemd/system/
+        sudo systemctl daemon-reload
+        sudo systemctl restart kamstrup.elec.service
+        sudo systemctl restart kamstrup.solaredge.service
+    fi
+
+    if [[ changed_config -eq 1 ]] || [[ changed_daemon -eq 1 ]]; then
+        echo "  ! Daemon or configuration changed"
+        echo "  o Restarting daemon"
+        sudo systemctl restart kamstrup.elec.service
+        sudo systemctl restart kamstrup.solaredge.service
+    fi
+
+    if [[ "${1}" == "--systemd" ]]; then
+        echo "" > /dev/null
+    else
+        sudo systemctl start kamstrup.trend.day.service
+    fi
 popd || exit

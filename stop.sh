@@ -3,26 +3,22 @@
 # Use stop.sh to stop all daemons in one go
 # You can use update.sh to get everything started kam.
 
-pushd "${HOME}/kamstrupd" || exit 1
-  # shellcheck disable=SC1091
-  source ./includes
+HERE=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
 
-  # Check if DIAG daemons are running
-  # shellcheck disable=SC2154
-  for daemon in ${runlist}; do
-    # command the daemon to stop regardless if it is running or not.
-    eval "./daemons/kam${daemon}d.py stop"
-    # kill off any rogue daemons by the same name (it happens sometimes)
-    if [   "$(pgrep -fc "kam${daemon}d.py")" -ne 0 ]; then
-      kill "$(pgrep -f  "kam${daemon}d.py")"
-    fi
-    # log the activity
-    logger -p user.err -t kamstrupd "  * Daemon ${daemon} stopped."
-    # force rm the .pid file
-    rm -f "/tmp/kamstrupd/${daemon}.pid"
-  done
+pushd "${HERE}" || exit 1
+    # shellcheck disable=SC1091
+    source ./includes
 
-  ./scripts/kamfile.sh --backup
+    sudo systemctl stop kamstrup.elec.service
+    sudo systemctl stop kamstrup.solaredge.service
+
+    sudo systemctl stop kamstrup.backupdb.timer
+    sudo systemctl stop kamstrup.trend.day.timer
+    sudo systemctl stop kamstrup.trend.month.timer
+    sudo systemctl stop kamstrup.trend.year.timer
+    sudo systemctl stop kamstrup.update.timer
+
+    ./bin/bakrecdb.sh --backup
 popd || exit
 
 echo

@@ -3,30 +3,34 @@
 # this repo gets installed either manually by the user or automatically by
 # a `*boot` repo.
 
-# The hostname is in /etc/hostname prior to running `install.sh` here!
-HOSTNAME=$(hostname)
+HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
 
-echo -n "Started UNinstalling kamstrupd on "; date
+pushd "${HERE}" || exit 1
+    # shellcheck disable=SC1091
+    source ./includes
 
-# allow user to abort
-sleep 10
+    echo
+    echo -n "Started UNinstalling ${app_name} on "
+    date
+    echo
 
-pushd "${HOME}/kamstrupd" || exit 1
-  # shellcheck disable=SC1091
- source ./includes
+    # allow user to abort
+    sleep 10
 
-  # prevent restarts of daemons while the script is still running
-  sudo rm /etc/cron.d/kamstrupd
+    sudo systemctl disable kamstrup.elec.service
+    sudo systemctl disable kamstrup.solaredge.service
 
-  echo "  Stopping all daemons"
-  # shellcheck disable=SC2154
-  for daemon in ${runlist}; do
-    echo "Stopping kam${daemon}"
-    eval "./daemons/kam${daemon}d.py stop"
-  done
+    sudo systemctl disable kamstrup.backupdb.timer
+    sudo systemctl disable kamstrup.trend.day.timer
+    sudo systemctl disable kamstrup.trend.month.timer
+    sudo systemctl disable kamstrup.trend.year.timer
+    sudo systemctl disable kamstrup.update.timer
 
-  ./scripts/kamfile.sh --backup
+    ./stop.sh
 popd || exit
 
-
-echo -n "Finished UNinstallation of kamstrupd on "; date
+echo
+echo -n "Finished UNinstallation of ${app_name} on "
+date
+echo "*********************************************************"
+echo

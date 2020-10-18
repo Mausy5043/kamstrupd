@@ -3,40 +3,45 @@
 # this repo gets installed either manually by the user or automatically by
 # a `*boot` repo.
 
-ME=$(whoami)
-required_commonlibversion="0.6.0"
-commonlibbranch="v0_6"
-
-echo -n "Started installing KAMSTRUPd on "
-date
-minit=$(echo $RANDOM/555 | bc)
-echo "MINIT = ${minit}"
-
 install_package() {
-  # See if packages are installed and install them.
-  package=$1
-  echo "*********************************************************"
-  echo "* Requesting ${package}"
-  status=$(dpkg-query -W -f='${Status} ${Version}\n' "${package}" 2>/dev/null | wc -l)
-  if [ "${status}" -eq 0 ]; then
-    echo "* Installing ${package}"
+    # See if packages are installed and install them.
+    package=$1
     echo "*********************************************************"
-    sudo apt-get -yuV install "${package}"
-  else
-    echo "* Already installed !!!"
-    echo "*********************************************************"
-  fi
+    echo "* Requesting ${package}"
+    status=$(dpkg-query -W -f='${Status} ${Version}\n' "${package}" 2>/dev/null | wc -l)
+    if [ "${status}" -eq 0 ]; then
+        echo "* Installing ${package}"
+        echo "*********************************************************"
+        sudo apt-get -yuV install "${package}"
+    else
+        echo "* Already installed !!!"
+        echo "*********************************************************"
+    fi
 }
 
 getfilefromserver() {
-  file="${1}"
-  mode="${2}"
+    file="${1}"
+    mode="${2}"
 
-  #if [ ! -f "${HOME}/${file}" ]; then
-  cp -rvf "${HOME}/bin/.config/home/${file}" "${HOME}/"
-  chmod "${mode}" "${HOME}/${file}"
-  #fi
+    #if [ ! -f "${HOME}/${file}" ]; then
+    cp -rvf "${HOME}/bin/.config/home/${file}" "${HOME}/"
+    chmod "${mode}" "${HOME}/${file}"
+    #fi
 }
+
+HERE=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
+required_commonlibversion="0.6.0"
+commonlibbranch="v0_6"
+
+pushd "${HERE}" || exit 1
+    # shellcheck disable=SC1091
+    source ./includes
+popd || exit
+
+echo
+echo "*********************************************************"
+echo -n "Started installing KAMSTRUP on "
+date
 
 sudo apt-get update
 # install_package "git"  # already installed by `mod-rasbian-netinst`
@@ -52,8 +57,6 @@ install_package "python3-pip"
 # Support for matplotlib & numpy
 install_package "libatlas-base-dev"
 install_package "libxcb1"
-# install_package "libpng16-16"
-# install_package "libjpeg62"
 install_package "libopenjp2-7"
 install_package "libtiff5"
 
@@ -74,53 +77,61 @@ getfilefromserver ".config" "0744"
 
 commonlibversion=$(python3 -m pip freeze | grep mausy5043 | cut -c 26-)
 if [ "${commonlibversion}" != "${required_commonlibversion}" ]; then
-  echo
-  echo "*********************************************************"
-  echo "Install common python functions..."
-  python3 -m pip uninstall -y mausy5043-common-python
-  pushd /tmp || exit 1
+    echo
+    echo "*********************************************************"
+    echo "Install common python functions..."
+    python3 -m pip uninstall -y mausy5043-common-python
+    pushd /tmp || exit 1
     git clone -b "${commonlibbranch}" https://gitlab.com/mausy5043-installer/mausy5043-common-python.git
     pushd /tmp/mausy5043-common-python || exit 1
-      python3 setup.py install --user
+    python3 setup.py install --user
     popd || exit
     sudo rm -rf mausy5043-common-python/
-  popd || exit
-  echo
-  echo -n "Installed: "
-  python3 -m pip freeze | grep mausy5043
-  echo
+    popd || exit
+    echo
+    echo -n "Installed: "
+    python3 -m pip freeze | grep mausy5043
+    echo
 fi
 
-pushd "${HOME}/kamstrupd" || exit 1
-# To suppress git detecting changes by chmod:
-git config core.fileMode false
-# set the branch
-if [ ! -e "${HOME}/.kamstrupd.branch" ]; then
-  echo "v4-lite" >"${HOME}/.kamstrupd.branch"
-fi
+pushd "${HERE}" || exit 1
+    # To suppress git detecting changes by chmod:
+    git config core.fileMode false
+    # set the branch
+    if [ ! -e "${HOME}/.${app_name}.branch" ]; then
+        echo "master" >"${HOME}/.${app_name}.branch"
+    fi
 
-# Recover the database from the server
-./scripts/kamfile.sh --install
+    # Recover the database from the server
+    ./bin/bakrecdb.sh --install
 
-# Create the /etc/cron.d directory if it doesn't exist
-sudo mkdir -p /etc/cron.d
-# Set up some cronjobs
-echo "# m h dom mon dow user  command" | sudo tee /etc/cron.d/kamstrupd
-echo "41  * *   *   *   ${ME}    sleep 80; ${HOME}/kamstrupd/scripts/kamfile.sh --backup 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
-echo "*/20 * *  *   *   ${ME}    sleep 61; ${HOME}/kamstrupd/scripts/pastday.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
-echo "03 *  *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/pastmonth.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
-# this takes upwards of 8m30s on RPi3B+:
-echo "05 01 *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/pastyear.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
-# echo "13  01 *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/vsyear.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
-# echo "23  01 *   *   *   ${ME}    sleep 12; ${HOME}/kamstrupd/scripts/vsmonth.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
-# @reboot we allow for 10s for the network to come up:
-echo "@reboot           ${ME}    sleep 10; ${HOME}/kamstrupd/update.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
-echo "59 03  *  *   *   ${ME}    sleep 10; ${HOME}/kamstrupd/update.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
-#echo "59 22  *  *   *   ${ME}    sleep 10; ${HOME}/kamstrupd/stop.sh 2>&1 | logger -p info -t kamstrupd" | sudo tee --append /etc/cron.d/kamstrupd
+    # install services and timers
+    sudo cp ./services/*.service /etc/systemd/system/
+    sudo cp ./services/*.timer /etc/systemd/system/
+    #
+    sudo systemctl daemon-reload
+    #
+    sudo systemctl enable kamstrup.backupdb.timer
+    sudo systemctl enable kamstrup.trend.day.timer
+    sudo systemctl enable kamstrup.trend.month.timer
+    sudo systemctl enable kamstrup.trend.year.timer
+    sudo systemctl enable kamstrup.update.timer
+
+    sudo systemctl enable kamstrup.elec.service
+    sudo systemctl enable kamstrup.solaredge.service
+    #
+    sudo systemctl start kamstrup.backupdb.timer
+    sudo systemctl start kamstrup.trend.day.timer
+    sudo systemctl start kamstrup.trend.month.timer
+    sudo systemctl start kamstrup.trend.year.timer
+    sudo systemctl start kamstrup.update.timer    # this will also start the daemon!
+
+    sudo systemctl start kamstrup.elec.service
+    sudo systemctl start kamstrup.solaredge.service
 
 popd || exit
 
 echo
-echo "*********************************************************"
-echo -n "Finished installation of KAMSTRUPd on "
+echo -n "Finished installation of KAMSTRUP on "
 date
+echo "*********************************************************"

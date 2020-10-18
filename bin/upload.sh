@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
+HERE=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
+
 copy_default_page() {
-  pushd "${HOME}/kamstrupd" >/dev/null || exit 1
-    cp ./web/default.md /tmp/kamstrupd/site
+  pushd "${HERE}" >/dev/null || exit 1
+    cp ../web/default.md /tmp/kamstrupd/site
   popd >/dev/null || exit
 }
 
@@ -23,6 +25,7 @@ make_script() {
 exec_script() {
     lftp -f /tmp/kamstrupd/script.lftp >/dev/null
 }
+
 
 # check commandline parameters
 for i in "$@"

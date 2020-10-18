@@ -2,12 +2,14 @@
 
 # query daily totals for a period of one month
 
-pushd "${HOME}/kamstrupd" >/dev/null || exit 1
-  ./scripts/kam43.py -m
-  ./scripts/upload.sh --upload
+HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
+
+pushd "${HERE}" >/dev/null || exit 1
+    ./kam43.py -m
+    ./upload.sh --upload
 popd >/dev/null || exit
 
 CURRENT_EPOCH=$(date +'%s')
 # Keep upto 10 years of data
-PURGE_EPOCH=$(echo "${CURRENT_EPOCH} - (10 * 366 * 24 * 3600)" |bc)
+PURGE_EPOCH=$(echo "${CURRENT_EPOCH} - (10 * 366 * 24 * 3600)" | bc)
 sqlite3 "${HOME}/.sqlite3/electriciteit.sqlite3" "DELETE FROM kamstrup WHERE sample_epoch < ${PURGE_EPOCH};"

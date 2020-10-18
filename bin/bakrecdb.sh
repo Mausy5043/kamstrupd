@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 DBFILE_1="electriciteit.sqlite3"
-DBFILE_2="electriciteit.sqlite3"
+#DBFILE_2="electriciteit.sqlite3"
 
 install_database_files() {
   mkdir -p "${HOME}/.sqlite3"
@@ -9,10 +9,6 @@ install_database_files() {
   if [ ! -e "${HOME}/.sqlite3/${DBFILE_1}" ]; then
     create_database_file "idf1"
   fi
-  #recover_database_file ${DBFILE_2}
-  #if [ ! -e "${HOME}/.sqlite3/${DBFILE_2}" ]; then
-  #  create_database_file "idf2"
-  #fi
 }
 
 backup_database_file() {
@@ -34,14 +30,7 @@ create_database_file() {
   # Calling this function from the wild will overwrite an existing database!
   #
   if [[ "${1}" == "idf1" ]]; then
-    sqlite3 "${HOME}/.sqlite3/${DBFILE_1}" <scripts/table31.sqlite3.sql
-  else
-    echo "Unsupported functionality. Use the 'install_database_file' function instead!"
-    exit 1
-  fi
-
-  if [[ "${1}" == "idf2" ]]; then
-    sqlite3 "${HOME}/.sqlite3/${DBFILE_2}" <scripts/table32.sqlite3.sql
+    sqlite3 "${HOME}/.sqlite3/${DBFILE_1}" <bin/table31.sqlite3.sql
   else
     echo "Unsupported functionality. Use the 'install_database_file' function instead!"
     exit 1
@@ -56,18 +45,16 @@ for i in "$@"; do
     ;;
   -b | --backup)
     backup_database_file ${DBFILE_1}
-    # backup_database_file ${DBFILE_2}
     ;;
   -r | --recover)
     recover_database_file ${DBFILE_1}
-    # recover_database_file ${DBFILE_2}
     ;;
   *)
     # unknown option
     echo "** Unknown option **"
     echo
     echo "Syntax:"
-    echo "kamfile.sh [-i|--install] [-b|--backup] [-r|--recover]"
+    echo "bakrecdb.sh [-i|--install] [-b|--backup] [-r|--recover]"
     echo
     exit 1
     ;;

@@ -1,0 +1,14 @@
+# This service is for making backups of the database
+
+[Unit]
+Description=kamstrup database backup service
+After=network-online.target
+Wants=network-online.target
+Wants=kamstrup.backupdb.timer
+
+
+[Service]
+Type=oneshot
+User=pi
+ExecStart=/home/pi/kamstrup/bin/bakrecdb.sh --backup
+

@@ -1,10 +1,15 @@
-# KAMSTRUPd [![pipeline status](https://gitlab.com/mausy5043-diagnostics/kamstrupd/badges/v3/pipeline.svg)](https://gitlab.com/mausy5043-diagnostics/kamstrupd/commits/v3)
+# KAMSTRUPd
+
+Read data from a KAMSTRUP smart meter.  
+Store the data in a SQLite3 database.  
+Regularly create trendgraphs.  
+Upload trendgraphs to an external website for perusal.
 
 ## Installing
 
 ```
 sudo su -
-cd /path/to/where/you/want/store/kamstrupd
+cd /home/pi
 git clone https://gitlab.com/mausy5043-diagnostics/kamstrupd.git
 cd kamstrupd
 ./install.sh
@@ -13,10 +18,5 @@ cd kamstrupd
 
 ## Requirements
 ### Hardware:
-The python scripts have been shown to work correctly on the following hardware:
- - Raspberry Pi 1B
-
-## Attribution
-The python code for the daemons is based on previous work by
-- [Charles Menguy](http://stackoverflow.com/questions/10217067/implementing-a-full-python-unix-style-daemon-process)
-- [Sander Marechal](http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/)
+The Python scripts have been shown to work correctly on the following hardware:
+ - Raspberry Pi 3B+
