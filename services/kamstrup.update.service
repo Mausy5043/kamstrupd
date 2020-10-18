@@ -9,7 +9,7 @@ Wants=kamstrup.update.timer
 [Service]
 Type=oneshot
 User=pi
-ExecStart=/home/pi/kamstrup/update.sh --systemd
+ExecStart=/home/pi/kamstrupd/update.sh --systemd
 
 # [Install]
 # WantedBy=multi-user.target

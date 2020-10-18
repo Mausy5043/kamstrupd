@@ -7,7 +7,7 @@ Wants=kamstrup.trend.year.timer
 [Service]
 Type=oneshot
 User=pi
-ExecStart=/home/pi/kamstrup/bin/pastyear.sh -
+ExecStart=/home/pi/kamstrupd/bin/pastyear.sh -
 
 # [Install]
 # WantedBy=multi-user.target

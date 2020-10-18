@@ -7,7 +7,7 @@ Wants=kamstrup.trend.day.timer
 [Service]
 Type=oneshot
 User=pi
-ExecStart=/home/pi/kamstrup/bin/pastday.sh -
+ExecStart=/home/pi/kamstrupd/bin/pastday.sh -
 
 # [Install]
 # WantedBy=multi-user.target
