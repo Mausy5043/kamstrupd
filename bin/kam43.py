@@ -13,6 +13,7 @@ import numpy as np
 DATABASE = os.environ['HOME'] + "/.sqlite3/electriciteit.sqlite3"
 OPTION = ''
 
+
 def fetch_last_day():
     """
       ...
@@ -228,6 +229,7 @@ def main():
     """
       This is the main loop
       """
+    global OPTION
     OPTION = kl.get_cli_params(1)
 
     if OPTION in ['-d', '-D', '-a', '-A']:
