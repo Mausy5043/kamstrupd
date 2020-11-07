@@ -11,12 +11,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 DATABASE = os.environ['HOME'] + "/.sqlite3/electriciteit.sqlite3"
+OPTION = ''
 
 
 def fetch_last_months():
     """
       ...
       """
+    global DATABASE
     config = kl.add_time_line({'grouping': '%Y-%m',
                                'period': 61,
                                'timeframe': 'month',
@@ -128,6 +130,7 @@ def main():
     """
       This is the main loop
       """
+    global OPTION
     OPTION = kl.get_cli_params(1)
 
     if OPTION in ['-m', '-M', '-y', '-Y', '-a', '-A']:
