@@ -11,12 +11,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 DATABASE = os.environ['HOME'] + "/.sqlite3/electriciteit.sqlite3"
-
+OPTION = ''
 
 def fetch_last_day():
     """
       ...
       """
+    global DATABASE
     config = kl.add_time_line({'grouping': '%m-%d %Hh',
                                'period': 50,
                                'timeframe': 'hour',
@@ -41,6 +42,7 @@ def fetch_last_month():
     """
       ...
       """
+    global DATABASE
     config = kl.add_time_line({'grouping': '%m-%d',
                                'period': 50,
                                'timeframe': 'day',
@@ -64,6 +66,7 @@ def fetch_last_year():
     """
       ...
       """
+    global DATABASE
     config = kl.add_time_line({'grouping': '%Y-%m',
                                'period': 38,
                                'timeframe': 'month',
@@ -87,6 +90,7 @@ def fetch_last_years():
     """
       ...
       """
+    global DATABASE
     config = kl.add_time_line({'grouping': '%Y',
                                'period': 6,
                                'timeframe': 'year',

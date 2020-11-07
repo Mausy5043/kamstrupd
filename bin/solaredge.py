@@ -33,7 +33,6 @@ MYROOT = "/".join(HERE[0:-3])
 # host_name :
 NODE = os.uname()[1]
 
-
 # example values:
 # HERE: ['', 'home', 'pi', 'kamstrupd', 'bin', 'solaredge.py']
 # MYID: 'solaredge.py
@@ -41,9 +40,12 @@ NODE = os.uname()[1]
 # MYROOT: /home/pi
 # NODE: rbelec
 
+API_SE = solaredge.Solaredge(0)
+
 
 def main():
     """Execute main loop."""
+    global API_SE
     # read api_key from the file ~/.config/solaredge/account.ini
     iniconf = configparser.ConfigParser()
     iniconf.read(f"{os.environ['HOME']}/.config/solaredge/account.ini")
@@ -60,15 +62,15 @@ def main():
 
     test_db_connection(fdatabase)
 
-    api = solaredge.Solaredge(api_key)
+    API_SE = solaredge.Solaredge(api_key)
     site_list = []
 
     while True:
         start_time = time.time()
         if not site_list:
             try:
-                site_list = api.get_list()['sites']['site']
-            except Exception:
+                site_list = API_SE.get_list()['sites']['site']
+            except Exception:   # noqa
                 mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                 site_list = []
@@ -77,11 +79,11 @@ def main():
         if site_list:
             try:
                 start_time = time.time()
-                data = do_work(api, site_list)
+                data = do_work(site_list)
                 if data:
                     mf.syslog_trace(f"Data to add : {data}", False, DEBUG)
                     do_add_to_database(data, fdatabase, sqlcmd)
-            except Exception:
+            except Exception:   # noqa
                 mf.syslog_trace("Unexpected error in run()", syslog.LOG_CRIT, DEBUG)
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                 raise
@@ -98,8 +100,9 @@ def main():
             mf.syslog_trace("................................", False, DEBUG)
 
 
-def do_work(api, site_list):
+def do_work(site_list):
     """Extract the data from the dict(s)."""
+    global API_SE
     dt_format = '%Y-%m-%d %H:%M:%S'
     data_list = list()
     data_dict = dict()
@@ -107,8 +110,8 @@ def do_work(api, site_list):
     for site in site_list:
         site_id = site['id']
         try:
-            data_dict = api.get_overview(site_id)['overview']
-        except Exception:
+            data_dict = API_SE.get_overview(site_id)['overview']
+        except Exception:   # noqa
             mf.syslog_trace("Request was unsuccesful.", syslog.LOG_WARNING, DEBUG)
             mf.syslog_trace(traceback.format_exc(), syslog.LOG_WARNING, DEBUG)
             mf.syslog_trace("Maybe next time...", syslog.LOG_WARNING, DEBUG)
