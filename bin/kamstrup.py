@@ -292,7 +292,7 @@ def test_db_connection(fdatabase):
 
 if __name__ == "__main__":
     # initialise logging
-    syslog.openlog(ident=MYAPP, facility=syslog.LOG_LOCAL0)
+    syslog.openlog(ident=f'{MYAPP}.{MYID.split(".")[0]}', facility=syslog.LOG_LOCAL0)
 
     # noinspection PyUnresolvedReferences
     port = serial.Serial()  # pylint: disable=C0103
