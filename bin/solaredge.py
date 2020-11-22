@@ -81,8 +81,6 @@ def main():
     while not killer.kill_now:
         if time.time() > pause_time:
             start_time = time.time()
-            # set a minimal pause to prevent sprints
-            pause_time = start_time + report_time
             if not site_list:
                 try:
                     site_list = API_SE.get_list()['sites']['site']

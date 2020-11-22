@@ -80,8 +80,6 @@ def main():
     while not killer.kill_now:
         if time.time() > pause_time:
             start_time = time.time()
-            # set a minimal pause to prevent sprints
-            pause_time = start_time + report_time
             try:
                 result = do_work()
                 result = result.split(',')
