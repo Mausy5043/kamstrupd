@@ -81,6 +81,8 @@ def main():
     while not killer.kill_now:
         if time.time() > pause_time:
             start_time = time.time()
+            # set a minimal pause to prevent sprints
+            pause_time = start_time + report_time
             if not site_list:
                 try:
                     site_list = API_SE.get_list()['sites']['site']
@@ -107,11 +109,11 @@ def main():
                           - (start_time % sample_time)
                           + time.time())
             if pause_time > 0:
-                mf.syslog_trace(f"Waiting  : {pause_time}s", False, DEBUG)
+                mf.syslog_trace(f"Waiting  : {pause_time-time.time()}s", False, DEBUG)
                 mf.syslog_trace("................................", False, DEBUG)
                 # time.sleep(pause_time)
             else:
-                mf.syslog_trace(f"Behind   : {pause_time}s", False, DEBUG)
+                mf.syslog_trace(f"Behind   : {pause_time-time.time()}s", False, DEBUG)
                 mf.syslog_trace("................................", False, DEBUG)
 
 

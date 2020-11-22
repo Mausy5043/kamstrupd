@@ -80,6 +80,8 @@ def main():
     while not killer.kill_now:
         if time.time() > pause_time:
             start_time = time.time()
+            # set a minimal pause to prevent sprints
+            pause_time = start_time + report_time
             try:
                 result = do_work()
                 result = result.split(',')
@@ -109,14 +111,14 @@ def main():
                               - (start_time % sample_time)
                               + time.time())
                 if pause_time > 0:
-                    mf.syslog_trace(f"Waiting  : {pause_time:.1f}s", False, DEBUG)
+                    mf.syslog_trace(f"Waiting  : {pause_time-time.time():.1f}s", False, DEBUG)
                     # no need to wait for the next cycles
                     # the meter will pace the meaurements
                     # any required waiting will be inside gettelegram()
                     # time.sleep(pause_time)
                     mf.syslog_trace("................................", False, DEBUG)
                 else:
-                    mf.syslog_trace(f"Behind   : {pause_time:.1f}s", False, DEBUG)
+                    mf.syslog_trace(f"Behind   : {pause_time-time.time():.1f}s", False, DEBUG)
                     mf.syslog_trace("................................", False, DEBUG)
             except Exception:
                 mf.syslog_trace("Unexpected error in run()", syslog.LOG_CRIT, DEBUG)
