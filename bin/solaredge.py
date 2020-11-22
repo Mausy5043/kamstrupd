@@ -51,7 +51,7 @@ class GracefulKiller:
     signal.signal(signal.SIGINT, self.exit_gracefully)
     signal.signal(signal.SIGTERM, self.exit_gracefully)
 
-  def exit_gracefully(self, signum, frame):
+  def exit_gracefully(self, signum, frame):     # noqa
     self.kill_now = True
 
 
@@ -71,46 +71,48 @@ def main():
     sqlcmd = iniconf.get(MYID, 'sqlcmd')
     # samples_averaged = iniconf.getint(MYID, 'samplespercycle') * iniconf.getint(MYID, 'cycles')
     sample_time = report_time / iniconf.getint(MYID, 'samplespercycle')
-    data = []
+    data = []   # noqa
 
     test_db_connection(fdatabase)
 
     API_SE = solaredge.Solaredge(api_key)
     site_list = []
-
+    pause_time = time.time()
     while not killer.kill_now:
-        start_time = time.time()
-        if not site_list:
-            try:
-                site_list = API_SE.get_list()['sites']['site']
-            except Exception:   # noqa
-                mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
-                mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
-                site_list = []
-                pass
+        if time.time() > pause_time:
+            start_time = time.time()
+            if not site_list:
+                try:
+                    site_list = API_SE.get_list()['sites']['site']
+                except Exception:   # noqa
+                    mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
+                    mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+                    site_list = []
+                    pass
 
-        if site_list:
-            try:
-                start_time = time.time()
-                data = do_work(site_list)
-                if data:
-                    mf.syslog_trace(f"Data to add : {data}", False, DEBUG)
-                    do_add_to_database(data, fdatabase, sqlcmd)
-            except Exception:   # noqa
-                mf.syslog_trace("Unexpected error in run()", syslog.LOG_CRIT, DEBUG)
-                mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
-                raise
+            if site_list:
+                try:
+                    start_time = time.time()
+                    data = do_work(site_list)
+                    if data:
+                        mf.syslog_trace(f"Data to add : {data}", False, DEBUG)
+                        do_add_to_database(data, fdatabase, sqlcmd)
+                except Exception:   # noqa
+                    mf.syslog_trace("Unexpected error in run()", syslog.LOG_CRIT, DEBUG)
+                    mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+                    raise
 
-        pause_time = (sample_time
-                      - (time.time() - start_time)
-                      - (start_time % sample_time))
-        if pause_time > 0:
-            mf.syslog_trace(f"Waiting  : {pause_time}s", False, DEBUG)
-            mf.syslog_trace("................................", False, DEBUG)
-            time.sleep(pause_time)
-        else:
-            mf.syslog_trace(f"Behind   : {pause_time}s", False, DEBUG)
-            mf.syslog_trace("................................", False, DEBUG)
+            pause_time = (sample_time
+                          - (time.time() - start_time)
+                          - (start_time % sample_time)
+                          + time.time())
+            if pause_time > 0:
+                mf.syslog_trace(f"Waiting  : {pause_time}s", False, DEBUG)
+                mf.syslog_trace("................................", False, DEBUG)
+                # time.sleep(pause_time)
+            else:
+                mf.syslog_trace(f"Behind   : {pause_time}s", False, DEBUG)
+                mf.syslog_trace("................................", False, DEBUG)
 
 
 def do_work(site_list):
@@ -261,8 +263,8 @@ if __name__ == "__main__":
         else:
             print("Unknown command")
             sys.exit(2)
-        sys.exit(0)
     else:
         print("usage: {0!s} start|restart|debug".format(sys.argv[0]))
         sys.exit(2)
     print("And it's goodnight from him")
+    sys.exit(0)
