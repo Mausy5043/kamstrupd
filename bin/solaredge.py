@@ -11,6 +11,7 @@ Store the data in a sqlite3 database.
 import configparser
 import datetime as dt
 import os
+import signal
 import sqlite3
 import sys
 import syslog
@@ -43,9 +44,21 @@ NODE = os.uname()[1]
 API_SE = solaredge.Solaredge(0)
 
 
+class GracefulKiller:
+  kill_now = False
+
+  def __init__(self):
+    signal.signal(signal.SIGINT, self.exit_gracefully)
+    signal.signal(signal.SIGTERM, self.exit_gracefully)
+
+  def exit_gracefully(self):     # , signum, frame):
+    self.kill_now = True
+
+
 def main():
     """Execute main loop."""
     global API_SE
+    killer = GracefulKiller()
     # read api_key from the file ~/.config/solaredge/account.ini
     iniconf = configparser.ConfigParser()
     iniconf.read(f"{os.environ['HOME']}/.config/solaredge/account.ini")
@@ -65,7 +78,7 @@ def main():
     API_SE = solaredge.Solaredge(api_key)
     site_list = []
 
-    while True:
+    while not killer.kill_now:
         start_time = time.time()
         if not site_list:
             try:
@@ -252,3 +265,4 @@ if __name__ == "__main__":
     else:
         print("usage: {0!s} start|restart|debug".format(sys.argv[0]))
         sys.exit(2)
+    print("And it's goodnight from him")
