@@ -38,8 +38,32 @@ def fetch_last_months():
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
+def fetch_last_year(years=1):
+    """
+      ...
+      """
+    global DATABASE
+    config = kl.add_time_line({'grouping': '%Y-%m',
+                               'period': years*12,
+                               'timeframe': 'month',
+                               'database': DATABASE,
+                               'table': 'production'
+                               })
+    opwekking, prod_lbls = kl.get_historic_data(config, telwerk='energy', from_start_of_year=True)
+    config['table'] = 'kamstrup'
+    import_lo, data_lbls = kl.get_historic_data(config, telwerk='T1in', from_start_of_year=True)
+    import_hi, data_lbls = kl.get_historic_data(config, telwerk='T2in', from_start_of_year=True)
+    export_lo, data_lbls = kl.get_historic_data(config, telwerk='T1out', from_start_of_year=True)
+    export_hi, data_lbls = kl.get_historic_data(config, telwerk='T2out', from_start_of_year=True)
+    # production data may not yet have caught up to the current hour
+    if not (prod_lbls[-1] == data_lbls[-1]):
+        opwekking = opwekking[:-1]
+        np.append(opwekking, 0.0)
+    return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
+
+
 # noinspection SpellCheckingInspection
-def plot_graph(output_file, data_tuple, plot_title):
+def plot_graph(output_file, data_tuple, plot_title, gauge=False):
     """
       Create the graph
       """
@@ -74,54 +98,117 @@ def plot_graph(output_file, data_tuple, plot_title):
     print("usage    : ", np.shape(usage), usage[-5:])
     print(" ")
     print(" ")
-    print("grph_lbls: ", np.shape(grph_lbls), grph_lbls)
+    # print("grph_lbls: ", np.shape(grph_lbls), grph_lbls)
+    print("grph_lbls: ", grph_lbls)
     print(" ")
-    print("total_use: ", np.shape(total_use), total_use[yr])
+    # print("total_use: ", np.shape(total_use), total_use[yr])
+    print("total_use: ", total_use)
     print(" ")
-    print("total_out: ", np.shape(total_out), total_out[yr])
+    # print("total_out: ", np.shape(total_out), total_out[yr])
+    print("total_out: ", total_out)
     --- End debugging.
     """
-    # Set the bar width
-    bars_width = 0.9
-    bar_width = bars_width / len(grph_lbls[0])
-    # Set the color alpha
-    ahpla = 1 - (1 / (len(grph_lbls[0]) + 1) * len(grph_lbls[0]))
-    # positions of the left bar-boundaries
-    tick_pos = np.arange(1, len(grph_lbls[1]) + 1) - (bars_width / 2)
+    if not gauge:
+        # Set the bar width
+        bars_width = 0.9
+        bar_width = bars_width / len(grph_lbls[0])
+        # Set the color alpha
+        ahpla = 1 - (1 / (len(grph_lbls[0]) + 1) * len(grph_lbls[0]))
+        # positions of the left bar-boundaries
+        tick_pos = np.arange(1, len(grph_lbls[1]) + 1) - (bars_width / 2)
 
-    # Create the general plot and the bar
-    plt.rc('font', size=6.5)
-    dummy, ax1 = plt.subplots(1, figsize=(10, 3.5))
+        # Create the general plot and the bar
+        plt.rc('font', size=6.5)
+        dummy, ax1 = plt.subplots(1, figsize=(10, 3.5))
 
-    # Create a bar plot usage
-    for idx in range(0, len(grph_lbls[0])):
-        ax1.bar(tick_pos + (idx * bar_width), total_use[idx],
-                width=bar_width,
-                label=grph_lbls[0][idx],
-                alpha=ahpla + (idx * ahpla),
-                color='b',
-                align='edge'
-                )
-        # Create a bar plot of production
-        ax1.bar(tick_pos + (idx * bar_width), [-1 * i for i in total_out[idx]],
-                width=bar_width,
-                alpha=ahpla + (idx * ahpla),
-                color='r',
-                align='edge'
-                )
+        # Create a bar plot usage
+        for idx in range(0, len(grph_lbls[0])):
+            ax1.bar(tick_pos + (idx * bar_width), total_use[idx],
+                    width=bar_width,
+                    label=grph_lbls[0][idx],
+                    alpha=ahpla + (idx * ahpla),
+                    color='b',
+                    align='edge'
+                    )
+            # Create a bar plot of production
+            ax1.bar(tick_pos + (idx * bar_width), [-1 * i for i in total_out[idx]],
+                    width=bar_width,
+                    alpha=ahpla + (idx * ahpla),
+                    color='r',
+                    align='edge'
+                    )
 
-    # Set Axes stuff
-    ax1.set_ylabel("[kWh]")
-    ax1.set_xlabel("Datetime")
-    ax1.grid(which='major', axis='y', color='k', linestyle='--', linewidth=0.5)
-    ax1.axhline(y=0, color='k')
-    ax1.axvline(x=0, color='k')
-    # Set plot stuff
-    plt.xticks(tick_pos + (bars_width / 2), grph_lbls[1])
+        # Set Axes stuff
+        ax1.set_ylabel("[kWh]")
+        ax1.set_xlabel("Datetime")
+        ax1.set_xlim([min(tick_pos) - (bars_width / 2), max(tick_pos) + (bars_width / 2 * 3)])
+        ax1.grid(which='major', axis='y', color='k', linestyle='--', linewidth=0.5)
+        ax1.axhline(y=0, color='k')
+        ax1.axvline(x=0, color='k')
+        plt.xticks(tick_pos + (bars_width / 2), grph_lbls[1])
+    else:
+        power_in = np.sum(imprt)
+        power_out = np.sum(exprt)
+        power_dif = power_out - power_in
+        power_rng = 2 * max(power_in, power_out)
+        """
+        print(f"IN  {power_in:.0f}")
+        print(f"OUT {power_out:.0f}")
+        print(f"DIF {power_dif:.0f}")
+        print(f"RNG {power_rng:.0f}")
+        """
+
+        # Set the bar width
+        bars_width = 1.0
+        # bar_width = bars_width / len(grph_lbls[0])
+        # Set the color alpha
+        ahpla = 0.7
+        # 1 - (1 / (len(grph_lbls[0]) + 1) * len(grph_lbls[0]))
+        # positions of the left bar-boundaries
+        tick_pos = 0
+
+        # Create the general plot and the bar
+        plt.rc('font', size=6.5)
+        dummy, ax1 = plt.subplots(1, figsize=(10, 1.5))
+
+        ax1.barh(tick_pos, power_out,
+                 height=bars_width,
+                 alpha=ahpla,
+                 color='g',
+                 left=power_rng/-2,
+                 align='edge'
+                 )
+        ax1.text(power_rng/-3, tick_pos+(bars_width/2), "{:4.0f}".format(power_out), {'ha': 'center', 'va': 'center'}, fontsize=12)
+        ax1.barh(tick_pos, abs(power_dif),
+                 height=bars_width,
+                 alpha=ahpla,
+                 color='y',
+                 left=(power_rng/-2) + power_out,
+                 align='edge'
+                 )
+        ax1.text((power_rng/-2) + power_out + abs(power_dif)/2, tick_pos+(bars_width*0.75), "{:4.0f}".format(power_dif), {'ha': 'center', 'va': 'center'}, fontsize=12)
+        ax1.barh(tick_pos, power_in,
+                 height=bars_width,
+                 alpha=ahpla,
+                 color='r',
+                 left=(power_rng/-2) + power_out + abs(power_dif),
+                 align='edge'
+                 )
+        ax1.text(power_rng/3, tick_pos+(bars_width/2), "{:4.0f}".format(power_in), {'ha': 'center', 'va': 'center'}, fontsize=12)
+
+        # Set  Axes stuff
+        ax1.set_xlabel("[kWh]")
+        ax1.grid(which='major', axis='x', color='k', linestyle='--', linewidth=0.5)
+        ax1.set_xlim([power_rng/-2, power_rng/2])
+        ax1.axhline(y=0, color='k')
+        ax1.axvline(x=0, color='k')
+        ax1.set_yticks([2])
+
+    # Set general plot stuff
     plt.title(f'{plot_title}')
-    plt.legend(loc='upper left', ncol=6, framealpha=0.2)
+    if not gauge:
+        plt.legend(loc='upper left', ncol=6, framealpha=0.2)
     # Fit every nicely
-    plt.xlim([min(tick_pos) - (bars_width / 2), max(tick_pos) + (bars_width / 2 * 3)])
     plt.tight_layout()
     plt.savefig(fname=f'{output_file}', format='png')
 
@@ -138,6 +225,11 @@ def main():
                    fetch_last_months(),
                    f"Stroomverbruik/levering per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                    )
+    if OPTION in ['-g', '-G', '-a', '-A']:
+        plot_graph('/tmp/kamstrupd/site/img/kam_gauge.png',
+                   fetch_last_year(years=1),
+                   f"Salderingsbalans dit jaar ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+                   gauge=True)
 
 
 if __name__ == "__main__":

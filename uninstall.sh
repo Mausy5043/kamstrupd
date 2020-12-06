@@ -17,6 +17,8 @@ pushd "${HERE}" || exit 1
     # allow user to abort
     sleep 10
 
+    sudo systemctl disable kamstrup.update.timer
+    sleep 10
     sudo systemctl disable kamstrup.kamstrup.service
     sudo systemctl disable kamstrup.solaredge.service
 
@@ -24,7 +26,6 @@ pushd "${HERE}" || exit 1
     sudo systemctl disable kamstrup.trend.day.timer
     sudo systemctl disable kamstrup.trend.month.timer
     sudo systemctl disable kamstrup.trend.year.timer
-    sudo systemctl disable kamstrup.update.timer
 
     ./stop.sh
 popd || exit

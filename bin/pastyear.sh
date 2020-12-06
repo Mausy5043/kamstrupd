@@ -8,5 +8,6 @@ pushd "${HERE}" >/dev/null || exit 1
     ./kam43.py -y1
     ./kam43.py -y2
     ./kam44.py -m
+    ./kam44.py -g
     ./upload.sh --all
 popd >/dev/null || exit

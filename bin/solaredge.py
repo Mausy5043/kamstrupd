@@ -11,17 +11,15 @@ Store the data in a sqlite3 database.
 import configparser
 import datetime as dt
 import os
-import signal
 import sqlite3
 import sys
 import syslog
 import time
 import traceback
 
-# noinspection PyUnresolvedReferences
-import libsolaredge as solaredge
-# noinspection PyUnresolvedReferences
-import mausy5043funcs.fileops3 as mf
+import libsolaredge as solaredge  # noqa
+import mausy5043funcs.fileops3 as mf  # noqa
+import mausy5043libs.libsignals3 as ml  # noqa
 
 # constants
 DEBUG = False
@@ -44,21 +42,10 @@ NODE = os.uname()[1]
 API_SE = solaredge.Solaredge(0)
 
 
-class GracefulKiller:
-  kill_now = False
-
-  def __init__(self):
-    signal.signal(signal.SIGINT, self.exit_gracefully)
-    signal.signal(signal.SIGTERM, self.exit_gracefully)
-
-  def exit_gracefully(self, signum, frame):     # noqa
-    self.kill_now = True
-
-
 def main():
     """Execute main loop."""
     global API_SE
-    killer = GracefulKiller()
+    killer = ml.GracefulKiller()
     # read api_key from the file ~/.config/solaredge/account.ini
     iniconf = configparser.ConfigParser()
     iniconf.read(f"{os.environ['HOME']}/.config/solaredge/account.ini")
@@ -107,12 +94,14 @@ def main():
                           - (start_time % sample_time)
                           + time.time())
             if pause_time > 0:
-                mf.syslog_trace(f"Waiting  : {pause_time-time.time()}s", False, DEBUG)
+                mf.syslog_trace(f"Waiting  : {pause_time-time.time():.1f}s", False, DEBUG)
                 mf.syslog_trace("................................", False, DEBUG)
                 # time.sleep(pause_time)
             else:
-                mf.syslog_trace(f"Behind   : {pause_time-time.time()}s", False, DEBUG)
+                mf.syslog_trace(f"Behind   : {pause_time-time.time():.1f}s", False, DEBUG)
                 mf.syslog_trace("................................", False, DEBUG)
+        else:
+            time.sleep(1.0)
 
 
 def do_work(site_list):

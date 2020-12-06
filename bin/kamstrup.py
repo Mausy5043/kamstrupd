@@ -10,15 +10,14 @@ import configparser
 import datetime as dt
 import os
 import re
-import signal
 import sqlite3
 import sys
 import syslog
 import time
 import traceback
 
-# noinspection PyUnresolvedReferences
-import mausy5043funcs.fileops3 as mf
+import mausy5043funcs.fileops3 as mf  # noqa
+import mausy5043libs.libsignals3 as ml  # noqa
 import serial
 
 # constants
@@ -49,20 +48,9 @@ tarif = 0
 swits = 1
 
 
-class GracefulKiller:
-  kill_now = False
-
-  def __init__(self):
-    signal.signal(signal.SIGINT, self.exit_gracefully)
-    signal.signal(signal.SIGTERM, self.exit_gracefully)
-
-  def exit_gracefully(self, signum, frame):     # noqa
-    self.kill_now = True
-
-
 def main():
     """Execute main loop."""
-    killer = GracefulKiller()
+    killer = ml.GracefulKiller()
     iniconf = configparser.ConfigParser()
     iniconf.read(f"{os.environ['HOME']}/{MYAPP}/config.ini")
     report_time = iniconf.getint(MYID, "reporttime")
@@ -80,48 +68,45 @@ def main():
     while not killer.kill_now:
         if time.time() > pause_time:
             start_time = time.time()
-            try:
-                result = do_work()
-                result = result.split(',')
-                mf.syslog_trace(f"Result   : {result}", False, DEBUG)
-                # data.append(list(map(int, result)))
-                data.append([int(d) for d in result])
-                if len(data) > samples_averaged:
-                    data.pop(0)
-                # mf.syslog_trace(f"Data     : {data}", False, DEBUG)
+            result = do_work()
+            result = result.split(',')
+            mf.syslog_trace(f"Result   : {result}", False, DEBUG)
+            # data.append(list(map(int, result)))
+            data.append([int(d) for d in result])
+            if len(data) > samples_averaged:
+                data.pop(0)
+            # mf.syslog_trace(f"Data     : {data}", False, DEBUG)
 
-                # report sample average
-                if start_time % report_time < sample_time:
-                    # somma       = list(map(sum, zip(*data)))
-                    somma = [sum(d) for d in zip(*data)]
-                    # not all entries should be float
-                    # ['3088596', '3030401', '270', '0', '0', '0', '1', '1']
-                    # averages    = [format(sm / len(data), '.2f') for sm in somma]
-                    averages = data[-1]
-                    averages[2] = int(somma[2] / len(data))  # avg powerin
-                    averages[5] = int(somma[5] / len(data))  # avg powerout
-                    mf.syslog_trace(f"Averages : {averages}", False, DEBUG)
-                    if averages[0] > 0:
-                        do_add_to_database(averages, fdatabase, sqlcmd)
+            # report sample average
+            if start_time % report_time < sample_time:
+                # somma       = list(map(sum, zip(*data)))
+                somma = [sum(d) for d in zip(*data)]
+                # not all entries should be float
+                # ['3088596', '3030401', '270', '0', '0', '0', '1', '1']
+                # averages    = [format(sm / len(data), '.2f') for sm in somma]
+                averages = data[-1]
+                averages[2] = int(somma[2] / len(data))  # avg powerin
+                averages[5] = int(somma[5] / len(data))  # avg powerout
+                mf.syslog_trace(f"Averages : {averages}", False, DEBUG)
+                if averages[0] > 0:
+                    do_add_to_database(averages, fdatabase, sqlcmd)
 
-                pause_time = (sample_time
-                              - (time.time() - start_time)
-                              - (start_time % sample_time)
-                              + time.time())
-                if pause_time > 0:
-                    mf.syslog_trace(f"Waiting  : {pause_time-time.time():.1f}s", False, DEBUG)
-                    # no need to wait for the next cycles
-                    # the meter will pace the meaurements
-                    # any required waiting will be inside gettelegram()
-                    # time.sleep(pause_time)
-                    mf.syslog_trace("................................", False, DEBUG)
-                else:
-                    mf.syslog_trace(f"Behind   : {pause_time-time.time():.1f}s", False, DEBUG)
-                    mf.syslog_trace("................................", False, DEBUG)
-            except Exception:
-                mf.syslog_trace("Unexpected error in run()", syslog.LOG_CRIT, DEBUG)
-                mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
-                raise
+            pause_time = (sample_time
+                          - (time.time() - start_time)
+                          - (start_time % sample_time)
+                          + time.time())
+            if pause_time > 0:
+                mf.syslog_trace(f"Waiting  : {pause_time-time.time():.1f}s", False, DEBUG)
+                # no need to wait for the next cycles
+                # the meter will pace the meaurements
+                # any required waiting will be inside gettelegram()
+                # time.sleep(pause_time)
+                mf.syslog_trace("................................", False, DEBUG)
+            else:
+                mf.syslog_trace(f"Behind   : {pause_time-time.time():.1f}s", False, DEBUG)
+                mf.syslog_trace("................................", False, DEBUG)
+        else:
+            time.sleep(1.0)
 
 
 def do_work():

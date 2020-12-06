@@ -111,7 +111,7 @@ def fetch_last_years():
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def plot_graph(output_file, data_tuple, plot_title, show_data=False):
+def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     """
       ...
       """
@@ -121,10 +121,10 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=False):
     opwekking = data_tuple[3]
     export_lo = data_tuple[4]
     export_hi = data_tuple[5]
-    # imprt = kl.contract(import_lo, import_hi)
+    imprt = kl.contract(import_lo, import_hi)
     exprt = kl.contract(export_lo, export_hi)
     own_usage = kl.distract(opwekking, exprt)
-    # usage = kl.contract(own_usage, imprt)
+    usage = kl.contract(own_usage, imprt)
     btm_hi = kl.contract(import_lo, own_usage)
     """
     --- Start debugging:
@@ -184,9 +184,12 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=False):
             color='g',
             align='center'
             )
-    if show_data:
+    if show_data == 1:
         for i, v in enumerate(own_usage):
             ax1.text(tick_pos[i], 10, "{:7.3f}".format(v), {'ha': 'center', 'va': 'bottom'}, rotation=-90)
+    if show_data == 2:
+        for i, v in enumerate(usage):
+            ax1.text(tick_pos[i], 500, "{:4.0f}".format(v), {'ha': 'center', 'va': 'bottom'}, fontsize=12)
     # Exports hang below the y-axis
     # Create a bar plot of export_lo
     ax1.bar(tick_pos, [-1 * i for i in export_lo],
@@ -205,12 +208,24 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=False):
             align='center',
             bottom=[-1 * i for i in export_lo]
             )
-    if show_data:
+    if show_data == 1:
         for i, v in enumerate(exprt):
             ax1.text(tick_pos[i], -10, "{:7.3f}".format(v), {'ha': 'center', 'va': 'top'}, rotation=-90)
+    if show_data == 2:
+        for i, v in enumerate(exprt):
+            ax1.text(tick_pos[i], -500, "{:4.0f}".format(v), {'ha': 'center', 'va': 'top'}, fontsize=12)
 
     # Set Axes stuff
     ax1.set_ylabel("[kWh]")
+    if show_data == 0:
+        y_lo = -1 * (max(exprt) + 1)
+        y_hi = max(usage) + 1
+        if y_lo > -1.5:
+            y_lo = -1.5
+        if y_hi < 1.5:
+            y_hi = 1.5
+        ax1.set_ylim([y_lo, y_hi])
+
     ax1.set_xlabel("Datetime")
     ax1.grid(which='major', axis='y', color='k', linestyle='--', linewidth=0.5)
     ax1.axhline(y=0, color='k')
@@ -248,13 +263,14 @@ def main():
         plot_graph('/tmp/kamstrupd/site/img/kam_pastyear.png',
                    fetch_last_year(),
                    f"Energietrend per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-                   show_data=True
+                   show_data=1
                    )
 
     if OPTION in ['-y', '-Y', '-y2', '-Y2' '-a', '-A']:
         plot_graph('/tmp/kamstrupd/site/img/kam_vs_year.png',
                    fetch_last_years(),
-                   f"Energietrend per jaar afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+                   f"Energietrend per jaar afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+                   show_data=2
                    )
 
 
