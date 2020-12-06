@@ -30,8 +30,8 @@ getfilefromserver() {
 }
 
 HERE=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
-required_commonlibversion="0.6.0"
-commonlibbranch="v0_6"
+required_commonlibversion="0.7.0"
+commonlibbranch="v0_7"
 
 pushd "${HERE}" || exit 1
     # shellcheck disable=SC1091
@@ -81,16 +81,10 @@ if [ "${commonlibversion}" != "${required_commonlibversion}" ]; then
     echo "*********************************************************"
     echo "Install common python functions..."
     python3 -m pip uninstall -y mausy5043-common-python
-    pushd /tmp || exit 1
-    git clone -b "${commonlibbranch}" https://gitlab.com/mausy5043-installer/mausy5043-common-python.git
-    pushd /tmp/mausy5043-common-python || exit 1
-    python3 setup.py install --user
-    popd || exit
-    sudo rm -rf mausy5043-common-python/
-    popd || exit
+    python3 -m pip install "git+https://gitlab.com/mausy5043-installer/mausy5043-common-python.git@${commonlibbranch}#egg=mausy5043-common-python"
     echo
     echo -n "Installed: "
-    python3 -m pip freeze | grep mausy5043
+    python3 -m pip list | grep mausy5043
     echo
 fi
 
