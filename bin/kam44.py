@@ -187,7 +187,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
         ax1.text(power_rng/-3, tick_pos+(bars_width/2), "{:4.0f}".format(power_out), {'ha': 'center', 'va': 'center'}, fontsize=12)
         ax1.barh(tick_pos, abs(power_dif),
                  height=bars_width,
-                 alpha=ahpla,
+                 alpha=ahpla*0.5,
                  color=col_usage,
                  left=(power_rng/-2) + power_out,
                  align='edge'
