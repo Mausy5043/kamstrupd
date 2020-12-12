@@ -157,13 +157,17 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     # Create the general plot and the bar
     plt.rc('font', size=6.5)
     dummy, ax1 = plt.subplots(1, figsize=(10, 3.5))
+    col_import = 'red'
+    col_export = 'blue'
+    col_usage = 'green'
+
 
     # Create a bar plot of import_lo
     ax1.bar(tick_pos, import_hi,
             width=bar_width,
             label='Inkoop (normaal)',
             alpha=ahpla,
-            color='orange',
+            color=col_import,
             align='center',
             bottom=btm_hi  # [sum(i) for i in zip(import_lo, own_usage)]
             )
@@ -171,8 +175,8 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     ax1.bar(tick_pos, import_lo,
             width=bar_width,
             label='Inkoop (dal)',
-            alpha=ahpla,
-            color='b',
+            alpha=ahpla*0.5,
+            color=col_import,
             align='center',
             bottom=own_usage
             )
@@ -181,7 +185,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
             width=bar_width,
             label='Eigen gebruik',
             alpha=ahpla,
-            color='g',
+            color=col_usage,
             align='center'
             )
     if show_data == 1:
@@ -196,15 +200,15 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
             width=bar_width,
             label='Verkoop (dal)',
             alpha=ahpla,
-            color='c',
+            color=col_export,
             align='center'
             )
     # Create a bar plot of export_hi
     ax1.bar(tick_pos, [-1 * i for i in export_hi],
             width=bar_width,
             label='Verkoop (normaal)',
-            alpha=ahpla,
-            color='r',
+            alpha=ahpla*0.5,
+            color=col_export,
             align='center',
             bottom=[-1 * i for i in export_lo]
             )
