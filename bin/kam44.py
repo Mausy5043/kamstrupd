@@ -154,6 +154,8 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
         power_in = np.sum(imprt)
         power_out = np.sum(exprt)
         power_dif = power_out - power_in
+        if power_in > power_out:
+            col_usage = 'yellow'
         power_rng = 2 * max(power_in, power_out)
         """
         print(f"IN  {power_in:.0f}")
@@ -186,7 +188,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
         ax1.barh(tick_pos, abs(power_dif),
                  height=bars_width,
                  alpha=ahpla,
-                 color='y',
+                 color=col_usage,
                  left=(power_rng/-2) + power_out,
                  align='edge'
                  )
