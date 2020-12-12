@@ -109,8 +109,8 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
     --- End debugging.
     """
     col_import = 'red'
-    col_export = 'green'
-    col_usage = 'blue'
+    col_export = 'blue'
+    col_usage = 'green'
 
     if not gauge:
         # Set the bar width
@@ -204,7 +204,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
         ax1.set_xlabel("[kWh]")
         ax1.grid(which='major', axis='x', color='k', linestyle='--', linewidth=0.5)
         ax1.set_xlim([power_rng/-2, power_rng/2])
-        ax1.axhline(y=0, color='k')
+        # ax1.axhline(y=0, color='k')
         ax1.axvline(x=0, color='k')
         ax1.set_yticks([2])
 

@@ -158,8 +158,8 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     plt.rc('font', size=6.5)
     dummy, ax1 = plt.subplots(1, figsize=(10, 3.5))
     col_import = 'red'
-    col_export = 'green'
-    col_usage = 'blue'
+    col_export = 'blue'
+    col_usage = 'green'
 
     # Create a bar plot of import_lo
     ax1.bar(tick_pos, import_hi,
