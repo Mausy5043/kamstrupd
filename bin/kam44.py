@@ -108,6 +108,10 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
     print("total_out: ", total_out)
     --- End debugging.
     """
+    col_import = 'red'
+    col_export = 'green'
+    col_usage = 'blue'
+
     if not gauge:
         # Set the bar width
         bars_width = 0.9
@@ -127,14 +131,14 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
                     width=bar_width,
                     label=grph_lbls[0][idx],
                     alpha=ahpla + (idx * ahpla),
-                    color='b',
+                    color=col_import,
                     align='edge'
                     )
             # Create a bar plot of production
             ax1.bar(tick_pos + (idx * bar_width), [-1 * i for i in total_out[idx]],
                     width=bar_width,
                     alpha=ahpla + (idx * ahpla),
-                    color='r',
+                    color=col_export,
                     align='edge'
                     )
 
@@ -174,7 +178,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
         ax1.barh(tick_pos, power_out,
                  height=bars_width,
                  alpha=ahpla,
-                 color='g',
+                 color=col_export,
                  left=power_rng/-2,
                  align='edge'
                  )
@@ -190,7 +194,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
         ax1.barh(tick_pos, power_in,
                  height=bars_width,
                  alpha=ahpla,
-                 color='r',
+                 color=col_import,
                  left=(power_rng/-2) + power_out + abs(power_dif),
                  align='edge'
                  )
