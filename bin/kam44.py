@@ -39,13 +39,13 @@ def fetch_last_months(months_to_fetch):
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def fetch_last_year(years_to_fetch):
+def fetch_last_year(months_to_fetch):
     """
       ...
       """
     global DATABASE
     config = kl.add_time_line({'grouping': '%Y-%m',
-                               'period': years_to_fetch*12,
+                               'period': months_to_fetch,
                                'timeframe': 'month',
                                'database': DATABASE,
                                'table': 'production'
@@ -242,10 +242,10 @@ def main():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Create trendgraph or gauge")
     parser.add_argument('-m', '--months', type=int, help='number of months of data to use for the graph')
-    parser.add_argument('-g', '--gauge', type=int, help='generate a gauge')
+    parser.add_argument('-g', '--gauge', type=int, help='generate a gauge. Specify number of months to aggregate.')
     OPTION = parser.parse_args()
     if OPTION.months == 0:
         OPTION.months = 61
     if OPTION.gauge == 0:
-        OPTION.gauge = 1
+        OPTION.gauge = 12
     main()
