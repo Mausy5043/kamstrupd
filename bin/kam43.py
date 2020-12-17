@@ -281,7 +281,6 @@ if __name__ == "__main__":
     parser.add_argument('-m', '--months', type=int, help='number of months of data to use for the graph')
     parser.add_argument('-y', '--years', type=int, help='number of months of data to use for the graph')
     OPTION = parser.parse_args()
-    print(OPTION)
     if OPTION.hours == 0:
         OPTION.hours = 50
     if OPTION.days == 0:
