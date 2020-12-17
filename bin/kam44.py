@@ -45,7 +45,7 @@ def fetch_last_year(years_to_fetch):
       """
     global DATABASE
     config = kl.add_time_line({'grouping': '%Y-%m',
-                               'period': years_to_fetch,
+                               'period': years_to_fetch*12,
                                'timeframe': 'month',
                                'database': DATABASE,
                                'table': 'production'
