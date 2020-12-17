@@ -240,8 +240,7 @@ def main():
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Create trendgraph or gauge",
-                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(description="Create trendgraph or gauge")
     parser.add_argument('-m', '--months', type=int, help='number of months of data to use for the graph')
     parser.add_argument('-g', '--gauge', type=int, help='generate a gauge')
     OPTION = parser.parse_args()
