@@ -5,7 +5,7 @@
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
 
 pushd "${HERE}" >/dev/null || exit 1
-    ./kam43.py -m
+    ./kam43.py --days 0
     ./upload.sh --upload
 popd >/dev/null || exit
 

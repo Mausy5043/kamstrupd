@@ -2,6 +2,7 @@
 
 """Create trendbargraphs for various periods of electricity use and production."""
 
+import argparse
 import os
 from datetime import datetime as dt
 
@@ -14,13 +15,13 @@ DATABASE = os.environ['HOME'] + "/.sqlite3/electriciteit.sqlite3"
 OPTION = ''
 
 
-def fetch_last_day():
+def fetch_last_day(hours_to_fetch):
     """
       ...
       """
     global DATABASE
     config = kl.add_time_line({'grouping': '%m-%d %Hh',
-                               'period': 50,
+                               'period': hours_to_fetch,
                                'timeframe': 'hour',
                                'database': DATABASE,
                                'table': 'production'
@@ -39,13 +40,13 @@ def fetch_last_day():
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def fetch_last_month():
+def fetch_last_month(days_to_fetch):
     """
       ...
       """
     global DATABASE
     config = kl.add_time_line({'grouping': '%m-%d',
-                               'period': 50,
+                               'period': days_to_fetch,
                                'timeframe': 'day',
                                'database': DATABASE,
                                'table': 'production'
@@ -63,13 +64,13 @@ def fetch_last_month():
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def fetch_last_year():
+def fetch_last_year(months_to_fetch):
     """
       ...
       """
     global DATABASE
     config = kl.add_time_line({'grouping': '%Y-%m',
-                               'period': 38,
+                               'period': months_to_fetch,
                                'timeframe': 'month',
                                'database': DATABASE,
                                'table': 'production'
@@ -87,13 +88,13 @@ def fetch_last_year():
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def fetch_last_years():
+def fetch_last_years(years_to_fetch):
     """
       ...
       """
     global DATABASE
     config = kl.add_time_line({'grouping': '%Y',
-                               'period': 6,
+                               'period': years_to_fetch,
                                'timeframe': 'year',
                                'database': DATABASE,
                                'table': 'production'
@@ -248,34 +249,45 @@ def main():
       This is the main loop
       """
     global OPTION
-    OPTION = kl.get_cli_params(1)
 
-    if OPTION in ['-d', '-D', '-a', '-A']:
+    if OPTION.hours:
         plot_graph('/tmp/kamstrupd/site/img/kam_pastday.png',
-                   fetch_last_day(),
+                   fetch_last_day(OPTION.hours),
                    f"Energietrend per uur afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                    )
-
-    if OPTION in ['-m', '-M', '-a', '-A']:
+    if OPTION.days:
         plot_graph('/tmp/kamstrupd/site/img/kam_pastmonth.png',
-                   fetch_last_month(),
+                   fetch_last_month(OPTION.days),
                    f"Energietrend per dag afgelopen maand ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                    )
-
-    if OPTION in ['-y', '-Y', '-y1', '-Y1' '-a', '-A']:
+    if OPTION.months:
         plot_graph('/tmp/kamstrupd/site/img/kam_pastyear.png',
-                   fetch_last_year(),
+                   fetch_last_year(OPTION.months),
                    f"Energietrend per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    show_data=1
                    )
-
-    if OPTION in ['-y', '-Y', '-y2', '-Y2' '-a', '-A']:
+    if OPTION.years:
         plot_graph('/tmp/kamstrupd/site/img/kam_vs_year.png',
-                   fetch_last_years(),
+                   fetch_last_years(OPTION.years),
                    f"Energietrend per jaar afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    show_data=2
                    )
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Create a trendgraph")
+    parser.add_argument('-hr', '--hours', type=int, help='create hour-trend for last <HOURS> hours')
+    parser.add_argument('-d', '--days', type=int, help='create day-trend for last <DAYS> days')
+    parser.add_argument('-m', '--months', type=int, help='number of months of data to use for the graph')
+    parser.add_argument('-y', '--years', type=int, help='number of months of data to use for the graph')
+    OPTION = parser.parse_args()
+    print(OPTION)
+    if OPTION.hours == 0:
+        OPTION.hours = 50
+    if OPTION.days == 0:
+        OPTION.days = 50
+    if OPTION.months == 0:
+        OPTION.months = 38
+    if OPTION.years == 0:
+        OPTION.years = 6
     main()
