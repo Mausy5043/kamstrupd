@@ -245,4 +245,8 @@ if __name__ == "__main__":
     parser.add_argument('-m', '--months', type=int, help='number of months of data to use for the graph')
     parser.add_argument('-g', '--gauge', type=int, help='generate a gauge')
     OPTION = parser.parse_args()
+    if OPTION.months == 0:
+        OPTION.months = 61
+    if OPTION.gauge == 0:
+        OPTION.gauge = 1
     main()
