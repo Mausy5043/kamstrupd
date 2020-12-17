@@ -2,6 +2,7 @@
 
 """Create multi-year graphs"""
 
+import argparse
 import os
 from datetime import datetime as dt
 
@@ -14,13 +15,13 @@ DATABASE = os.environ['HOME'] + "/.sqlite3/electriciteit.sqlite3"
 OPTION = ''
 
 
-def fetch_last_months():
+def fetch_last_months(months_to_fetch):
     """
       ...
       """
     global DATABASE
     config = kl.add_time_line({'grouping': '%Y-%m',
-                               'period': 61,
+                               'period': months_to_fetch,
                                'timeframe': 'month',
                                'database': DATABASE,
                                'table': 'production'
@@ -225,19 +226,23 @@ def main():
       This is the main loop
       """
     global OPTION
-    OPTION = kl.get_cli_params(1)
 
-    if OPTION in ['-m', '-M', '-y', '-Y', '-a', '-A']:
+    if OPTION.months:
         plot_graph('/tmp/kamstrupd/site/img/kam_vs_month.png',
-                   fetch_last_months(),
+                   fetch_last_months(OPTION.months),
                    f"Stroomverbruik/levering per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
                    )
-    if OPTION in ['-g', '-G', '-a', '-A']:
+    if OPTION.gauge:
         plot_graph('/tmp/kamstrupd/site/img/kam_gauge.png',
-                   fetch_last_year(years=1),
+                   fetch_last_year(years=OPTION.gauge),
                    f"Salderingsbalans dit jaar ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    gauge=True)
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Create trendgraph or gauge",
+                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-m', '--months', type=int, help='number of months of data to use for the graph')
+    parser.add_argument('-g', '--gauge', type=int, help='generate a gauge')
+    OPTION = parser.parse_args()
     main()

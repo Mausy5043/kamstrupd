@@ -5,10 +5,10 @@
 HERE=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
 
 pushd "${HERE}" >/dev/null || exit 1
-    ./kam44.py -g &
+    ./kam44.py --gauge 1 &
     ./kam43.py -y1 &
     ./kam43.py -y2 &
-    ./kam44.py -m &
+    ./kam44.py --months 61 &
     wait
     ./upload.sh --all
 popd >/dev/null || exit
