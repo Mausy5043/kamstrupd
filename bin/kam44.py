@@ -39,13 +39,13 @@ def fetch_last_months(months_to_fetch):
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def fetch_last_year(years=1):
+def fetch_last_year(years_to_fetch):
     """
       ...
       """
     global DATABASE
     config = kl.add_time_line({'grouping': '%Y-%m',
-                               'period': years*12,
+                               'period': years_to_fetch,
                                'timeframe': 'month',
                                'database': DATABASE,
                                'table': 'production'
@@ -234,7 +234,7 @@ def main():
                    )
     if OPTION.gauge:
         plot_graph('/tmp/kamstrupd/site/img/kam_gauge.png',
-                   fetch_last_year(years=OPTION.gauge),
+                   fetch_last_year(OPTION.gauge),
                    f"Salderingsbalans dit jaar ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    gauge=True)
 
