@@ -98,14 +98,6 @@ def distract24(arr1, arr2):
     return result
 
 
-def get_cli_params(expected_amount):
-    """Check for presence of a CLI parameter."""
-    if len(sys.argv) != (expected_amount + 1):
-        print(f"{expected_amount} arguments expected, {len(sys.argv) - 1} received.")
-        sys.exit(0)
-    return sys.argv[1]
-
-
 def get_historic_data_legacy(dicti, telwerk=None, from_start_of_year=False, include_today=True):
     """Fetch historic data from SQLITE3 database.
 
