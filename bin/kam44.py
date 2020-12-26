@@ -255,4 +255,4 @@ if __name__ == "__main__":
     if OPTION.year:
         OPTION.gauge = OPTION.year
     print(OPTION)
-    #main()
+    main()
