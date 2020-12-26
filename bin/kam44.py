@@ -5,6 +5,7 @@
 import argparse
 import os
 from datetime import datetime as dt
+import time
 
 # noinspection PyUnresolvedReferences
 import libkamstrup as kl
@@ -39,7 +40,7 @@ def fetch_last_months(months_to_fetch):
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def fetch_last_year(months_to_fetch):
+def fetch_last_year(months_to_fetch, year_to_fetch):
     """
       ...
       """
@@ -48,7 +49,8 @@ def fetch_last_year(months_to_fetch):
                                'period': months_to_fetch,
                                'timeframe': 'month',
                                'database': DATABASE,
-                               'table': 'production'
+                               'table': 'production',
+                               'year': year_to_fetch
                                })
     opwekking, prod_lbls = kl.get_historic_data(config, telwerk='energy', from_start_of_year=True)
     config['table'] = 'kamstrup'
@@ -234,15 +236,17 @@ def main():
                    )
     if OPTION.gauge:
         plot_graph('/tmp/kamstrupd/site/img/kam_gauge.png',
-                   fetch_last_year(OPTION.gauge),
+                   fetch_last_year(OPTION.gauge, OPTION.year),
                    f"Salderingsbalans dit jaar ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    gauge=True)
 
 
 if __name__ == "__main__":
+    year_to_graph = int(time.strftime('%Y',time.localtime()))
     parser = argparse.ArgumentParser(description="Create trendgraph or gauge")
     parser.add_argument('-m', '--months', type=int, help='number of months of data to use for the graph')
     parser.add_argument('-g', '--gauge', type=int, help='generate a gauge. Specify number of months to aggregate.')
+    parser.add_argument('-y', '--year', default=year_to_graph, type=int, help='specify the year for the graph.')
     OPTION = parser.parse_args()
     if OPTION.months == 0:
         OPTION.months = 61

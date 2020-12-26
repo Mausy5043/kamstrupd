@@ -4,7 +4,6 @@
 
 import datetime as dt
 import sqlite3 as s3
-import sys
 
 import numpy as np
 
@@ -154,25 +153,28 @@ def get_historic_data(dicti, telwerk=None, from_start_of_year=False, include_tod
     ret_lbls: numpy list str - label texts returned
     """
     period = dicti['period']
+    interval = f"datetime(\'now\', \'-{period + 1} {dicti['timeframe']}\')"
+    and_where_not_today = ''
     if from_start_of_year:
         interval = f"datetime(datetime(\'now\', \'-{period + 1} {dicti['timeframe']}\'), \'start of year\')"
-    else:
-        interval = f"datetime(\'now\', \'-{period + 1} {dicti['timeframe']}\')"
-    if include_today:
-        and_where_not_today = ''
-    else:
+    if not include_today:
         and_where_not_today = 'AND (sample_time <= datetime(\'now\', \'-1 day\'))'
+    if dicti['year']:
+        ytf = dicti['year']
+        interval = f"datetime(\'{ytf}-01-01 00:00\')"
+        and_where_not_today = f"AND (sample_time <= datetime(\'{ytf + 1}-01-01 00:00\'))"
+
     db_con = s3.connect(dicti['database'])
     with db_con:
         db_cur = db_con.cursor()
         db_cur.execute(f"SELECT sample_epoch, \
-                     {telwerk} \
-                     FROM {dicti['table']} \
-                     WHERE (sample_time >= {interval}) \
+                       {telwerk} \
+                       FROM {dicti['table']} \
+                       WHERE (sample_time >= {interval}) \
                         {and_where_not_today} \
-                     ORDER BY sample_epoch ASC \
-                     ;"
-                       )
+                       ORDER BY sample_epoch ASC \
+                       ;"
+                      )
         db_data = db_cur.fetchall()
 
     data = np.array(db_data)
