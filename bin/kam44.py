@@ -40,13 +40,13 @@ def fetch_last_months(months_to_fetch):
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def fetch_last_year(months_to_fetch, year_to_fetch):
+def fetch_last_year(year_to_fetch):
     """
       ...
       """
     global DATABASE
     config = kl.add_time_line({'grouping': '%Y-%m',
-                               'period': months_to_fetch,
+                               'period': 12,
                                'timeframe': 'month',
                                'database': DATABASE,
                                'table': 'production',
@@ -236,20 +236,23 @@ def main():
                    )
     if OPTION.gauge:
         plot_graph('/tmp/kamstrupd/site/img/kam_gauge.png',
-                   fetch_last_year(OPTION.gauge, OPTION.year),
+                   fetch_last_year(OPTION.gauge),
                    f"Salderingsbalans dit jaar ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    gauge=True)
 
 
 if __name__ == "__main__":
-    year_to_graph = int(time.strftime('%Y',time.localtime()))
+    year_to_graph = int(time.strftime('%Y', time.localtime()))
     parser = argparse.ArgumentParser(description="Create trendgraph or gauge")
     parser.add_argument('-m', '--months', type=int, help='number of months of data to use for the graph')
-    parser.add_argument('-g', '--gauge', type=int, help='generate a gauge. Specify number of months to aggregate.')
+    parser.add_argument('-g', '--gauge', action='store_true', help='generate a gauge. Specify number of months to aggregate.')
     parser.add_argument('-y', '--year', default=year_to_graph, type=int, help='specify the year for the graph.')
     OPTION = parser.parse_args()
     if OPTION.months == 0:
         OPTION.months = 61
-    if OPTION.gauge == 0:
-        OPTION.gauge = 12
-    main()
+    if OPTION.gauge:
+        OPTION.gauge = year_to_graph
+    if OPTION.year:
+        OPTION.gauge = OPTION.year
+    print(OPTION)
+    #main()

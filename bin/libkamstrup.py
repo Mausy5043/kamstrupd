@@ -176,6 +176,10 @@ def get_historic_data(dicti, telwerk=None, from_start_of_year=False, include_tod
                        ;"
                       )
         db_data = db_cur.fetchall()
+    if not db_data:
+        # fake some data
+        db_data = [(int(dt.datetime(ytf, 1, 1).timestamp()), 0),
+                   (int(dt.datetime(ytf+1, 1, 1).timestamp()), 0)]
 
     data = np.array(db_data)
 
