@@ -254,5 +254,4 @@ if __name__ == "__main__":
         OPTION.gauge = year_to_graph
     if OPTION.year:
         OPTION.gauge = OPTION.year
-    print(OPTION)
     main()
