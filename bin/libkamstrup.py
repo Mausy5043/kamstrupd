@@ -220,9 +220,7 @@ def fast_group_data(x_epochs, y_data, grouping):
     x_texts = np.array([dt.datetime.fromtimestamp(i).strftime(grouping) for i in x_epochs], dtype='str')
     """x_texts = ['12-31 20h' '12-31 21h' '12-31 21h' '12-31 21h' '12-31 21h' '12-31 21h'
                  '12-31 21h' '12-31 22h' '12-31 22h' '12-31 22h' '12-31 22h' '12-31 22h'
-                 '12-31 22h' '12-31 23h' '12-31 23h' '12-31 23h' '12-31 23h' '12-31 23h'
                  :
-                 '01-01 07h' '01-01 08h' '01-01 08h' '01-01 08h' '01-01 08h' '01-01 08h'
                  '01-01 08h' '01-01 09h' '01-01 09h' '01-01 09h' '01-01 09h' '01-01 09h'
                  '01-01 09h' '01-01 10h' '01-01 10h' '01-01 10h' '01-01 10h' '01-01 10h'
                  '01-01 10h']
@@ -232,14 +230,8 @@ def fast_group_data(x_epochs, y_data, grouping):
     _, loc1 = np.unique(x_texts, return_index=True)  # 20210101
     loc1 = np.sort(loc1)  # 20210101
     unique_x_texts = x_texts[loc1]  # 20210101
-
-    # unique_x_texts, loc1 = np.unique(x_texts, return_index=True)
-    # """unique_x_texts = ['01-01 00h' '01-01 01h' '01-01 02h' '01-01 03h' '01-01 04h' '01-01 05h'
-    #                     '01-01 06h' '01-01 07h' '01-01 08h' '01-01 09h' '01-01 10h' '12-31 20h'
-    #                     '12-31 21h' '12-31 22h' '12-31 23h']
-    # """
     loc2 = len(x_texts) - 1 - np.unique(np.flip(x_texts), return_index=True)[1]
-    loc2 = np.sort(loc2)   # 2021010
+    loc2 = np.sort(loc2)   # 20210101
 
     y = y_data[loc2] - y_data[loc1]
     returned_y_data = np.where(y > 0, y, 0)
