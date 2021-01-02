@@ -11,7 +11,7 @@ import numpy as np
 def add_time_line(config):
     final_epoch = int(dt.datetime.now().timestamp())
     if 'year' in config:
-        ytf = config['year']
+        ytf = int(config['year']) + 1
         final_epoch = int(dt.datetime.strptime(f"{ytf}-01-01 00:00", "%Y-%m-%d %H:%M").timestamp())
     step_epoch = 10 * 60
     multi = 3600
