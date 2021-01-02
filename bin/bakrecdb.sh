@@ -31,6 +31,7 @@ create_database_file() {
   #
   if [[ "${1}" == "idf1" ]]; then
     sqlite3 "${HOME}/.sqlite3/${DBFILE_1}" <bin/table31.sqlite3.sql
+    sqlite3 "${HOME}/.sqlite3/${DBFILE_1}" 'PRAGMA journal_mode=WAL;'
   else
     echo "Unsupported functionality. Use the 'install_database_file' function instead!"
     exit 1

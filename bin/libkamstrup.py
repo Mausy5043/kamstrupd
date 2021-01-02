@@ -220,11 +220,24 @@ def group_data(x_epochs, y_data, grouping):
 
 def fast_group_data(x_epochs, y_data, grouping):
     """A faster version of group_data()."""
+    # convert y-values to numpy array
     y_data = np.array(y_data)
+    # convert epochs to text
     x_texts = np.array([dt.datetime.fromtimestamp(i).strftime(grouping) for i in x_epochs], dtype='str')
-
-    unique_x_texts, loc1 = np.unique(x_texts, return_index=True)
+    """x_texts = ['12-31 20h' '12-31 21h' '12-31 21h' '12-31 21h' '12-31 21h' '12-31 21h'
+                 '12-31 21h' '12-31 22h' '12-31 22h' '12-31 22h' '12-31 22h' '12-31 22h'
+                 :
+                 '01-01 08h' '01-01 09h' '01-01 09h' '01-01 09h' '01-01 09h' '01-01 09h'
+                 '01-01 09h' '01-01 10h' '01-01 10h' '01-01 10h' '01-01 10h' '01-01 10h'
+                 '01-01 10h']
+    """
+    # compress x_texts to a unique list
+    # order must be preserved
+    _, loc1 = np.unique(x_texts, return_index=True)  # 20210101
+    loc1 = np.sort(loc1)  # 20210101
+    unique_x_texts = x_texts[loc1]  # 20210101
     loc2 = len(x_texts) - 1 - np.unique(np.flip(x_texts), return_index=True)[1]
+    loc2 = np.sort(loc2)   # 20210101
 
     y = y_data[loc2] - y_data[loc1]
     returned_y_data = np.where(y > 0, y, 0)
