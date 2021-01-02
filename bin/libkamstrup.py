@@ -116,7 +116,7 @@ def get_historic_data(dicti, telwerk=None, from_start_of_year=False, include_tod
         interval = f"datetime(datetime(\'now\', \'-{period + 1} {dicti['timeframe']}\'), \'start of year\')"
     if not include_today:
         and_where_not_today = 'AND (sample_time <= datetime(\'now\', \'-1 day\'))'
-    if dicti['year']:
+    if 'year' in dicti:
         ytf = dicti['year']
         interval = f"datetime(\'{ytf}-01-01 00:00\')"
         and_where_not_today = f"AND (sample_time <= datetime(\'{ytf + 1}-01-01 00:00\'))"
