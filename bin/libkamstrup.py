@@ -97,49 +97,6 @@ def distract24(arr1, arr2):
     return result
 
 
-def get_historic_data_legacy(dicti, telwerk=None, from_start_of_year=False, include_today=True):
-    """Fetch historic data from SQLITE3 database.
-
-    :param
-    dict: dict - containing settings
-    telwerk: str - columnname to be collected
-    from_start_of_year: boolean - fetch data from start of year or not
-
-    :returns
-    ret_data: numpy list int - data returned
-    ret_lbls: numpy list str - label texts returned
-    """
-    period = dicti['period']
-    if from_start_of_year:
-        interval = f"datetime(datetime(\'now\', \'-{period + 1} {dicti['timeframe']}\'), \'start of year\')"
-    else:
-        interval = f"datetime(\'now\', \'-{period + 1} {dicti['timeframe']}\')"
-    if include_today:
-        and_where_not_today = ''
-    else:
-        and_where_not_today = 'AND (sample_time <= datetime(\'now\', \'-1 day\'))'
-    db_con = s3.connect(dicti['database'])
-    with db_con:
-        db_cur = db_con.cursor()
-        db_cur.execute(f"SELECT strftime('{dicti['grouping']}',sample_time) as grouped, \
-                     MAX({telwerk})-MIN({telwerk}), \
-                     MIN(sample_epoch) as t \
-                     FROM {dicti['table']} \
-                     WHERE (sample_time >= {interval}) \
-                        {and_where_not_today} \
-                     GROUP BY grouped \
-                     ORDER BY t ASC \
-                     ;"
-                       )
-        db_data = db_cur.fetchall()
-
-    data = np.array(db_data)
-    ret_data = np.array(data[:, 1], dtype=float) / 1000
-    ret_lbls = np.array(data[:, 0], dtype=str)
-
-    return ret_data[-period:], ret_lbls[-period:]
-
-
 def get_historic_data(dicti, telwerk=None, from_start_of_year=False, include_today=True):
     """Fetch historic data from SQLITE3 database.
 
@@ -203,21 +160,6 @@ def interplate(epochrng, epoch, data):
     return epochrng, datarng
 
 
-def group_data(x_epochs, y_data, grouping):
-    """"""
-    x_texts = np.array([dt.datetime.fromtimestamp(i).strftime(grouping) for i in x_epochs], dtype='str')
-    unique_x_texts = np.array(sorted(set(x_texts)), dtype='str')
-    returned_y_data = np.zeros(np.shape(unique_x_texts))
-
-    for idx, ut in enumerate(unique_x_texts):
-        indices = np.where(x_texts == ut)[0]
-        y = y_data[indices[-1]] - y_data[indices[0]]
-        if y > 0:
-            returned_y_data[idx] = y
-
-    return unique_x_texts, returned_y_data
-
-
 def fast_group_data(x_epochs, y_data, grouping):
     """A faster version of group_data()."""
     # convert y-values to numpy array
@@ -233,11 +175,11 @@ def fast_group_data(x_epochs, y_data, grouping):
     """
     # compress x_texts to a unique list
     # order must be preserved
-    _, loc1 = np.unique(x_texts, return_index=True)  # 20210101
-    loc1 = np.sort(loc1)  # 20210101
-    unique_x_texts = x_texts[loc1]  # 20210101
+    _, loc1 = np.unique(x_texts, return_index=True)
+    loc1 = np.sort(loc1)
+    unique_x_texts = x_texts[loc1]
     loc2 = len(x_texts) - 1 - np.unique(np.flip(x_texts), return_index=True)[1]
-    loc2 = np.sort(loc2)   # 20210101
+    loc2 = np.sort(loc2)
 
     y = y_data[loc2] - y_data[loc1]
     returned_y_data = np.where(y > 0, y, 0)
