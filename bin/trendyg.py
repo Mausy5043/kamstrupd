@@ -69,6 +69,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
     """
       Create the graph
       """
+    global OPTION
     data_lbls = data_tuple[0]
     import_lo = data_tuple[1]
     import_hi = data_tuple[2]
@@ -80,36 +81,34 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
     own_usage = kl.distract(opwekking, exprt)
     usage = kl.contract(own_usage, imprt)
     grph_lbls, total_use, total_out = kl.build_arrays44(data_lbls, usage, exprt)
-    """
-    --- Start debugging:
-    np.set_printoptions(precision=3)
-    yr = 6
-    print("data_lbls: ", np.shape(data_lbls), data_lbls[-5:])
-    print(" ")
-    print("opwekking: ", np.shape(opwekking), opwekking[-5:])
-    print(" ")
-    print("export_hi: ", np.shape(export_hi), export_hi[-5:])
-    print("export_lo: ", np.shape(export_lo), export_lo[-5:])
-    print("exprt    : ", np.shape(exprt), exprt[-5:])
-    print(" ")
-    print("import_hi: ", np.shape(import_hi), import_hi[-5:])
-    print("import_lo: ", np.shape(import_lo), import_lo[-5:])
-    print("imprt    : ", np.shape(imprt), imprt[-5:])
-    print(" ")
-    print("own_usage: ", np.shape(own_usage), own_usage[-5:])
-    print("usage    : ", np.shape(usage), usage[-5:])
-    print(" ")
-    print(" ")
-    # print("grph_lbls: ", np.shape(grph_lbls), grph_lbls)
-    print("grph_lbls: ", grph_lbls)
-    print(" ")
-    # print("total_use: ", np.shape(total_use), total_use[yr])
-    print("total_use: ", total_use)
-    print(" ")
-    # print("total_out: ", np.shape(total_out), total_out[yr])
-    print("total_out: ", total_out)
-    --- End debugging.
-    """
+    if OPTION.print:
+        np.set_printoptions(precision=3)
+        yr = 6
+        print("data_lbls: ", np.shape(data_lbls), data_lbls[-5:])
+        print(" ")
+        print("opwekking: ", np.shape(opwekking), opwekking[-5:])
+        print(" ")
+        print("export_hi: ", np.shape(export_hi), export_hi[-5:])
+        print("export_lo: ", np.shape(export_lo), export_lo[-5:])
+        print("exprt    : ", np.shape(exprt), exprt[-5:])
+        print(" ")
+        print("import_hi: ", np.shape(import_hi), import_hi[-5:])
+        print("import_lo: ", np.shape(import_lo), import_lo[-5:])
+        print("imprt    : ", np.shape(imprt), imprt[-5:])
+        print(" ")
+        print("own_usage: ", np.shape(own_usage), own_usage[-5:])
+        print("usage    : ", np.shape(usage), usage[-5:])
+        print(" ")
+        print(" ")
+        # print("grph_lbls: ", np.shape(grph_lbls), grph_lbls)
+        print("grph_lbls: ", grph_lbls)
+        print(" ")
+        # print("total_use: ", np.shape(total_use), total_use[yr])
+        print("total_use: ", total_use)
+        print(" ")
+        # print("total_out: ", np.shape(total_out), total_out[yr])
+        print("total_out: ", total_out)
+
     col_import = 'red'
     col_export = 'blue'
     col_usage = 'green'
@@ -160,12 +159,11 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
         if power_in > power_out:
             col_iodif = 'orange'
         power_rng = 2 * max(power_in, power_out)
-        """
-        print(f"IN  {power_in:.0f}")
-        print(f"OUT {power_out:.0f}")
-        print(f"DIF {power_dif:.0f}")
-        print(f"RNG {power_rng:.0f}")
-        """
+        if OPTION.print:
+            print(f"IN  {power_in:.0f}")
+            print(f"OUT {power_out:.0f}")
+            print(f"DIF {power_dif:.0f}")
+            print(f"RNG {power_rng:.0f}")
 
         # Set the bar width
         bars_width = 1.0
