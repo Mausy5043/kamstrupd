@@ -65,7 +65,6 @@ def fetch_last_year(year_to_fetch):
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-# noinspection SpellCheckingInspection
 def plot_graph(output_file, data_tuple, plot_title, gauge=False):
     """
       Create the graph
@@ -244,14 +243,14 @@ def main():
 if __name__ == "__main__":
     year_to_graph = int(time.strftime('%Y', time.localtime()))
     parser = argparse.ArgumentParser(description="Create trendgraph or gauge")
-    parser.add_argument('-m', '--months', type=int, help='number of months of data to use for the graph')
-    parser.add_argument('-g', '--gauge', action='store_true', help='generate a gauge. Specify year to aggregate.')
-    parser.add_argument('-y', '--year', default=year_to_graph, type=int, help='specify the year for the graph.')
+    parser.add_argument('-g', '--gauge', type=int, help='generate a gauge. Specify year to aggregate or 0 for current '
+                                                        'year.')
+    parser.add_argument('-m', '--months', type=int, help='number of months of data to use for the graph or 0 for '
+                                                         'default.')
+    parser.add_argument('-p', '--print', action='store_true', help='Output data to stdout.')
     OPTION = parser.parse_args()
     if OPTION.months == 0:
         OPTION.months = 61
-    if OPTION.gauge:
+    if OPTION.gauge == 0 or OPTION.gauge > year_to_graph:
         OPTION.gauge = year_to_graph
-    if OPTION.year:
-        OPTION.gauge = OPTION.year
     main()
