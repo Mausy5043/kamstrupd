@@ -70,7 +70,9 @@ install_package "sqlite3"
 echo
 echo "*********************************************************"
 python3 -m pip install --upgrade pip setuptools wheel
-python3 -m pip install -r requirements.txt
+pushd "${HERE}" || exit 1
+  python3 -m pip install -r requirements.txt
+popd || exit 1
 
 getfilefromserver ".my.kam.cnf" "0740"
 getfilefromserver ".config" "0744"
