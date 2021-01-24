@@ -36,7 +36,7 @@ commonlibbranch="v0_7"
 pushd "${HERE}" || exit 1
     # shellcheck disable=SC1091
     source ./includes
-popd || exit
+popd || exit 1
 
 echo
 echo "*********************************************************"
@@ -125,7 +125,7 @@ pushd "${HERE}" || exit 1
     sudo systemctl start kamstrup.kamstrup.service
     sudo systemctl start kamstrup.solaredge.service
 
-popd || exit
+popd || exit 1
 
 echo
 echo -n "Finished installation of KAMSTRUP on "
