@@ -249,6 +249,6 @@ if __name__ == "__main__":
     OPTION = parser.parse_args()
     if OPTION.months == 0:
         OPTION.months = 61
-    if OPTION.gauge == 0 or OPTION.gauge > year_to_graph:
+    if (OPTION.gauge is not None) and (OPTION.gauge == 0 or OPTION.gauge > year_to_graph):
         OPTION.gauge = year_to_graph
     main()
