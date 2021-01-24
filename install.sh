@@ -95,7 +95,7 @@ pushd "${HERE}" || exit 1
     git config core.fileMode false
     # set the branch
     if [ ! -e "${HOME}/.${app_name}.branch" ]; then
-        echo "master" >"${HOME}/.${app_name}.branch"
+        echo "v5" >"${HOME}/.${app_name}.branch"
     fi
 
     # Recover the database from the server
