@@ -97,6 +97,7 @@ pushd "${HERE}" || exit 1
     if [ ! -e "${HOME}/.${app_name}.branch" ]; then
         echo "v5" >"${HOME}/.${app_name}.branch"
     fi
+    chmod -x ./services/*
 
     # Recover the database from the server
     ./bin/bakrecdb.sh --install
