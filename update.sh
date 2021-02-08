@@ -28,6 +28,7 @@ pushd "${HERE}" || exit 1
     git checkout "${branch}"
     git reset --hard "origin/${branch}" && git clean -f -d
     chmod -x ./services/*
+    # sudo chmod -x /etc/systemd/system/kamstrup.*
 
     changed_config=0
     changed_service=0
