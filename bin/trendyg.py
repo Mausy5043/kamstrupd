@@ -182,31 +182,34 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
                  height=bars_width,
                  alpha=ahpla,
                  color=col_export,
-                 left=power_rng/-2,
+                 left=power_rng / -2,
                  align='edge'
                  )
-        ax1.text(power_rng/-3, tick_pos+(bars_width/2), "{:4.0f}".format(power_out), {'ha': 'center', 'va': 'center'}, fontsize=12)
+        ax1.text(power_rng / -3, tick_pos + (bars_width / 2), "{:4.0f}".format(power_out),
+                 {'ha': 'center', 'va': 'center'}, fontsize=12)
         ax1.barh(tick_pos, abs(power_dif),
                  height=bars_width,
-                 alpha=ahpla*0.5,
+                 alpha=ahpla * 0.5,
                  color=col_iodif,
-                 left=(power_rng/-2) + power_out,
+                 left=(power_rng / -2) + power_out,
                  align='edge'
                  )
-        ax1.text((power_rng/-2) + power_out + abs(power_dif)/2, tick_pos+(bars_width*0.75), "{:4.0f}".format(power_dif), {'ha': 'center', 'va': 'center'}, fontsize=12)
+        ax1.text((power_rng / -2) + power_out + abs(power_dif) / 2, tick_pos + (bars_width * 0.75),
+                 "{:4.0f}".format(power_dif), {'ha': 'center', 'va': 'center'}, fontsize=12)
         ax1.barh(tick_pos, power_in,
                  height=bars_width,
                  alpha=ahpla,
                  color=col_import,
-                 left=(power_rng/-2) + power_out + abs(power_dif),
+                 left=(power_rng / -2) + power_out + abs(power_dif),
                  align='edge'
                  )
-        ax1.text(power_rng/3, tick_pos+(bars_width/2), "{:4.0f}".format(power_in), {'ha': 'center', 'va': 'center'}, fontsize=12)
+        ax1.text(power_rng / 3, tick_pos + (bars_width / 2), "{:4.0f}".format(power_in),
+                 {'ha': 'center', 'va': 'center'}, fontsize=12)
 
         # Set  Axes stuff
         ax1.set_xlabel("[kWh]")
         ax1.grid(which='major', axis='x', color='k', linestyle='--', linewidth=0.5)
-        ax1.set_xlim([power_rng/-2, power_rng/2])
+        ax1.set_xlim([power_rng / -2, power_rng / 2])
         # ax1.axhline(y=0, color='k')
         ax1.axvline(x=0, color='k')
         ax1.set_yticks([2])

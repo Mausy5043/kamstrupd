@@ -58,7 +58,7 @@ def main():
     sqlcmd = iniconf.get(MYID, 'sqlcmd')
     # samples_averaged = iniconf.getint(MYID, 'samplespercycle') * iniconf.getint(MYID, 'cycles')
     sample_time = report_time / iniconf.getint(MYID, 'samplespercycle')
-    data = []   # noqa
+    data = []  # noqa
 
     test_db_connection(fdatabase)
 
@@ -71,7 +71,7 @@ def main():
             if not site_list:
                 try:
                     site_list = API_SE.get_list()['sites']['site']
-                except Exception:   # noqa
+                except Exception:  # noqa
                     mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                     site_list = []
@@ -84,7 +84,7 @@ def main():
                     if data:
                         mf.syslog_trace(f"Data to add : {data}", False, DEBUG)
                         do_add_to_database(data, fdatabase, sqlcmd)
-                except Exception:   # noqa
+                except Exception:  # noqa
                     mf.syslog_trace("Unexpected error in run()", syslog.LOG_CRIT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                     raise
@@ -94,11 +94,11 @@ def main():
                           - (start_time % sample_time)
                           + time.time())
             if pause_time > 0:
-                mf.syslog_trace(f"Waiting  : {pause_time-time.time():.1f}s", False, DEBUG)
+                mf.syslog_trace(f"Waiting  : {pause_time - time.time():.1f}s", False, DEBUG)
                 mf.syslog_trace("................................", False, DEBUG)
                 # time.sleep(pause_time)
             else:
-                mf.syslog_trace(f"Behind   : {pause_time-time.time():.1f}s", False, DEBUG)
+                mf.syslog_trace(f"Behind   : {pause_time - time.time():.1f}s", False, DEBUG)
                 mf.syslog_trace("................................", False, DEBUG)
         else:
             time.sleep(1.0)
@@ -115,7 +115,7 @@ def do_work(site_list):
         site_id = site['id']
         try:
             data_dict = API_SE.get_overview(site_id)['overview']
-        except Exception:   # noqa
+        except Exception:  # noqa
             mf.syslog_trace("Request was unsuccesful.", syslog.LOG_WARNING, DEBUG)
             mf.syslog_trace(traceback.format_exc(), syslog.LOG_WARNING, DEBUG)
             mf.syslog_trace("Maybe next time...", syslog.LOG_WARNING, DEBUG)
