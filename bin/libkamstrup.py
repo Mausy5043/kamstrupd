@@ -112,6 +112,7 @@ def get_historic_data(dicti, telwerk=None, from_start_of_year=False, include_tod
     ret_data: numpy list int - data returned
     ret_lbls: numpy list str - label texts returned
     """
+    ytf = 2019
     period = dicti['period']
     interval = f"datetime(\'now\', \'-{period + 1} {dicti['timeframe']}\')"
     and_where_not_today = ''
@@ -134,12 +135,12 @@ def get_historic_data(dicti, telwerk=None, from_start_of_year=False, include_tod
                         {and_where_not_today} \
                        ORDER BY sample_epoch ASC \
                        ;"
-                      )
+                       )
         db_data = db_cur.fetchall()
     if not db_data:
         # fake some data
         db_data = [(int(dt.datetime(ytf, 1, 1).timestamp()), 0),
-                   (int(dt.datetime(ytf+1, 1, 1).timestamp()), 0)]
+                   (int(dt.datetime(ytf + 1, 1, 1).timestamp()), 0)]
 
     data = np.array(db_data)
 
