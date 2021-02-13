@@ -122,7 +122,7 @@ class Solaredge:
         -------
         (pd.Timestamp, pd.Timestamp)
         """
-        import pandas as pd
+        import pandas as pd  # noqa
         j = self.get_data_period(site_id=site_id)
         tz = self.get_timezone(site_id=site_id)
         start, end = [pd.Timestamp(j['dataPeriod'][param]) for param in ['startDate', 'endDate']]
@@ -389,7 +389,7 @@ class Solaredge:
         -------
         ((pd.Timestamp, pd.Timestamp))
         """
-        import pandas as pd
+        import pandas as pd  # noqa
 
         if time_unit in {"WEEK", "MONTH", "YEAR"}:
             # no restrictions, so just return start and end
