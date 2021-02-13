@@ -39,7 +39,7 @@ NODE = os.uname()[1]
 # MYROOT: /home/pi
 # NODE: rbelec
 
-API_SE = solaredge.Solaredge(0)
+API_SE = solaredge.Solaredge('0')
 
 
 def main():
