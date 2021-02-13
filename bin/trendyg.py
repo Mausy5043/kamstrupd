@@ -83,7 +83,6 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
     grph_lbls, total_use, total_out = kl.build_arrays44(data_lbls, usage, exprt)
     if OPTION.print:
         np.set_printoptions(precision=3)
-        yr = 6
         print("data_lbls: ", np.shape(data_lbls), data_lbls[-12:])
         print(" ")
         print("opwekking: ", np.shape(opwekking), opwekking[-12:])
@@ -111,7 +110,6 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
 
     col_import = 'red'
     col_export = 'blue'
-    col_usage = 'green'
     col_iodif = 'cyan'
 
     if not gauge:
