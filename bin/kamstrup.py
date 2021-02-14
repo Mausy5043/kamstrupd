@@ -56,6 +56,7 @@ swits = 1
 
 def main():
     """Execute main loop."""
+    global PORT
     killer = ml.GracefulKiller()
     iniconf = configparser.ConfigParser()
     iniconf.read(f"{os.environ['HOME']}/{MYAPP}/config.ini")
@@ -68,7 +69,7 @@ def main():
 
     test_db_connection(fdatabase)
 
-    port.open()
+    PORT.open()
     serial.XON  # noqa
     pause_time = time.time()
     while not killer.kill_now:
@@ -174,6 +175,7 @@ def do_work():
 # noinspection PyUnresolvedReferences
 def gettelegram():
     """Fetch a telegram from the serialport."""
+    global PORT
     # flag used to exit the while-loop
     abort = 0
     # countdown counter used to prevent infinite loops
@@ -185,8 +187,8 @@ def gettelegram():
 
     while abort == 0:
         try:
-            # line = "".join(iter(lambda: port.read(1), delim)).strip()
-            line = str(port.readline().strip(), 'utf-8')
+            # line = "".join(iter(lambda: PORT.read(1), delim)).strip()
+            line = str(PORT.readline().strip(), 'utf-8')
             if line == "!":
                 abort = 1
             if line != "":
@@ -301,19 +303,19 @@ if __name__ == "__main__":
     syslog.openlog(ident=f'{MYAPP}.{MYID.split(".")[0]}', facility=syslog.LOG_LOCAL0)
 
     # noinspection PyUnresolvedReferences
-    port = serial.Serial()  # pylint: disable=C0103
-    port.baudrate = 9600
+    PORT = serial.Serial()  # pylint: disable=C0103
+    PORT.baudrate = 9600
     # noinspection PyUnresolvedReferences
-    port.bytesize = serial.SEVENBITS
+    PORT.bytesize = serial.SEVENBITS
     # noinspection PyUnresolvedReferences
-    port.parity = serial.PARITY_EVEN
+    PORT.parity = serial.PARITY_EVEN
     # noinspection PyUnresolvedReferences
-    port.stopbits = serial.STOPBITS_ONE
-    port.xonxoff = 1
-    port.rtscts = 0
-    port.dsrdtr = 0
-    port.timeout = 15
-    port.port = '/dev/ttyUSB0'
+    PORT.stopbits = serial.STOPBITS_ONE
+    PORT.xonxoff = 1
+    PORT.rtscts = 0
+    PORT.dsrdtr = 0
+    PORT.timeout = 15
+    PORT.port = '/dev/ttyUSB0'
 
     if OPTION.debug:
         DEBUG = True
