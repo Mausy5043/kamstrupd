@@ -8,18 +8,24 @@ Communicate with the SolarEdge API to fetch energy production data.
 Store the data in a sqlite3 database.
 """
 
+import argparse
 import configparser
 import datetime as dt
 import os
 import sqlite3
-import sys
 import syslog
 import time
 import traceback
 
-import libsolaredge as solaredge  # noqa
-import mausy5043funcs.fileops3 as mf  # noqa
-import mausy5043libs.libsignals3 as ml  # noqa
+import libsolaredge as solaredge
+import mausy5043funcs.fileops3 as mf
+import mausy5043libs.libsignals3 as ml
+
+parser = argparse.ArgumentParser(description="Execute the portal daemon.")
+parser_group = parser.add_mutually_exclusive_group(required=True)
+parser_group.add_argument('--start', action='store_true', help='start the daemon as a service')
+parser_group.add_argument('--debug', action='store_true', help='start the daemon in debugging mode')
+OPTION = parser.parse_args()
 
 # constants
 DEBUG = False
@@ -238,22 +244,12 @@ if __name__ == "__main__":
     # initialise logging
     syslog.openlog(ident=f'{MYAPP}.{MYID.split(".")[0]}', facility=syslog.LOG_LOCAL0)
 
-    if len(sys.argv) == 2:
-        if sys.argv[1] == 'start':
-            main()
-        elif sys.argv[1] == 'restart':
-            main()
-        elif sys.argv[1] == 'debug':
-            # assist with debugging.
-            DEBUG = True
-            mf.syslog_trace("Debug-mode started.", syslog.LOG_DEBUG, DEBUG)
-            print("Use <Ctrl>+C to stop.")
-            main()
-        else:
-            print("Unknown command")
-            sys.exit(2)
-    else:
-        print("usage: {0!s} start|restart|debug".format(sys.argv[0]))
-        sys.exit(2)
+    if OPTION.debug:
+        DEBUG = True
+        mf.syslog_trace("Debug-mode started.", syslog.LOG_DEBUG, DEBUG)
+        print("Use <Ctrl>+C to stop.")
+
+    # OPTION.start only executes this next line, we don't need to test for it.
+    main()
+
     print("And it's goodnight from him")
-    sys.exit(0)
