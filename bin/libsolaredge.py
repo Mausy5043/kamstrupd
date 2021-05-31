@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+"""Library functions for SolarEdge."""
+
 import datetime as dt
 import functools
 import time
