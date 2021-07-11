@@ -146,6 +146,7 @@ disable=print-statement,
         bad-continuation,
         bad-whitespace,
         duplicate-code,
+        global-statement,
         locally-enabled,
         too-many-locals
 

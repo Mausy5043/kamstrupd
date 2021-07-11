@@ -23,13 +23,17 @@ import mausy5043libs.libsignals3 as ml
 
 parser = argparse.ArgumentParser(description="Execute the portal daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
-parser_group.add_argument('--start', action='store_true', help='start the daemon as a service')
-parser_group.add_argument('--debug', action='store_true', help='start the daemon in debugging mode')
+parser_group.add_argument(
+    "--start", action="store_true", help="start the daemon as a service"
+)
+parser_group.add_argument(
+    "--debug", action="store_true", help="start the daemon in debugging mode"
+)
 OPTION = parser.parse_args()
 
 # constants
 DEBUG = False
-HERE = os.path.realpath(__file__).split('/')
+HERE = os.path.realpath(__file__).split("/")
 # runlist id :
 MYID = HERE[-1]
 # app_name :
@@ -45,7 +49,7 @@ NODE = os.uname()[1]
 # MYROOT: /home/pi
 # NODE: rbelec
 
-API_SE = solaredge.Solaredge('0')
+API_SE = solaredge.Solaredge("0")
 
 
 def main():
@@ -55,15 +59,15 @@ def main():
     # read api_key from the file ~/.config/solaredge/account.ini
     iniconf = configparser.ConfigParser()
     iniconf.read(f"{os.environ['HOME']}/.config/solaredge/account.ini")
-    api_key = iniconf.get('account', 'api_key')
+    api_key = iniconf.get("account", "api_key")
     # read the rest of the configuration from config.ini
     iniconf = configparser.ConfigParser()
     iniconf.read(f"{os.environ['HOME']}/{MYAPP}/config.ini")
     report_time = iniconf.getint(MYID, "reporttime")
     fdatabase = f"{os.environ['HOME']}/{iniconf.get(MYID, 'databasefile')}"
-    sqlcmd = iniconf.get(MYID, 'sqlcmd')
+    sqlcmd = iniconf.get(MYID, "sqlcmd")
     # samples_averaged = iniconf.getint(MYID, 'samplespercycle') * iniconf.getint(MYID, 'cycles')
-    sample_time = report_time / iniconf.getint(MYID, 'samplespercycle')
+    sample_time = report_time / iniconf.getint(MYID, "samplespercycle")
     data = []  # noqa
 
     test_db_connection(fdatabase)
@@ -76,10 +80,16 @@ def main():
             start_time = time.time()
             if not site_list:
                 try:
-                    site_list = API_SE.get_list()['sites']['site']
+                    site_list = API_SE.get_list()["sites"]["site"]
                 except Exception:  # noqa
-                    mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
-                    mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+                    mf.syslog_trace(
+                        "Error connecting to SolarEdge",
+                        syslog.LOG_CRIT,
+                        DEBUG,
+                    )
+                    mf.syslog_trace(
+                        traceback.format_exc(), syslog.LOG_CRIT, DEBUG
+                    )
                     site_list = []
                     pass
 
@@ -91,21 +101,39 @@ def main():
                         mf.syslog_trace(f"Data to add : {data}", False, DEBUG)
                         do_add_to_database(data, fdatabase, sqlcmd)
                 except Exception:  # noqa
-                    mf.syslog_trace("Unexpected error in run()", syslog.LOG_CRIT, DEBUG)
-                    mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+                    mf.syslog_trace(
+                        "Unexpected error in run()", syslog.LOG_CRIT, DEBUG
+                    )
+                    mf.syslog_trace(
+                        traceback.format_exc(), syslog.LOG_CRIT, DEBUG
+                    )
                     raise
 
-            pause_time = (sample_time
-                          - (time.time() - start_time)
-                          - (start_time % sample_time)
-                          + time.time())
+            pause_time = (
+                sample_time
+                - (time.time() - start_time)
+                - (start_time % sample_time)
+                + time.time()
+            )
             if pause_time > 0:
-                mf.syslog_trace(f"Waiting  : {pause_time - time.time():.1f}s", False, DEBUG)
-                mf.syslog_trace("................................", False, DEBUG)
+                mf.syslog_trace(
+                    f"Waiting  : {pause_time - time.time():.1f}s",
+                    False,
+                    DEBUG,
+                )
+                mf.syslog_trace(
+                    "................................", False, DEBUG
+                )
                 # time.sleep(pause_time)
             else:
-                mf.syslog_trace(f"Behind   : {pause_time - time.time():.1f}s", False, DEBUG)
-                mf.syslog_trace("................................", False, DEBUG)
+                mf.syslog_trace(
+                    f"Behind   : {pause_time - time.time():.1f}s",
+                    False,
+                    DEBUG,
+                )
+                mf.syslog_trace(
+                    "................................", False, DEBUG
+                )
         else:
             time.sleep(1.0)
 
@@ -113,16 +141,18 @@ def main():
 def do_work(site_list):
     """Extract the data from the dict(s)."""
     global API_SE
-    dt_format = '%Y-%m-%d %H:%M:%S'
+    dt_format = "%Y-%m-%d %H:%M:%S"
     data_list = list()
     data_dict = dict()
 
     for site in site_list:
-        site_id = site['id']
+        site_id = site["id"]
         try:
-            data_dict = API_SE.get_overview(site_id)['overview']
+            data_dict = API_SE.get_overview(site_id)["overview"]
         except Exception:  # noqa
-            mf.syslog_trace("Request was unsuccesful.", syslog.LOG_WARNING, DEBUG)
+            mf.syslog_trace(
+                "Request was unsuccesful.", syslog.LOG_WARNING, DEBUG
+            )
             mf.syslog_trace(traceback.format_exc(), syslog.LOG_WARNING, DEBUG)
             mf.syslog_trace("Maybe next time...", syslog.LOG_WARNING, DEBUG)
 
@@ -138,9 +168,11 @@ def do_work(site_list):
         }
         """
         try:
-            date_time = data_dict['lastUpdateTime']
-            epoch = int(dt.datetime.strptime(date_time, dt_format).timestamp())
-            energy = data_dict['lifeTimeData']['energy']
+            date_time = data_dict["lastUpdateTime"]
+            epoch = int(
+                dt.datetime.strptime(date_time, dt_format).timestamp()
+            )
+            energy = data_dict["lifeTimeData"]["energy"]
             data_list.append([date_time, epoch, site_id, energy])
             mf.syslog_trace(f"    : {date_time} = {energy}", False, DEBUG)
         except TypeError:
@@ -168,8 +200,12 @@ def do_add_to_database(result_data, fdatabase, sql_cmd):
             try:
                 conn = create_db_connection(fdatabase)
                 cursor = conn.cursor()
-                if not epoch_is_present_in_database(cursor, results[1], results[2]):
-                    mf.syslog_trace(f"   @: {results[0]} = {results[2]}", False, DEBUG)
+                if not epoch_is_present_in_database(
+                    cursor, results[1], results[2]
+                ):
+                    mf.syslog_trace(
+                        f"   @: {results[0]} = {results[2]}", False, DEBUG
+                    )
                     cursor.execute(sql_cmd, results)
                     cursor.close()
                     conn.commit()
@@ -192,11 +228,12 @@ def epoch_is_present_in_database(db_cur, epoch, site_id):
     :param site_id: int
     :return: boolean  (true if data is present in the database for the given site at or after the given epoch)
     """
-    db_cur.execute(f"SELECT MAX(sample_epoch) \
+    db_cur.execute(
+        f"SELECT MAX(sample_epoch) \
                    FROM production \
                    WHERE (site_id = 0) OR (site_id = {site_id}) \
                    ;"
-                   )
+    )
     db_epoch = db_cur.fetchone()[0]
     if db_epoch >= epoch:
         return True
@@ -213,11 +250,17 @@ def create_db_connection(database_file):
         consql = sqlite3.connect(database_file, timeout=9000)
         return consql
     except sqlite3.Error:
-        mf.syslog_trace("Unexpected SQLite3 error when connecting to server.", syslog.LOG_CRIT, DEBUG)
+        mf.syslog_trace(
+            "Unexpected SQLite3 error when connecting to server.",
+            syslog.LOG_CRIT,
+            DEBUG,
+        )
         mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
         if consql:  # attempt to close connection to SQLite3 server
             consql.close()
-            mf.syslog_trace(" ** Closed SQLite3 connection. **", syslog.LOG_CRIT, DEBUG)
+            mf.syslog_trace(
+                " ** Closed SQLite3 connection. **", syslog.LOG_CRIT, DEBUG
+            )
         raise
 
 
@@ -233,16 +276,22 @@ def test_db_connection(fdatabase):
         cursor.close()
         conn.commit()
         conn.close()
-        syslog.syslog(syslog.LOG_INFO, f"Attached to SQLite3 server: {versql}")
+        syslog.syslog(
+            syslog.LOG_INFO, f"Attached to SQLite3 server: {versql}"
+        )
     except sqlite3.Error:
-        mf.syslog_trace("Unexpected SQLite3 error during test.", syslog.LOG_CRIT, DEBUG)
+        mf.syslog_trace(
+            "Unexpected SQLite3 error during test.", syslog.LOG_CRIT, DEBUG
+        )
         mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
         raise
 
 
 if __name__ == "__main__":
     # initialise logging
-    syslog.openlog(ident=f'{MYAPP}.{MYID.split(".")[0]}', facility=syslog.LOG_LOCAL0)
+    syslog.openlog(
+        ident=f'{MYAPP}.{MYID.split(".")[0]}', facility=syslog.LOG_LOCAL0
+    )
 
     if OPTION.debug:
         DEBUG = True
