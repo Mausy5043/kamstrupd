@@ -104,7 +104,6 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     own_usage = kl.distract(iflux, exprt)
     # own_usage = kl.distract(opwekking, exprt)
     # usage = kl.contract(own_usage, imprt)
-    btm_hi = kl.contract(ev_usage, own_usage)
     print("LBLS", data_lbls)
     print("imp", importd)
     print("exp", exportd)
@@ -112,8 +111,6 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     print("gen", green)
     print("h1d", h1d)
     print("own", own_usage)
-    print("use", usage)
-    print("btm", btm_hi)
     # Set the bar width
     bar_width = 0.75
     # Set the color alpha
@@ -155,7 +152,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
         own_usage,
         width=bar_width,
         label="Eigen Gebruik",
-        alpha=ahpla * 0.5,
+        alpha=ahpla,
         color=col_usage,
         align="center",
     )
@@ -165,7 +162,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
         ev_usage,
         width=bar_width,
         label="EV",
-        alpha=ahpla,
+        alpha=ahpla * 0.7,
         color=col_ev,
         align="center",
     )
@@ -182,11 +179,8 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
         align="center",
     )
 
-
-
     # Set Axes stuff
     ax1.set_ylabel("[kWh]")
-
 
     ax1.set_xlabel("Datetime")
     ax1.grid(
