@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import argparse
+import datetime as dt
 import os
 
 import libkamstrup as kl
@@ -47,18 +48,22 @@ def fetch_last_day(hours_to_fetch):
     zdate = str2int(zappi_status["zappi"][0]["dat"].split("-"))
     ztime = str2int(zappi_status["zappi"][0]["tim"].split(":"))
 
-    ztime[0] -= hours_to_fetch
-    if ztime[0] < 0:
-        ztime[0] += 24
-        zdate[0] -= 1
-        if zdate[1] < 1:
-            zdate[1] += 12
-            zdate[2] -= 1
-    zdate = int2str(zdate)
-    ztime = int2str(ztime)
+    time_dict = {"hours": hours_to_fetch + 2}
+    time_delta = dt.timedelta(**time_dict)
+    time_obj = dt.datetime.now() - time_delta
+
+    # ztime[0] -= hours_to_fetch
+    # if ztime[0] < 0:
+    #     ztime[0] += 24
+    #     zdate[0] -= 1
+    #     if zdate[1] < 1:
+    #         zdate[1] += 12
+    #         zdate[2] -= 1
+    # zdate = int2str(zdate)
+    # ztime = int2str(ztime)
 
     zappi_data = myenergi.get_status(
-        f"cgi-jdayhour-Z{myenergi.zappi_serial}-{zdate[2]}-{zdate[1]}-{zdate[0]}-{ztime[0]}"
+        f"cgi-jdayhour-Z{myenergi.zappi_serial}-{time_obj.year}-{time_obj.month}-{time_obj.day}-{time_obj.hour}"
     )
     # for key, value in enumerate(zappi_status["zappi"][0]):
     #     print(key, value, zappi_status["zappi"][0][value])
