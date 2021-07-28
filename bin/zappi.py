@@ -1,18 +1,14 @@
 #!/usr/bin/python3
 
+import argparse
 import os
 
+import libkamstrup as kl
 import libzappi as zl
+import matplotlib.pyplot as plt
 
-import argparse
-import sys
 from datetime import datetime as dt
 
-# noinspection PyUnresolvedReferences
-import libkamstrup as kl
-
-# import matplotlib.pyplot as plt
-import numpy as np
 
 # import time
 DEBUG = False
@@ -94,17 +90,152 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     opwekking = data_tuple[3]
     exportd = data_tuple[4]
     h1d = data_tuple[5]
-    # imprt = kl.contract(import_lo, import_hi)
-    # exprt = kl.contract(export_lo, export_hi)
-    # own_usage = kl.distract(opwekking, exprt)
-    # usage = kl.contract(own_usage, imprt)
-    # btm_hi = kl.contract(import_lo, own_usage)
+    #
+    imprt = importd
+    exprt = exportd
+    own_usage = kl.distract(opwekking, exprt)
+    ev_usage = h1d
+    usage = kl.contract(own_usage, imprt)
+    btm_hi = kl.contract(ev_usage, own_usage)
     print("LBLS", data_lbls)
     print("imp", importd)
     print("exp", exportd)
     print("gen", opwekking)
     print("gep", green)
     print("h1d", h1d)
+    print("own", own_usage)
+    print("use", usage)
+    print("btm", btm_hi)
+    # Set the bar width
+    bar_width = 0.75
+    # Set the color alpha
+    ahpla = 0.7
+    # positions of the left bar-boundaries
+    tick_pos = list(range(1, len(data_lbls) + 1))
+
+    # Create the general plot and the bar
+    plt.rc("font", size=6.5)
+    dummy, ax1 = plt.subplots(1, figsize=(10, 3.5))
+    col_import = "red"
+    col_export = "blue"
+    col_ev = "yellow"
+    col_usage = "green"
+
+    """example data:
+    LBLS ['07-28 01h', '07-28 02h', '07-28 03h', '07-28 04h', '07-28 05h', '07-28 06h', '07-28 07h', '07-28 08h', '07-28 09h', '07-28 10h', '07-28 11h', '07-28 12h', '07-28 13h']
+    imp [0.189, 0.171, 0.152, 0.211, 0.071, 0.071, 0.17, 0.161, 0.128, 0.072, 0.072, 0.103, 0.053]
+    exp [0.0, 0.0, 0.0, 0.001, 0.058, 0.23, 0.194, 0.148, 0.099, 0.169, 0.335, 0.701, 0.671]
+    gen [0.007, 0.007, 0.007, 0.003, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    gep [0.0, 0.0, 0.0, 0.028, 0.223, 0.577, 1.313, 1.124, 1.365, 0.833, 0.84, 1.017, 1.183]
+    h1d [0.0, 0.0, 0.0, 0.0, 0.0, 0.233, 1.032, 0.826, 1.111, 0.537, 0.29, 0.0, 0.0]
+    """
+
+    # Create a bar plot of importd
+    ax1.bar(
+        tick_pos,
+        importd,
+        width=bar_width,
+        label="Inkoop",
+        alpha=ahpla,
+        color=col_import,
+        align="center",
+        bottom=btm_hi,
+    )
+    # Create a bar plot of import_hi
+    ax1.bar(
+        tick_pos,
+        ev_usage,
+        width=bar_width,
+        label="EV",
+        alpha=ahpla * 0.5,
+        color=col_ev,
+        align="center",
+        bottom=own_usage,
+    )
+    # Create a bar plot of own_usage
+    ax1.bar(
+        tick_pos,
+        own_usage,
+        width=bar_width,
+        label="Eigen gebruik",
+        alpha=ahpla,
+        color=col_usage,
+        align="center",
+    )
+    if show_data == 1:
+        for i, v in enumerate(own_usage):
+            ax1.text(
+                tick_pos[i],
+                10,
+                "{:7.3f}".format(v),
+                {"ha": "center", "va": "bottom"},
+                rotation=-90,
+            )
+    if show_data == 2:
+        for i, v in enumerate(usage):
+            ax1.text(
+                tick_pos[i],
+                500,
+                "{:4.0f}".format(v),
+                {"ha": "center", "va": "bottom"},
+                fontsize=12,
+            )
+    # Exports hang below the y-axis
+    # Create a bar plot of exportd
+    ax1.bar(
+        tick_pos,
+        [-1 * i for i in exportd],
+        width=bar_width,
+        label="Verkoop",
+        alpha=ahpla,
+        color=col_export,
+        align="center",
+    )
+
+    if show_data == 1:
+        for i, v in enumerate(exprt):
+            ax1.text(
+                tick_pos[i],
+                -10,
+                "{:7.3f}".format(v),
+                {"ha": "center", "va": "top"},
+                rotation=-90,
+            )
+    if show_data == 2:
+        for i, v in enumerate(exprt):
+            ax1.text(
+                tick_pos[i],
+                -500,
+                "{:4.0f}".format(v),
+                {"ha": "center", "va": "top"},
+                fontsize=12,
+            )
+
+    # Set Axes stuff
+    ax1.set_ylabel("[kWh]")
+    if show_data == 0:
+        y_lo = -1 * (max(exprt) + 1)
+        y_hi = max(usage) + 1
+        if y_lo > -1.5:
+            y_lo = -1.5
+        if y_hi < 1.5:
+            y_hi = 1.5
+        ax1.set_ylim([y_lo, y_hi])
+
+    ax1.set_xlabel("Datetime")
+    ax1.grid(
+        which="major", axis="y", color="k", linestyle="--", linewidth=0.5
+    )
+    ax1.axhline(y=0, color="k")
+    ax1.axvline(x=0, color="k")
+    # Set plot stuff
+    plt.xticks(tick_pos, data_lbls, rotation=-60)
+    plt.title(f"{plot_title}")
+    plt.legend(loc="upper left", ncol=5, framealpha=0.2)
+    # Fit every nicely
+    plt.xlim([min(tick_pos) - bar_width, max(tick_pos) + bar_width])
+    plt.tight_layout()
+    plt.savefig(fname=f"{output_file}", format="png")
 
 
 def main():
@@ -144,7 +275,6 @@ if __name__ == "__main__":
         OPTION.hours = 5
     if OPTION.days == 0:
         OPTION.days = 5
-    # OPTION.hours = 5
     # Initialise object and connect to myenergi server
     myenergi = zl.Myenergi(CONFIG_FILE, debug=DEBUG)
     main()
