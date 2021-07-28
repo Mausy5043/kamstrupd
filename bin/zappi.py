@@ -101,7 +101,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     ev_usage = h1d
     iflux = kl.contract(imprt, opwekking)
     oflux = kl.contract(exprt, h1d)
-    own_usage = kl.distract(iflux, oflux)
+    own_usage = kl.distract(iflux, exprt)
     # own_usage = kl.distract(opwekking, exprt)
     # usage = kl.contract(own_usage, imprt)
     btm_hi = kl.contract(ev_usage, own_usage)
@@ -147,7 +147,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
         alpha=ahpla,
         color=col_import,
         align="center",
-        bottom=btm_hi,
+        bottom=own_usage,
     )
     # Create a bar plot of import_hi
     ax1.bar(
@@ -158,7 +158,6 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
         alpha=ahpla * 0.5,
         color=col_usage,
         align="center",
-        bottom=ev_usage,
     )
     # Create a bar plot of own_usage
     ax1.bar(
@@ -170,24 +169,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
         color=col_ev,
         align="center",
     )
-    if show_data == 1:
-        for i, v in enumerate(own_usage):
-            ax1.text(
-                tick_pos[i],
-                10,
-                "{:7.3f}".format(v),
-                {"ha": "center", "va": "bottom"},
-                rotation=-90,
-            )
-    if show_data == 2:
-        for i, v in enumerate(usage):
-            ax1.text(
-                tick_pos[i],
-                500,
-                "{:4.0f}".format(v),
-                {"ha": "center", "va": "bottom"},
-                fontsize=12,
-            )
+
     # Exports hang below the y-axis
     # Create a bar plot of exportd
     ax1.bar(
@@ -200,35 +182,11 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
         align="center",
     )
 
-    if show_data == 1:
-        for i, v in enumerate(exprt):
-            ax1.text(
-                tick_pos[i],
-                -10,
-                "{:7.3f}".format(v),
-                {"ha": "center", "va": "top"},
-                rotation=-90,
-            )
-    if show_data == 2:
-        for i, v in enumerate(exprt):
-            ax1.text(
-                tick_pos[i],
-                -500,
-                "{:4.0f}".format(v),
-                {"ha": "center", "va": "top"},
-                fontsize=12,
-            )
+
 
     # Set Axes stuff
     ax1.set_ylabel("[kWh]")
-    if show_data == 0:
-        y_lo = -1 * (max(exprt) + 1)
-        y_hi = max(usage) + 1
-        if y_lo > -1.5:
-            y_lo = -1.5
-        if y_hi < 1.5:
-            y_hi = 1.5
-        ax1.set_ylim([y_lo, y_hi])
+
 
     ax1.set_xlabel("Datetime")
     ax1.grid(
