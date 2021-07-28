@@ -98,9 +98,12 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     #
     imprt = importd
     exprt = exportd
-    own_usage = kl.distract(opwekking, exprt)
     ev_usage = h1d
-    usage = kl.contract(own_usage, imprt)
+    iflux = kl.contract(imprt, opwekking)
+    oflux = kl.contract(exprt, h1d)
+    own_usage = kl.distract(iflux, oflux)
+    # own_usage = kl.distract(opwekking, exprt)
+    # usage = kl.contract(own_usage, imprt)
     btm_hi = kl.contract(ev_usage, own_usage)
     print("LBLS", data_lbls)
     print("imp", importd)
@@ -149,22 +152,22 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     # Create a bar plot of import_hi
     ax1.bar(
         tick_pos,
-        ev_usage,
+        own_usage,
         width=bar_width,
-        label="EV",
+        label="Eigen Gebruik",
         alpha=ahpla * 0.5,
-        color=col_ev,
+        color=col_usage,
         align="center",
-        bottom=own_usage,
+        bottom=ev_usage,
     )
     # Create a bar plot of own_usage
     ax1.bar(
         tick_pos,
-        own_usage,
+        ev_usage,
         width=bar_width,
-        label="Eigen gebruik",
+        label="EV",
         alpha=ahpla,
-        color=col_usage,
+        color=col_ev,
         align="center",
     )
     if show_data == 1:
