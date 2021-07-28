@@ -10,7 +10,7 @@ Electricity production is achieved using LG NeONR LG-370Q1C-V5 (370Wp) panels wi
 
 ![An image should be here: kam_pastday](img/kam_pastday.png)
 ![An image should be here: kam_pastmonth](img/kam_pastmonth.png)
-![An image should be here: kam_pastmonth](img/zap_pastmonth.png)
+![An image should be here: kam_pastmonth](img/zap_pastday.png)
 ![An image should be here: kam_gauge](img/kam_gauge.png)
 Pas op: De data van 2019 is geïnterpoleerd, vanwege een defect aan de RPi.
 ![An image should be here: kam_pastyear](img/kam_pastyear.png)
