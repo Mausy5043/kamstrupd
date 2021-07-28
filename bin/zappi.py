@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import argparse
-import datetime as dt
+import datetime
 import os
 
 import libkamstrup as kl
@@ -49,8 +49,8 @@ def fetch_last_day(hours_to_fetch):
     ztime = str2int(zappi_status["zappi"][0]["tim"].split(":"))
 
     time_dict = {"hours": hours_to_fetch + 2}
-    time_delta = dt.timedelta(**time_dict)
-    time_obj = dt.datetime.now() - time_delta
+    time_delta = datetime.timedelta(**time_dict)
+    time_obj = datetime.datetime.now() - time_delta
 
     # ztime[0] -= hours_to_fetch
     # if ztime[0] < 0:
@@ -90,11 +90,11 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     ...
     """
     data_lbls = data_tuple[0]
-    importd = data_tuple[1]
-    green = data_tuple[2]
-    opwekking = data_tuple[3]
-    exportd = data_tuple[4]
-    h1d = data_tuple[5]
+    importd = data_tuple[1]     # imp = P1 totaliser import
+    opwekking = data_tuple[2]   # gep; PV production
+    green = data_tuple[3]       # gen; own use
+    exportd = data_tuple[4]     # exp = P1 totaliser export
+    h1d = data_tuple[5]         # h1d = EV
     #
     imprt = importd
     exprt = exportd
