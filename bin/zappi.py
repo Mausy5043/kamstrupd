@@ -47,6 +47,7 @@ def fetch_last_day(hours_to_fetch):
     )
     zdate = str2int(zappi_status["zappi"][0]["dat"].split("-"))
     ztime = str2int(zappi_status["zappi"][0]["tim"].split(":"))
+    zdst = str2int(zappi_status["zappi"][0]["dst"])
 
     time_dict = {"hours": hours_to_fetch + 2}
     time_delta = datetime.timedelta(**time_dict)
@@ -75,7 +76,7 @@ def fetch_last_day(hours_to_fetch):
     exp = list()
     h1d = list()
     for key, value in enumerate(zappi_data[f"U{myenergi.zappi_serial}"]):
-        block_values = myenergi.trans_data_block(value)
+        block_values = myenergi.trans_data_block(value, zdst)
         data_lbls.append(block_values[0])
         imp.append(block_values[1])
         gep.append(block_values[2])

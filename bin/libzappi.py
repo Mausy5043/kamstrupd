@@ -101,7 +101,7 @@ class Myenergi:
             print("***************")
         return result
 
-    def trans_data_block(self, block):
+    def trans_data_block(self, block, dst):
         """translate a block of data from the zappi
 
                     Args:
@@ -133,6 +133,7 @@ class Myenergi:
         gep = int(block["gep"] / 3600) / 1000
         gen = int(block["gen"] / 3600) / 1000
         h1d = int(block["h1d"] / 3600) / 1000
-        block_date = f"{str(block['mon']).zfill(2)}-{str(block['dom']).zfill(2)} {str(block['hr']).zfill(2)}h"
+        # hack to display localtime in stead of UTC
+        block_date = f"{str(block['mon']).zfill(2)}-{str(block['dom']).zfill(2)} {str(block['hr'] + 1 + dst).zfill(2)}h"
         #       block_date, imp, gep, gen, exp, h1d
         return [block_date, imp, gep, gen, exp, h1d]
