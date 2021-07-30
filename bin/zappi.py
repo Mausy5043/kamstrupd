@@ -85,7 +85,7 @@ def fetch_last_day(hours_to_fetch):
         exp.append(block_values[4])
         h1b.append(block_values[5])
         h1d.append(block_values[6])
-    return data_lbls, imp, gep, gen, exp, h1d, h1b
+    return data_lbls, imp, gep, gen, exp, h1b, h1d
 
 
 def plot_graph(output_file, data_tuple, plot_title, show_data=0):
@@ -97,8 +97,8 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     opwekking = data_tuple[2]  # gep; PV production
     green = data_tuple[3]  # gen; own use
     exportd = data_tuple[4]  # exp = P1 totaliser export
-    h1b = data_tuple[5]   # h1b = EV (imported)
-    h1d = data_tuple[6]     # h1d = EV (from PV)
+    h1b = data_tuple[5]  # h1b = EV (imported)
+    h1d = data_tuple[6]  # h1d = EV (from PV)
     #
     imprt = importd
     exprt = exportd
@@ -106,17 +106,18 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     iflux = kl.contract(imprt, opwekking)
     oflux = kl.contract(exprt, h1d)
     own_usage = kl.distract(iflux, exprt)
-    # own_usage = kl.distract(opwekking, exprt)
+
+    own_usage = kl.distract(own_usage, h1b)
     # usage = kl.contract(own_usage, imprt)
     print("LBLS", data_lbls)
     print("imp", importd)
     print("exp", exportd)
     print("gep", opwekking)
     print("gen", green)
-    print("h1d", h1d)
     print("h1b", h1b)
+    print("h1d", h1d)
     print("own", own_usage)
-
+    print(".ev", ev_usage)
 
     # Set the bar width
     bar_width = 0.75
