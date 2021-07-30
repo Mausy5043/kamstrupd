@@ -83,6 +83,7 @@ def fetch_last_day(hours_to_fetch):
         gep.append(block_values[2])
         gen.append(block_values[3])
         exp.append(block_values[4])
+        h1d.append(block_values[5])
         h1b.append(block_values[6])
     return data_lbls, imp, gep, gen, exp, h1d, h1b
 
