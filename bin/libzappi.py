@@ -128,7 +128,7 @@ class Myenergi:
             if key not in block:
                 # print(key, "!")
                 block[key] = self.zappi_data_default[key]
-                print(key, block[key])
+                # print(key, block[key])
         exp = int(block["exp"] / 3600) / 1000
         imp = int(block["imp"] / 3600) / 1000
         gep = int(block["gep"] / 3600) / 1000
