@@ -47,7 +47,7 @@ def fetch_last_day(hours_to_fetch):
     )
     zdate = str2int(zappi_status["zappi"][0]["dat"].split("-"))
     ztime = str2int(zappi_status["zappi"][0]["tim"].split(":"))
-    zdst = str2int(zappi_status["zappi"][0]["dst"])
+    zdst = int(zappi_status["zappi"][0]["dst"])
 
     time_dict = {"hours": hours_to_fetch + 2}
     time_delta = datetime.timedelta(**time_dict)
