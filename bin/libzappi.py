@@ -33,6 +33,7 @@ ZAPPI_DEFAULT = {
     "gep": 0,
     "imp": 0,
     "h1d": 0,
+    "h1b": 0,
 }
 
 
@@ -133,7 +134,8 @@ class Myenergi:
         gep = int(block["gep"] / 3600) / 1000
         gen = int(block["gen"] / 3600) / 1000
         h1d = int(block["h1d"] / 3600) / 1000
+        h1b = int(block["h1b"] / 3600) / 1000
         # hack to display localtime in stead of UTC
         block_date = f"{str(block['mon']).zfill(2)}-{str(block['dom']).zfill(2)} {str(block['hr'] + 1 + dst).zfill(2)}h"
         #       block_date, imp, gep, gen, exp, h1d
-        return [block_date, imp, gep, gen, exp, h1d]
+        return [block_date, imp, gep, gen, exp, h1d, h1b]

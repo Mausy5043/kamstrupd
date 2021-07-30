@@ -75,6 +75,7 @@ def fetch_last_day(hours_to_fetch):
     gen = list()
     exp = list()
     h1d = list()
+    h1b = list()
     for key, value in enumerate(zappi_data[f"U{myenergi.zappi_serial}"]):
         block_values = myenergi.trans_data_block(value, zdst)
         data_lbls.append(block_values[0])
@@ -82,8 +83,8 @@ def fetch_last_day(hours_to_fetch):
         gep.append(block_values[2])
         gen.append(block_values[3])
         exp.append(block_values[4])
-        h1d.append(block_values[5])
-    return data_lbls, imp, gep, gen, exp, h1d
+        h1b.append(block_values[6])
+    return data_lbls, imp, gep, gen, exp, h1d, h1b
 
 
 def plot_graph(output_file, data_tuple, plot_title, show_data=0):
@@ -95,11 +96,12 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     opwekking = data_tuple[2]  # gep; PV production
     green = data_tuple[3]  # gen; own use
     exportd = data_tuple[4]  # exp = P1 totaliser export
-    h1d = data_tuple[5]  # h1d = EV
+    h1d = data_tuple[5]  # h1d = EV (from PV)
+    h1b = data_tuple[6]  # h1d = EV (imported)
     #
     imprt = importd
     exprt = exportd
-    ev_usage = h1d
+    ev_usage = h1d + h1b
     iflux = kl.contract(imprt, opwekking)
     oflux = kl.contract(exprt, h1d)
     own_usage = kl.distract(iflux, exprt)
@@ -111,7 +113,10 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     print("gep", opwekking)
     print("gen", green)
     print("h1d", h1d)
+    print("h1b", h1b)
     print("own", own_usage)
+
+
     # Set the bar width
     bar_width = 0.75
     # Set the color alpha
