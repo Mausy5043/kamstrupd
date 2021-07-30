@@ -102,7 +102,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     #
     imprt = importd
     exprt = exportd
-    ev_usage = h1d + h1b
+    ev_usage = [x + y for x, y in zip(h1d, h1b)]
     iflux = kl.contract(imprt, opwekking)
     oflux = kl.contract(exprt, h1d)
     own_usage = kl.distract(iflux, exprt)
