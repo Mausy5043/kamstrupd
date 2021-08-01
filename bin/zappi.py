@@ -238,9 +238,9 @@ if __name__ == "__main__":
         type=int,
         help="create hour-trend for last <HOURS> hours",
     )
-    parser.add_argument(
-        "-d", "--days", type=int, help="create day-trend for last <DAYS> days"
-    )
+    # parser.add_argument(
+    #     "-d", "--days", type=int, help="create day-trend for last <DAYS> days"
+    # )
 
     parser.add_argument(
         "--day",
