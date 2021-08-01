@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import argparse
-import datetime
+import datetime as dt
 import os
 
 import libkamstrup as kl
@@ -41,57 +41,60 @@ def int2str(arr):
     return arr
 
 
-def fetch_last_day(hours_to_fetch):
-    zappi_status = myenergi.get_status(
-        f"cgi-jstatus-Z{myenergi.zappi_serial}"
-    )
-    zdate = str2int(zappi_status["zappi"][0]["dat"].split("-"))
-    ztime = str2int(zappi_status["zappi"][0]["tim"].split(":"))
-    zdst = int(zappi_status["zappi"][0]["dst"])
+# def fetch_last_day(hours_to_fetch):
+#     # zappi_status = myenergi.get_status(
+#     #     f"cgi-jstatus-Z{myenergi.zappi_serial}"
+#     # )
+#     # zdate = str2int(zappi_status["zappi"][0]["dat"].split("-"))
+#     # ztime = str2int(zappi_status["zappi"][0]["tim"].split(":"))
+#     # zdst = int(zappi_status["zappi"][0]["dst"])
 
-    time_dict = {"hours": hours_to_fetch + 2}
-    time_delta = datetime.timedelta(**time_dict)
-    time_obj = datetime.datetime.now() - time_delta
+#     # time_dict = {"hours": hours_to_fetch + 2}
+#     # time_delta = datetime.timedelta(**time_dict)
+#     # time_obj = datetime.datetime.now() - time_delta
 
-    # ztime[0] -= hours_to_fetch
-    # if ztime[0] < 0:
-    #     ztime[0] += 24
-    #     zdate[0] -= 1
-    #     if zdate[1] < 1:
-    #         zdate[1] += 12
-    #         zdate[2] -= 1
-    # zdate = int2str(zdate)
-    # ztime = int2str(ztime)
+#     # ztime[0] -= hours_to_fetch
+#     # if ztime[0] < 0:
+#     #     ztime[0] += 24
+#     #     zdate[0] -= 1
+#     #     if zdate[1] < 1:
+#     #         zdate[1] += 12
+#     #         zdate[2] -= 1
+#     # zdate = int2str(zdate)
+#     # ztime = int2str(ztime)
 
-    zappi_data = myenergi.get_status(
-        f"cgi-jdayhour-Z{myenergi.zappi_serial}-{time_obj.year}-{time_obj.month}-{time_obj.day}-{time_obj.hour}"
-    )
-    # for key, value in enumerate(zappi_status["zappi"][0]):
-    #     print(key, value, zappi_status["zappi"][0][value])
-    print("")
-    data_lbls = list()
-    imp = list()
-    gep = list()
-    gen = list()
-    exp = list()
-    h1b = list()
-    h1d = list()
-    for key, value in enumerate(zappi_data[f"U{myenergi.zappi_serial}"]):
-        block_values = myenergi.trans_data_block(value, zdst)
-        data_lbls.append(block_values[0])
-        imp.append(block_values[1])
-        gep.append(block_values[2])
-        gen.append(block_values[3])
-        exp.append(block_values[4])
-        h1b.append(block_values[5])
-        h1d.append(block_values[6])
-    return data_lbls, imp, gep, gen, exp, h1b, h1d
+#     zappi_data = myenergi.get_status(
+#         f"cgi-jdayhour-Z{myenergi.zappi_serial}-{time_obj.year}-{time_obj.month}-{time_obj.day}-{time_obj.hour}"
+#     )
+#     # for key, value in enumerate(zappi_status["zappi"][0]):
+#     #     print(key, value, zappi_status["zappi"][0][value])
+#     print("")
+#     data_lbls = list()
+#     imp = list()
+#     gep = list()
+#     gen = list()
+#     exp = list()
+#     h1b = list()
+#     h1d = list()
+#     for key, value in enumerate(zappi_data[f"U{myenergi.zappi_serial}"]):
+#         block_values = myenergi.trans_data_block(value, zdst)
+#         data_lbls.append(block_values[0])
+#         imp.append(block_values[1])
+#         gep.append(block_values[2])
+#         gen.append(block_values[3])
+#         exp.append(block_values[4])
+#         h1b.append(block_values[5])
+#         h1d.append(block_values[6])
+#     return data_lbls, imp, gep, gen, exp, h1b, h1d
 
 
 def plot_graph(output_file, data_tuple, plot_title):
     """
     ...
     """
+    global DEBUG
+    global OPTION
+    print("")
     data_lbls = data_tuple[0]
     importd = data_tuple[1]  # imp = P1 totaliser import
     opwekking = data_tuple[2]  # gep; PV production
@@ -99,23 +102,30 @@ def plot_graph(output_file, data_tuple, plot_title):
     exportd = data_tuple[4]  # exp = P1 totaliser export
     h1b = data_tuple[5]  # h1b = EV (imported)
     h1d = data_tuple[6]  # h1d = EV (from PV)
+    utc_dt = data_tuple[7]
     #
     ev_usage = [x + y for x, y in zip(h1d, h1b)]
     iflux = kl.contract(importd, opwekking)
-    oflux = kl.contract(exportd, h1d)
+    oflux = kl.contract(kl.contract(exportd, h1d), h1b)
     own_usage = kl.distract(opwekking, exportd)
 
     own_usage = kl.distract(own_usage, h1b)
     # usage = kl.contract(own_usage, imprt)
-    print("LBLS", data_lbls)
-    print("imp", importd)
-    print("exp", exportd)
-    print("gep", opwekking)
-    print("gen", green)
-    print("h1b", h1b)
-    print("h1d", h1d)
-    print("own", own_usage)
-    print(".ev", ev_usage)
+    if OPTION.print or DEBUG:
+        print("LBLS", data_lbls)
+        print("TIME", utc_dt)
+        print("imp", importd)
+        print("exp", exportd)
+        print("gep", opwekking)
+        print("gen", green)
+        print("h1b", h1b)
+        print("h1d", h1d)
+        print("")
+        print("ofx", oflux)
+        print("ifx", iflux)
+        print("own", own_usage)
+        print(".ev", ev_usage)
+
 
     # Set the bar width
     bar_width = 0.75
@@ -131,15 +141,6 @@ def plot_graph(output_file, data_tuple, plot_title):
     col_export = "blue"
     col_ev = "yellow"
     col_usage = "green"
-
-    """example data:
-    LBLS ['07-28 01h', '07-28 02h', '07-28 03h', '07-28 04h', '07-28 05h', '07-28 06h', '07-28 07h', '07-28 08h', '07-28 09h', '07-28 10h', '07-28 11h', '07-28 12h', '07-28 13h']
-    imp [0.189, 0.171, 0.152, 0.211, 0.071, 0.071, 0.17, 0.161, 0.128, 0.072, 0.072, 0.103, 0.053]
-    exp [0.0, 0.0, 0.0, 0.001, 0.058, 0.23, 0.194, 0.148, 0.099, 0.169, 0.335, 0.701, 0.671]
-    gen [0.007, 0.007, 0.007, 0.003, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    gep [0.0, 0.0, 0.0, 0.028, 0.223, 0.577, 1.313, 1.124, 1.365, 0.833, 0.84, 1.017, 1.183]
-    h1d [0.0, 0.0, 0.0, 0.0, 0.0, 0.233, 1.032, 0.826, 1.111, 0.537, 0.29, 0.0, 0.0]
-    """
 
     # Create a bar plot of importd
     ax1.bar(
