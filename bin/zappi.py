@@ -88,7 +88,7 @@ def fetch_last_day(hours_to_fetch):
     return data_lbls, imp, gep, gen, exp, h1b, h1d
 
 
-def plot_graph(output_file, data_tuple, plot_title, show_data=0):
+def plot_graph(output_file, data_tuple, plot_title):
     """
     ...
     """
@@ -210,11 +210,17 @@ def main():
     """
     global OPTION
 
-    if OPTION.hours:
+    # if OPTION.hours:
+    #     plot_graph(
+    #         "/tmp/kamstrupd/site/img/zap_pastday.png",
+    #         fetch_last_day(OPTION.hours),
+    #         f"Energietrend per uur afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+    #     )
+    if OPTION.day:
         plot_graph(
             "/tmp/kamstrupd/site/img/zap_pastday.png",
-            fetch_last_day(OPTION.hours),
-            f"Energietrend per uur afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+            myenergi.fetch_data(OPTION.day),
+            f"Energietrend per uur afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
         )
     # if OPTION.days:
     #     plot_graph(
@@ -236,11 +242,70 @@ if __name__ == "__main__":
         "-d", "--days", type=int, help="create day-trend for last <DAYS> days"
     )
 
+    parser.add_argument(
+        "--day",
+        type=str,
+        help=argparse.SUPPRESS,
+    )
+    parser.add_argument(
+        "--iso",
+        type=str,
+        help="Fetch zappi data for a date <YYYY-MM-DD>",
+    )
+    parser.add_argument(
+        "--ymd",
+        type=str,
+        help="Fetch zappi data for a date <YYYY-MM-DD>",
+    )
+    parser.add_argument(
+        "--dmy",
+        type=str,
+        help="Fetch zappi data for a date <YYYY-MM-DD>",
+    )
+    parser.add_argument(
+        "--mdy",
+        type=str,
+        help="Fetch zappi data for a date <YYYY-MM-DD>",
+    )
+    parser.add_argument(
+        "-p", "--print", action="store_true", help="Output data to stdout."
+    )
+    parser.add_argument(
+        "-s",
+        "--status",
+        action="store_true",
+        help="Display zappi current state",
+    )
+    parser.add_argument(
+        "-d",
+        "--debug",
+        action="store_true",
+        help="debug",
+    )
+
     OPTION = parser.parse_args()
-    if OPTION.hours == 0:
-        OPTION.hours = 5
-    if OPTION.days == 0:
-        OPTION.days = 5
+    if OPTION.print or DEBUG:
+        print("Options passed: ", OPTION)
+    if OPTION.iso:
+        OPTION.day = dt.datetime.strptime(OPTION.iso, "%Y-%m-%d")
+    if OPTION.ymd:
+        OPTION.day = dt.datetime.strptime(OPTION.ymd, "%Y-%m-%d")
+    if OPTION.dmy:
+        OPTION.day = dt.datetime.strptime(OPTION.dmy, "%d-%m-%Y")
+    if OPTION.mdy:
+        OPTION.day = dt.datetime.strptime(OPTION.mdy, "%m-%d-%Y")
+    if not OPTION.day:
+        OPTION.day = dt.datetime.today()
+    OPTION.day = OPTION.day.date()
+    if OPTION.debug:
+        DEBUG = True
+    if OPTION.print or DEBUG:
+        print("Options parsed: ", OPTION)
+
+    # if OPTION.hours == 0:
+    #     OPTION.hours = 5
+    # if OPTION.days == 0:
+    #     OPTION.days = 5
     # Initialise object and connect to myenergi server
     myenergi = zl.Myenergi(CONFIG_FILE, debug=DEBUG)
     main()
