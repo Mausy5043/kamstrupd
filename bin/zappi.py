@@ -8,8 +8,6 @@ import libkamstrup as kl
 import libzappi as zl
 import matplotlib.pyplot as plt
 
-from datetime import datetime as dt
-
 
 # import time
 DEBUG = False
