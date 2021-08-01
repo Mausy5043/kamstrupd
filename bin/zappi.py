@@ -100,12 +100,10 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     h1b = data_tuple[5]  # h1b = EV (imported)
     h1d = data_tuple[6]  # h1d = EV (from PV)
     #
-    imprt = importd
-    exprt = exportd
     ev_usage = [x + y for x, y in zip(h1d, h1b)]
-    iflux = kl.contract(imprt, opwekking)
-    oflux = kl.contract(exprt, h1d)
-    own_usage = kl.distract(iflux, exprt)
+    iflux = kl.contract(importd, opwekking)
+    oflux = kl.contract(exportd, h1d)
+    own_usage = kl.distract(opwekking, exportd)
 
     own_usage = kl.distract(own_usage, h1b)
     # usage = kl.contract(own_usage, imprt)
