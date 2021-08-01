@@ -213,19 +213,19 @@ def main():
     #     plot_graph(
     #         "/tmp/kamstrupd/site/img/zap_pastday.png",
     #         fetch_last_day(OPTION.hours),
-    #         f"Energietrend per uur afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+    #         f"Energietrend per uur afgelopen dagen ({dt.datetime.now().strftime('%d-%m-%Y %H:%M:%S')})",
     #     )
     if OPTION.day:
         plot_graph(
             "/tmp/kamstrupd/site/img/zap_pastday.png",
             myenergi.fetch_data(OPTION.day),
-            f"Energietrend per uur afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})"
+            f"Energietrend per uur afgelopen dagen ({dt.datetime.now().strftime('%d-%m-%Y %H:%M:%S')})"
         )
     # if OPTION.days:
     #     plot_graph(
     #         "/tmp/kamstrupd/site/img/kam_pastmonth.png",
     #         fetch_last_month(OPTION.days),
-    #         f"Energietrend per dag afgelopen maand ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+    #         f"Energietrend per dag afgelopen maand ({dt.datetime.now().strftime('%d-%m-%Y %H:%M:%S')})",
     #     )
 
 
