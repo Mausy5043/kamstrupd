@@ -4,10 +4,13 @@ import datetime as dt
 import json
 import configparser
 import os
-from pprint import pprint
+#import sys
 import time
+from pprint import pprint
 import traceback
 
+#import pandas as pd
+#import numpy as np
 import requests
 from requests.auth import HTTPDigestAuth
 
@@ -64,7 +67,6 @@ class Myenergi:
         serial: 12345678
         # EOF
         """
-        global DEBUG
         global DIRECTOR_URL
         global ZAPPI_TEMPLATE
 
@@ -129,7 +131,6 @@ class Myenergi:
             # We raise the time-out here. If desired, retries should be handled by caller
             print("!!! TimeOut")
             raise
-
         result = json.loads(response.content)
 
         if self.DEBUG:
@@ -222,6 +223,8 @@ class Myenergi:
             day_to_fetch - dt.timedelta(days=1))[f"U{self.zappi_serial}"]
         current_day_data = self._fetch(day_to_fetch)[f"U{self.zappi_serial}"]
 
+        # print(pd.json_normalize(current_day_data))
+
         for block in previous_day_data + current_day_data:
             if self.DEBUG:
                 print(block)
@@ -253,7 +256,7 @@ class Myenergi:
                 )
                 done_flag = True
                 print("")
-            except:
+            except Exception:
                 print(traceback.format_exc())
                 timeout_retries -= 1
                 if timeout_retries <= 0:
