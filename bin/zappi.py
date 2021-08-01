@@ -124,7 +124,6 @@ def plot_graph(output_file, data_tuple, plot_title):
         print("own", own_usage)
         print(".ev", ev_usage)
 
-
     # Set the bar width
     bar_width = 0.75
     # Set the color alpha
@@ -167,7 +166,7 @@ def plot_graph(output_file, data_tuple, plot_title):
         ev_usage,
         width=bar_width,
         label="EV",
-        alpha=ahpla * 0.7,
+        alpha=ahpla * 0.9,
         color=col_ev,
         align="center",
     )
