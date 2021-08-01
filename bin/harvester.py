@@ -106,22 +106,22 @@ if __name__ == "__main__":
     parser.add_argument(
         "--iso",
         type=str,
-        help="Fetch zappi data for a date <YYYY-MM-DD>",
+        help="Fetch zappi data for a date in the ISO-format <YYYY-MM-DD>",
     )
     parser.add_argument(
         "--ymd",
         type=str,
-        help="Fetch zappi data for a date <YYYY-MM-DD>",
+        help="Fetch zappi data for a date in the sensible format <YYYY-MM-DD>",
     )
     parser.add_argument(
         "--dmy",
         type=str,
-        help="Fetch zappi data for a date <YYYY-MM-DD>",
+        help="Fetch zappi data for a date in the reasonable format <DD-MM-YYYY>",
     )
     parser.add_argument(
         "--mdy",
         type=str,
-        help="Fetch zappi data for a date <YYYY-MM-DD>",
+        help="Fetch zappi data for a date in the idiotic format <MM-DD-YYYY>",
     )
     parser.add_argument(
         "-p", "--print", action="store_true", help="Output data to stdout."
