@@ -10,14 +10,13 @@ Store the data in a sqlite3 database.
 import argparse
 import configparser
 import datetime as dt
+import mausy5043funcs.fileops3 as mf
+import mausy5043libs.libsignals3 as ml
 import os
 import sqlite3
 import syslog
 import time
 import traceback
-
-import mausy5043funcs.fileops3 as mf
-import mausy5043libs.libsignals3 as ml
 
 import libsolaredge as solaredge
 
@@ -194,14 +193,15 @@ def do_add_to_database(result_data, fdatabase, sql_cmd):
     for entry in result_data:
         results = tuple(entry)
 
-        err_flag = True
-        while err_flag:
+        err_flag = 3
+        while err_flag > 0:
             try:
                 conn = create_db_connection(fdatabase)
                 cursor = conn.cursor()
-                if not epoch_is_present_in_database(
-                    cursor, results[1], results[2]
-                ):
+                if not epoch_is_present_in_database(cursor,
+                                                    results[1],
+                                                    results[2]
+                                                    ):
                     mf.syslog_trace(f"   @: {results[0]} = {results[2]}", False, DEBUG)
                     cursor.execute(sql_cmd, results)
                     cursor.close()
@@ -209,8 +209,9 @@ def do_add_to_database(result_data, fdatabase, sql_cmd):
                     conn.close()
                 else:
                     mf.syslog_trace(f"Skip: {results[0]}", False, DEBUG)
-                err_flag = False
+                err_flag = 0
             except sqlite3.OperationalError:
+                err_flag -= 1
                 if cursor:
                     cursor.close()
                 if conn:
