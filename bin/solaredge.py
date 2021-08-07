@@ -210,8 +210,10 @@ def do_add_to_database(result_data, fdatabase, sql_cmd):
                 else:
                     mf.syslog_trace(f"Skip: {results[0]}", False, DEBUG)
                 err_flag = 0
+                mf.syslog_trace("Addition succesfull", False, DEBUG)
             except sqlite3.OperationalError:
                 err_flag -= 1
+                mf.syslog_trace("Addition failed", False, DEBUG)
                 if cursor:
                     cursor.close()
                 if conn:
