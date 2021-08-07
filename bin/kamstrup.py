@@ -22,12 +22,14 @@ import serial
 
 parser = argparse.ArgumentParser(description="Execute the telemetry daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
-parser_group.add_argument(
-    "--start", action="store_true", help="start the daemon as a service"
-)
-parser_group.add_argument(
-    "--debug", action="store_true", help="start the daemon in debugging mode"
-)
+parser_group.add_argument("--start",
+                          action="store_true",
+                          help="start the daemon as a service"
+                          )
+parser_group.add_argument("--debug",
+                          action="store_true",
+                          help="start the daemon in debugging mode"
+                          )
 OPTION = parser.parse_args()
 
 # constants
@@ -67,9 +69,9 @@ def main():
     report_time = iniconf.getint(MYID, "reporttime")
     fdatabase = f"{os.environ['HOME']}/{iniconf.get(MYID, 'databasefile')}"
     sqlcmd = iniconf.get(MYID, "sqlcmd")
-    samples_averaged = iniconf.getint(
-        MYID, "samplespercycle"
-    ) * iniconf.getint(MYID, "cycles")
+    samples_averaged = iniconf.getint(MYID,
+                                      "samplespercycle"
+                                      ) * iniconf.getint(MYID, "cycles")
     sample_time = report_time / iniconf.getint(MYID, "samplespercycle")
     data = []
 
@@ -104,34 +106,28 @@ def main():
                 if averages[0] > 0:
                     do_add_to_database(averages, fdatabase, sqlcmd)
 
-            pause_time = (
-                sample_time
-                - (time.time() - start_time)
-                - (start_time % sample_time)
-                + time.time()
-            )
+            pause_time = (sample_time
+                          - (time.time() - start_time)
+                          - (start_time % sample_time)
+                          + time.time()
+                          )
             if pause_time > 0:
-                mf.syslog_trace(
-                    f"Waiting  : {pause_time - time.time():.1f}s",
-                    False,
-                    DEBUG,
-                )
+                mf.syslog_trace(f"Waiting  : {pause_time - time.time():.1f}s",
+                                False,
+                                DEBUG,
+                                )
                 # no need to wait for the next cycles
                 # the meter will pace the meaurements
                 # any required waiting will be inside gettelegram()
                 # time.sleep(pause_time)
-                mf.syslog_trace(
-                    "................................", False, DEBUG
-                )
+                mf.syslog_trace("................................", False, DEBUG)
             else:
                 mf.syslog_trace(
                     f"Behind   : {pause_time - time.time():.1f}s",
                     False,
                     DEBUG,
                 )
-                mf.syslog_trace(
-                    "................................", False, DEBUG
-                )
+                mf.syslog_trace("................................", False, DEBUG)
         else:
             time.sleep(1.0)
 
@@ -186,15 +182,12 @@ def do_work():
                 # ['0-0:96.13.0', '', '']
                 # not recorded
             except ValueError:
-                mf.syslog_trace(
-                    "*** Conversion not possible for element:",
-                    syslog.LOG_CRIT,
-                    DEBUG,
-                )
+                mf.syslog_trace("*** Conversion not possible for element:",
+                                syslog.LOG_CRIT,
+                                DEBUG,
+                                )
                 mf.syslog_trace(f"    {element}", syslog.LOG_CRIT, DEBUG)
-                mf.syslog_trace(
-                    "*** Extracted from telegram:", syslog.LOG_DEBUG, DEBUG
-                )
+                mf.syslog_trace("*** Extracted from telegram:", syslog.LOG_DEBUG, DEBUG)
                 mf.syslog_trace(f"    {telegram}", syslog.LOG_DEBUG, DEBUG)
                 pass
 
@@ -223,15 +216,11 @@ def gettelegram():
             if line != "":
                 telegram.append(line)
         except serial.SerialException:
-            mf.syslog_trace(
-                "*** Serialport read error:", syslog.LOG_CRIT, DEBUG
-            )
+            mf.syslog_trace("*** Serialport read error:", syslog.LOG_CRIT, DEBUG)
             mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
             abort = 2
         except UnicodeDecodeError:
-            mf.syslog_trace(
-                "*** Unicode Decode error:", syslog.LOG_CRIT, DEBUG
-            )
+            mf.syslog_trace("*** Unicode Decode error:", syslog.LOG_CRIT, DEBUG)
             mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
             abort = 2
 
@@ -263,18 +252,17 @@ def do_add_to_database(result, fdatabase, sql_cmd):
     dt_format = "%Y-%m-%d %H:%M:%S"
     out_date = dt.datetime.now()  # time.strftime('%Y-%m-%dT%H:%M:%S')
     out_epoch = int(out_date.timestamp())
-    results = (
-        out_date.strftime(dt_format),
-        out_epoch,
-        result[0],
-        result[1],
-        result[2],
-        result[3],
-        result[4],
-        result[5],
-        result[6],
-        result[7],
-    )
+    results = (out_date.strftime(dt_format),
+               out_epoch,
+               result[0],
+               result[1],
+               result[2],
+               result[3],
+               result[4],
+               result[5],
+               result[6],
+               result[7],
+               )
     mf.syslog_trace(f"   @: {out_date.strftime(dt_format)}", False, DEBUG)
     mf.syslog_trace(f"    : {results}", False, DEBUG)
 
@@ -314,17 +302,14 @@ def create_db_connection(database_file):
         #  syslog.syslog(syslog.LOG_INFO, logtext)
         return consql
     except sqlite3.Error:
-        mf.syslog_trace(
-            "Unexpected SQLite3 error when connecting to server.",
-            syslog.LOG_CRIT,
-            DEBUG,
-        )
+        mf.syslog_trace("Unexpected SQLite3 error when connecting to server.",
+                        syslog.LOG_CRIT,
+                        DEBUG,
+                        )
         mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
         if consql:  # attempt to close connection to SQLite3 server
             consql.close()
-            mf.syslog_trace(
-                " ** Closed SQLite3 connection. **", syslog.LOG_CRIT, DEBUG
-            )
+            mf.syslog_trace(" ** Closed SQLite3 connection. **", syslog.LOG_CRIT, DEBUG)
         raise
 
 
@@ -340,13 +325,9 @@ def test_db_connection(fdatabase):
         cursor.close()
         conn.commit()
         conn.close()
-        syslog.syslog(
-            syslog.LOG_INFO, f"Attached to SQLite3 server: {versql}"
-        )
+        syslog.syslog(syslog.LOG_INFO, f"Attached to SQLite3 server: {versql}")
     except sqlite3.Error:
-        mf.syslog_trace(
-            "Unexpected SQLite3 error during test.", syslog.LOG_CRIT, DEBUG
-        )
+        mf.syslog_trace("Unexpected SQLite3 error during test.", syslog.LOG_CRIT, DEBUG)
         mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
         raise
 

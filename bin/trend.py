@@ -6,29 +6,27 @@ import argparse
 import os
 from datetime import datetime as dt
 
-# noinspection PyUnresolvedReferences
-import libkamstrup as kl
 import matplotlib.pyplot as plt
 import numpy as np
+
+# noinspection PyUnresolvedReferences
+import libkamstrup as kl
 
 DATABASE = os.environ["HOME"] + "/.sqlite3/electriciteit.sqlite3"
 OPTION = ""
 
 
 def fetch_last_day(hours_to_fetch):
-    """
-    ...
+    """...
     """
     global DATABASE
-    config = kl.add_time_line(
-        {
-            "grouping": "%m-%d %Hh",
-            "period": hours_to_fetch,
-            "timeframe": "hour",
-            "database": DATABASE,
-            "table": "production",
-        }
-    )
+    config = kl.add_time_line({"grouping": "%m-%d %Hh",
+                               "period": hours_to_fetch,
+                               "timeframe": "hour",
+                               "database": DATABASE,
+                               "table": "production",
+                               }
+                              )
 
     opwekking, prod_lbls = kl.get_historic_data(config, telwerk="energy")
     config["table"] = "kamstrup"
@@ -44,19 +42,16 @@ def fetch_last_day(hours_to_fetch):
 
 
 def fetch_last_month(days_to_fetch):
-    """
-    ...
+    """...
     """
     global DATABASE
-    config = kl.add_time_line(
-        {
-            "grouping": "%m-%d",
-            "period": days_to_fetch,
-            "timeframe": "day",
-            "database": DATABASE,
-            "table": "production",
-        }
-    )
+    config = kl.add_time_line({"grouping": "%m-%d",
+                               "period": days_to_fetch,
+                               "timeframe": "day",
+                               "database": DATABASE,
+                               "table": "production",
+                               }
+                              )
     opwekking, prod_lbls = kl.get_historic_data(config, telwerk="energy")
     config["table"] = "kamstrup"
     import_lo, data_lbls = kl.get_historic_data(config, telwerk="T1in")
@@ -71,35 +66,37 @@ def fetch_last_month(days_to_fetch):
 
 
 def fetch_last_year(months_to_fetch):
-    """
-    ...
+    """...
     """
     global DATABASE
-    config = kl.add_time_line(
-        {
-            "grouping": "%Y-%m",
-            "period": months_to_fetch,
-            "timeframe": "month",
-            "database": DATABASE,
-            "table": "production",
-        }
-    )
-    opwekking, prod_lbls = kl.get_historic_data(
-        config, telwerk="energy", from_start_of_year=True
-    )
+    config = kl.add_time_line({"grouping": "%Y-%m",
+                               "period": months_to_fetch,
+                               "timeframe": "month",
+                               "database": DATABASE,
+                               "table": "production",
+                               }
+                              )
+    opwekking, prod_lbls = kl.get_historic_data(config,
+                                                telwerk="energy",
+                                                from_start_of_year=True
+                                                )
     config["table"] = "kamstrup"
-    import_lo, data_lbls = kl.get_historic_data(
-        config, telwerk="T1in", from_start_of_year=True
-    )
-    import_hi, data_lbls = kl.get_historic_data(
-        config, telwerk="T2in", from_start_of_year=True
-    )
-    export_lo, data_lbls = kl.get_historic_data(
-        config, telwerk="T1out", from_start_of_year=True
-    )
-    export_hi, data_lbls = kl.get_historic_data(
-        config, telwerk="T2out", from_start_of_year=True
-    )
+    import_lo, data_lbls = kl.get_historic_data(config,
+                                                telwerk="T1in",
+                                                from_start_of_year=True
+                                                )
+    import_hi, data_lbls = kl.get_historic_data(config,
+                                                telwerk="T2in",
+                                                from_start_of_year=True
+                                                )
+    export_lo, data_lbls = kl.get_historic_data(config,
+                                                telwerk="T1out",
+                                                from_start_of_year=True
+                                                )
+    export_hi, data_lbls = kl.get_historic_data(config,
+                                                telwerk="T2out",
+                                                from_start_of_year=True
+                                                )
     # production data may not yet have caught up to the current hour
     if not (prod_lbls[-1] == data_lbls[-1]):
         opwekking = opwekking[:-1]
@@ -108,35 +105,37 @@ def fetch_last_year(months_to_fetch):
 
 
 def fetch_last_years(years_to_fetch):
-    """
-    ...
+    """...
     """
     global DATABASE
-    config = kl.add_time_line(
-        {
-            "grouping": "%Y",
-            "period": years_to_fetch,
-            "timeframe": "year",
-            "database": DATABASE,
-            "table": "production",
-        }
-    )
-    opwekking, prod_lbls = kl.get_historic_data(
-        config, telwerk="energy", from_start_of_year=True
-    )
+    config = kl.add_time_line({"grouping": "%Y",
+                               "period": years_to_fetch,
+                               "timeframe": "year",
+                               "database": DATABASE,
+                               "table": "production",
+                               }
+                              )
+    opwekking, prod_lbls = kl.get_historic_data(config,
+                                                telwerk="energy",
+                                                from_start_of_year=True
+                                                )
     config["table"] = "kamstrup"
-    import_lo, data_lbls = kl.get_historic_data(
-        config, telwerk="T1in", from_start_of_year=True
-    )
-    import_hi, data_lbls = kl.get_historic_data(
-        config, telwerk="T2in", from_start_of_year=True
-    )
-    export_lo, data_lbls = kl.get_historic_data(
-        config, telwerk="T1out", from_start_of_year=True
-    )
-    export_hi, data_lbls = kl.get_historic_data(
-        config, telwerk="T2out", from_start_of_year=True
-    )
+    import_lo, data_lbls = kl.get_historic_data(config,
+                                                telwerk="T1in",
+                                                from_start_of_year=True
+                                                )
+    import_hi, data_lbls = kl.get_historic_data(config,
+                                                telwerk="T2in",
+                                                from_start_of_year=True
+                                                )
+    export_lo, data_lbls = kl.get_historic_data(config,
+                                                telwerk="T1out",
+                                                from_start_of_year=True
+                                                )
+    export_hi, data_lbls = kl.get_historic_data(config,
+                                                telwerk="T2out",
+                                                from_start_of_year=True
+                                                )
     # production data may not yet have caught up to the current hour
     if not (prod_lbls[-1] == data_lbls[-1]):
         opwekking = opwekking[:-1]
@@ -145,8 +144,7 @@ def fetch_last_years(years_to_fetch):
 
 
 def plot_graph(output_file, data_tuple, plot_title, show_data=0):
-    """
-    ...
+    """...
     """
     data_lbls = data_tuple[0]
     import_lo = data_tuple[1]
@@ -195,95 +193,86 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     col_usage = "green"
 
     # Create a bar plot of import_lo
-    ax1.bar(
-        tick_pos,
-        import_hi,
-        width=bar_width,
-        label="Inkoop (normaal)",
-        alpha=ahpla,
-        color=col_import,
-        align="center",
-        bottom=btm_hi,  # [sum(i) for i in zip(import_lo, own_usage)]
-    )
+    ax1.bar(tick_pos,
+            import_hi,
+            width=bar_width,
+            label="Inkoop (normaal)",
+            alpha=ahpla,
+            color=col_import,
+            align="center",
+            bottom=btm_hi,  # [sum(i) for i in zip(import_lo, own_usage)]
+            )
     # Create a bar plot of import_hi
-    ax1.bar(
-        tick_pos,
-        import_lo,
-        width=bar_width,
-        label="Inkoop (dal)",
-        alpha=ahpla * 0.5,
-        color=col_import,
-        align="center",
-        bottom=own_usage,
-    )
+    ax1.bar(tick_pos,
+            import_lo,
+            width=bar_width,
+            label="Inkoop (dal)",
+            alpha=ahpla * 0.5,
+            color=col_import,
+            align="center",
+            bottom=own_usage,
+            )
     # Create a bar plot of own_usage
-    ax1.bar(
-        tick_pos,
-        own_usage,
-        width=bar_width,
-        label="Eigen gebruik",
-        alpha=ahpla,
-        color=col_usage,
-        align="center",
-    )
+    ax1.bar(tick_pos,
+            own_usage,
+            width=bar_width,
+            label="Eigen gebruik",
+            alpha=ahpla,
+            color=col_usage,
+            align="center",
+            )
     if show_data == 1:
         for i, v in enumerate(own_usage):
-            ax1.text(
-                tick_pos[i],
-                10,
-                "{:7.3f}".format(v),
-                {"ha": "center", "va": "bottom"},
-                rotation=-90,
-            )
+            ax1.text(tick_pos[i],
+                     10,
+                     "{:7.3f}".format(v),
+                     {"ha": "center", "va": "bottom"},
+                     rotation=-90,
+                     )
     if show_data == 2:
         for i, v in enumerate(usage):
-            ax1.text(
-                tick_pos[i],
-                500,
-                "{:4.0f}".format(v),
-                {"ha": "center", "va": "bottom"},
-                fontsize=12,
-            )
+            ax1.text(tick_pos[i],
+                     500,
+                     "{:4.0f}".format(v),
+                     {"ha": "center", "va": "bottom"},
+                     fontsize=12,
+                     )
     # Exports hang below the y-axis
     # Create a bar plot of export_lo
-    ax1.bar(
-        tick_pos,
-        [-1 * i for i in export_lo],
-        width=bar_width,
-        label="Verkoop (dal)",
-        alpha=ahpla * 0.5,
-        color=col_export,
-        align="center",
-    )
+    ax1.bar(tick_pos,
+            [-1 * i for i in export_lo],
+            width=bar_width,
+            label="Verkoop (dal)",
+            alpha=ahpla * 0.5,
+            color=col_export,
+            align="center",
+            )
     # Create a bar plot of export_hi
-    ax1.bar(
-        tick_pos,
-        [-1 * i for i in export_hi],
-        width=bar_width,
-        label="Verkoop (normaal)",
-        alpha=ahpla,
-        color=col_export,
-        align="center",
-        bottom=[-1 * i for i in export_lo],
-    )
+    ax1.bar(tick_pos,
+            [-1 * i for i in export_hi],
+            width=bar_width,
+            label="Verkoop (normaal)",
+            alpha=ahpla,
+            color=col_export,
+            align="center",
+            bottom=[-1 * i for i in export_lo],
+            )
     if show_data == 1:
         for i, v in enumerate(exprt):
-            ax1.text(
-                tick_pos[i],
-                -10,
-                "{:7.3f}".format(v),
-                {"ha": "center", "va": "top"},
-                rotation=-90,
-            )
+            ax1.text(tick_pos[i],
+                     -10,
+                     "{:7.3f}".format(v),
+                     {"ha": "center", "va": "top"},
+                     rotation=-90,
+                     )
     if show_data == 2:
         for i, v in enumerate(exprt):
-            ax1.text(
-                tick_pos[i],
-                -500,
-                "{:4.0f}".format(v),
-                {"ha": "center", "va": "top"},
-                fontsize=12,
-            )
+            ax1.text(tick_pos[i],
+                     -500,
+                     "{:4.0f}".format(v),
+                     {"ha": "center", "va": "top"},
+                     fontsize=12,
+                     )
 
     # Set Axes stuff
     ax1.set_ylabel("[kWh]")
@@ -297,9 +286,12 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
         ax1.set_ylim([y_lo, y_hi])
 
     ax1.set_xlabel("Datetime")
-    ax1.grid(
-        which="major", axis="y", color="k", linestyle="--", linewidth=0.5
-    )
+    ax1.grid(which="major",
+             axis="y",
+             color="k",
+             linestyle="--",
+             linewidth=0.5
+             )
     ax1.axhline(y=0, color="k")
     ax1.axvline(x=0, color="k")
     # Set plot stuff
@@ -319,56 +311,51 @@ def main():
     global OPTION
 
     if OPTION.hours:
-        plot_graph(
-            "/tmp/kamstrupd/site/img/kam_pastday.png",
-            fetch_last_day(OPTION.hours),
-            f"Energietrend per uur afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-        )
+        plot_graph("/tmp/kamstrupd/site/img/kam_pastday.png",
+                   fetch_last_day(OPTION.hours),
+                   f"Energietrend per uur afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+                   )
     if OPTION.days:
-        plot_graph(
-            "/tmp/kamstrupd/site/img/kam_pastmonth.png",
-            fetch_last_month(OPTION.days),
-            f"Energietrend per dag afgelopen maand ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-        )
+        plot_graph("/tmp/kamstrupd/site/img/kam_pastmonth.png",
+                   fetch_last_month(OPTION.days),
+                   f"Energietrend per dag afgelopen maand ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+                   )
     if OPTION.months:
-        plot_graph(
-            "/tmp/kamstrupd/site/img/kam_pastyear.png",
-            fetch_last_year(OPTION.months),
-            f"Energietrend per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-            show_data=1,
-        )
+        plot_graph("/tmp/kamstrupd/site/img/kam_pastyear.png",
+                   fetch_last_year(OPTION.months),
+                   f"Energietrend per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+                   show_data=1,
+                   )
     if OPTION.years:
-        plot_graph(
-            "/tmp/kamstrupd/site/img/kam_vs_year.png",
-            fetch_last_years(OPTION.years),
-            f"Energietrend per jaar afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-            show_data=2,
-        )
+        plot_graph("/tmp/kamstrupd/site/img/kam_vs_year.png",
+                   fetch_last_years(OPTION.years),
+                   f"Energietrend per jaar afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+                   show_data=2,
+                   )
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Create a trendgraph")
-    parser.add_argument(
-        "-hr",
-        "--hours",
-        type=int,
-        help="create hour-trend for last <HOURS> hours",
-    )
-    parser.add_argument(
-        "-d", "--days", type=int, help="create day-trend for last <DAYS> days"
-    )
-    parser.add_argument(
-        "-m",
-        "--months",
-        type=int,
-        help="number of months of data to use for the graph",
-    )
-    parser.add_argument(
-        "-y",
-        "--years",
-        type=int,
-        help="number of months of data to use for the graph",
-    )
+    parser.add_argument("-hr",
+                        "--hours",
+                        type=int,
+                        help="create hour-trend for last <HOURS> hours",
+                        )
+    parser.add_argument("-d",
+                        "--days",
+                        type=int,
+                        help="create day-trend for last <DAYS> days"
+                        )
+    parser.add_argument("-m",
+                        "--months",
+                        type=int,
+                        help="number of months of data to use for the graph",
+                        )
+    parser.add_argument("-y",
+                        "--years",
+                        type=int,
+                        help="number of months of data to use for the graph",
+                        )
     OPTION = parser.parse_args()
     if OPTION.hours == 0:
         OPTION.hours = 50
