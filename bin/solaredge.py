@@ -229,8 +229,8 @@ def epoch_is_present_in_database(db_cur, epoch, site_id):
     :return: boolean  (true if data is present in the database for the given site at or after the given epoch)
     """
     db_cur.execute(f"SELECT MAX(sample_epoch)"
-                   f"FROM production"
-                   f"WHERE (site_id = 0) OR (site_id = {site_id})"
+                   f" FROM production"
+                   f" WHERE (site_id = 0) OR (site_id = {site_id})"
                    f";"
                    )
     db_epoch = db_cur.fetchone()[0]
