@@ -29,7 +29,7 @@ SOLAREDGE = {'database': _DATABASE,
                             "sample_time, sample_epoch, site_id, energy"
                             ") "
                             "VALUES (?, ?, ?, ?)",
-             'reporttime': 899,
+             'report_time': 899,
              'cycles': 1,
              'samplespercycle': 1
              }
