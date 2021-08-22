@@ -68,7 +68,7 @@ def main():
     fdatabase = constants.KAMSTRUP['database']
     sqlcmd = constants.KAMSTRUP['sql_command']
     report_time = int(constants.KAMSTRUP['report_time'])
-    samples_averaged = int(constants.KAMSTRUP['samplepercycle']) \
+    samples_averaged = int(constants.KAMSTRUP['samplespercycle']) \
                        * int(constants.KAMSTRUP['cycles'])
     sample_time = report_time / int(constants.KAMSTRUP['samplespercycle'])
     data = []
