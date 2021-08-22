@@ -65,9 +65,9 @@ def main():
     """Execute main loop."""
     global PORT
     killer = ml.GracefulKiller()
-    report_time = int(constants.KAMSTRUP['report_time'])
     fdatabase = constants.KAMSTRUP['database']
     sqlcmd = constants.KAMSTRUP['sql_command']
+    report_time = int(constants.KAMSTRUP['report_time'])
     samples_averaged = int(constants.KAMSTRUP['samplepercycle']) \
                        * int(constants.KAMSTRUP['cycles'])
     sample_time = report_time / int(constants.KAMSTRUP['samplespercycle'])
@@ -110,10 +110,7 @@ def main():
                           + time.time()
                           )
             if pause_time > 0:
-                mf.syslog_trace(f"Waiting  : {pause_time - time.time():.1f}s",
-                                False,
-                                DEBUG,
-                                )
+                mf.syslog_trace(f"Waiting  : {pause_time - time.time():.1f}s", False, DEBUG)
                 # no need to wait for the next cycles
                 # the meter will pace the meaurements
                 # any required waiting will be inside gettelegram()
@@ -180,10 +177,7 @@ def do_work():
                 # ['0-0:96.13.0', '', '']
                 # not recorded
             except ValueError:
-                mf.syslog_trace("*** Conversion not possible for element:",
-                                syslog.LOG_CRIT,
-                                DEBUG,
-                                )
+                mf.syslog_trace("*** Conversion not possible for element:", syslog.LOG_CRIT, DEBUG)
                 mf.syslog_trace(f"    {element}", syslog.LOG_CRIT, DEBUG)
                 mf.syslog_trace("*** Extracted from telegram:", syslog.LOG_DEBUG, DEBUG)
                 mf.syslog_trace(f"    {telegram}", syslog.LOG_DEBUG, DEBUG)
@@ -300,10 +294,7 @@ def create_db_connection(database_file):
         #  syslog.syslog(syslog.LOG_INFO, logtext)
         return consql
     except sqlite3.Error:
-        mf.syslog_trace("Unexpected SQLite3 error when connecting to server.",
-                        syslog.LOG_CRIT,
-                        DEBUG,
-                        )
+        mf.syslog_trace("Unexpected SQLite3 error when connecting to server.", syslog.LOG_CRIT, DEBUG)
         mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
         if consql:  # attempt to close connection to SQLite3 server
             consql.close()
@@ -332,9 +323,7 @@ def test_db_connection(fdatabase):
 
 if __name__ == "__main__":
     # initialise logging
-    syslog.openlog(
-        ident=f'{MYAPP}.{MYID.split(".")[0]}', facility=syslog.LOG_LOCAL0
-    )
+    syslog.openlog(ident=f'{MYAPP}.{MYID.split(".")[0]}', facility=syslog.LOG_LOCAL0)
 
     # noinspection PyUnresolvedReferences
     PORT = serial.Serial()  # pylint: disable=C0103
