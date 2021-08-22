@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import configparser
-import constants
 import datetime as dt
 import json
 import os
@@ -12,6 +11,8 @@ import numpy as np
 import pandas as pd
 import requests
 from requests.auth import HTTPDigestAuth
+
+import constants
 
 pd.options.display.float_format = "{:.3f}".format
 
@@ -142,9 +143,9 @@ class Myenergi:
                             }
 
         Returns:
-            dict: values for each parameter in the template. 0 for missing values.
-                  Joules are converted to kWh. Datetime parameters are converted to
-                  a datetime-object.
+            (dict): values for each parameter in the template. 0 for missing values.
+                    Joules are converted to kWh. Datetime parameters are converted to
+                    a datetime-object.
         """
         unknown_keys = set()
         for key in self.zappi_data_template:
@@ -176,9 +177,9 @@ class Myenergi:
                             }
 
         Returns:
-            dict: values for each parameter in the template. 0 for missing values.
-                  Joules are converted to kWh. Datetime parameters are converted to
-                  a datetime-object.
+            (dict): values for each parameter in the template. 0 for missing values.
+                    Joules are converted to kWh. Datetime parameters are converted to
+                    a datetime-object.
         """
         unknown_keys = set()
         for key in self.zappi_data_template:
@@ -348,10 +349,10 @@ def joules2kwh(df_joules):
     """Convert Joules to kWh values
 
     Args:
-        df_joules (dataframe): data in [J]
+        df_joules (Any): data in [J]
 
     Returns:
-        (ndarray): data in [kWh]
+        (numpy.ndarray): data in [kWh]
     """
     df_wh = np.array(df_joules / 3600, dtype=int)
     for k, v in enumerate(df_wh):
