@@ -12,13 +12,13 @@ pushd "${HERE}" || exit 1
     sudo systemctl stop kamstrup.kamstrup.service
     sudo systemctl stop kamstrup.solaredge.service
 
-    sudo systemctl stop kamstrup.backupdb.timer
+    # sudo systemctl stop kamstrup.backupdb.timer
     sudo systemctl stop kamstrup.trend.day.timer
     sudo systemctl stop kamstrup.trend.month.timer
     sudo systemctl stop kamstrup.trend.year.timer
     sudo systemctl stop kamstrup.update.timer
 
-    ./bin/bakrecdb.sh --backup
+    # ./bin/bakrecdb.sh --backup
 popd || exit
 
 echo

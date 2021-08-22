@@ -22,7 +22,7 @@ pushd "${HERE}" || exit 1
     sudo systemctl disable kamstrup.kamstrup.service
     sudo systemctl disable kamstrup.solaredge.service
 
-    sudo systemctl disable kamstrup.backupdb.timer
+    # sudo systemctl disable kamstrup.backupdb.timer
     sudo systemctl disable kamstrup.trend.day.timer
     sudo systemctl disable kamstrup.trend.month.timer
     sudo systemctl disable kamstrup.trend.year.timer

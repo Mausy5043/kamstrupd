@@ -101,7 +101,7 @@ pushd "${HERE}" || exit 1
     chmod -x ./services/*
 
     # Recover the database from the server
-    ./bin/bakrecdb.sh --install
+    # ./bin/bakrecdb.sh --install
 
     # install services and timers
     sudo cp ./services/*.service /etc/systemd/system/
