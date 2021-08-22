@@ -109,7 +109,7 @@ pushd "${HERE}" || exit 1
     #
     sudo systemctl daemon-reload
     #
-    sudo systemctl enable kamstrup.backupdb.timer
+    # sudo systemctl enable kamstrup.backupdb.timer
     sudo systemctl enable kamstrup.trend.day.timer
     sudo systemctl enable kamstrup.trend.month.timer
     sudo systemctl enable kamstrup.trend.year.timer
@@ -118,7 +118,7 @@ pushd "${HERE}" || exit 1
     sudo systemctl enable kamstrup.kamstrup.service
     sudo systemctl enable kamstrup.solaredge.service
     #
-    sudo systemctl start kamstrup.backupdb.timer
+    # sudo systemctl start kamstrup.backupdb.timer
     sudo systemctl start kamstrup.trend.day.timer
     sudo systemctl start kamstrup.trend.month.timer
     sudo systemctl start kamstrup.trend.year.timer
