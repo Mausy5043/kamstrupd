@@ -38,5 +38,18 @@ ZAPPI = {'database': _DATABASE,
          'sql_commmand': "INSERT INTO zappi ("
                          "sample_time, sample_epoch"
                          ") "
-                         "VALUES (?, ?, ?, ?)"
+                         "VALUES (?, ?, ?, ?)",
+         'director': "https://director.myenergi.net",
+         'template': {'hr': 0,
+                      'dow': "Mon",
+                      'dom': 1,
+                      'mon': 1,
+                      'yr': 2021,
+                      'exp': 0.0,
+                      'gen': 0.0,
+                      'gep': 0.0,
+                      'imp': 0.0,
+                      'h1b': 0.0,
+                      'h1d': 0.0,
+                      }
          }
