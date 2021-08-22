@@ -3,6 +3,10 @@
 # this repo gets installed either manually by the user or automatically by
 # a `*boot` repo.
 
+HERE=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
+required_commonlibversion="1.0.0"
+commonlibbranch="v1_0"
+
 install_package() {
     # See if packages are installed and install them.
     package=$1
@@ -29,9 +33,6 @@ getfilefromserver() {
     #fi
 }
 
-HERE=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
-required_commonlibversion="0.7.0"
-commonlibbranch="v0_7"
 
 pushd "${HERE}" || exit 1
     # shellcheck disable=SC1091
