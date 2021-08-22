@@ -25,13 +25,13 @@ KAMSTRUP = {'database': _DATABASE,
             }
 
 SOLAREDGE = {'database': _DATABASE,
+             'sql_command': "INSERT INTO production ("
+                            "sample_time, sample_epoch, site_id, energy"
+                            ") "
+                            "VALUES (?, ?, ?, ?)",
              'reporttime': 899,
              'cycles': 1,
-             'samplespercycle': 1,
-             'sql_commmand': "INSERT INTO production ("
-                             "sample_time, sample_epoch, site_id, energy"
-                             ") "
-                             "VALUES (?, ?, ?, ?)"
+             'samplespercycle': 1
              }
 
 ZAPPI = {'database': _DATABASE,
