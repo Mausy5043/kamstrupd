@@ -33,3 +33,10 @@ SOLAREDGE = {'database': _DATABASE,
                              ") "
                              "VALUES (?, ?, ?, ?)"
              }
+
+ZAPPI = {'database': _DATABASE,
+         'sql_commmand': "INSERT INTO zappi ("
+                         "sample_time, sample_epoch"
+                         ") "
+                         "VALUES (?, ?, ?, ?)"
+         }
