@@ -10,14 +10,16 @@ Store the data in a sqlite3 database.
 import argparse
 import configparser
 import datetime as dt
-import mausy5043funcs.fileops3 as mf
-import mausy5043libs.libsignals3 as ml
 import os
 import sqlite3
 import syslog
 import time
 import traceback
 
+import mausy5043funcs.fileops3 as mf
+import mausy5043libs.libsignals3 as ml
+
+import constants
 import libsolaredge as solaredge
 
 parser = argparse.ArgumentParser(description="Execute the portal daemon.")
@@ -61,15 +63,11 @@ def main():
     iniconf = configparser.ConfigParser()
     iniconf.read(f"{os.environ['HOME']}/.config/solaredge/account.ini")
     api_key = iniconf.get("account", "api_key")
-    # read the rest of the configuration from config.ini
-    iniconf = configparser.ConfigParser()
-    iniconf.read(f"{os.environ['HOME']}/{MYAPP}/config.ini")
-    report_time = iniconf.getint(MYID, "reporttime")
-    fdatabase = f"{os.environ['HOME']}/{iniconf.get(MYID, 'databasefile')}"
-    sqlcmd = iniconf.get(MYID, "sqlcmd")
-    # samples_averaged = iniconf.getint(MYID, 'samplespercycle') * iniconf.getint(MYID, 'cycles')
-    sample_time = report_time / iniconf.getint(MYID, "samplespercycle")
-    data = []  # noqa
+    fdatabase = constants.SOLAREDGE['database']
+    sqlcmd = constants.SOLAREDGE['sql_command']
+    report_time = int(constants.SOLAREDGE['report_time'])
+    sample_time = report_time / int(constants.SOLAREDGE['samplespercycle'])
+    data = list()
 
     test_db_connection(fdatabase)
 
@@ -83,14 +81,8 @@ def main():
                 try:
                     site_list = API_SE.get_list()["sites"]["site"]
                 except Exception:  # noqa
-                    mf.syslog_trace("Error connecting to SolarEdge",
-                                    syslog.LOG_CRIT,
-                                    DEBUG,
-                                    )
-                    mf.syslog_trace(traceback.format_exc(),
-                                    syslog.LOG_CRIT,
-                                    DEBUG
-                                    )
+                    mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
+                    mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                     site_list = []
                     pass
 
@@ -102,14 +94,8 @@ def main():
                         mf.syslog_trace(f"Data to add : {data}", False, DEBUG)
                         do_add_to_database(data, fdatabase, sqlcmd)
                 except Exception:  # noqa
-                    mf.syslog_trace("Unexpected error in run()",
-                                    syslog.LOG_CRIT,
-                                    DEBUG
-                                    )
-                    mf.syslog_trace(traceback.format_exc(),
-                                    syslog.LOG_CRIT,
-                                    DEBUG
-                                    )
+                    mf.syslog_trace("Unexpected error in run()", syslog.LOG_CRIT, DEBUG)
+                    mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                     raise
 
             pause_time = (sample_time
@@ -118,24 +104,12 @@ def main():
                           + time.time()
                           )
             if pause_time > 0:
-                mf.syslog_trace(f"Waiting  : {pause_time - time.time():.1f}s",
-                                False,
-                                DEBUG,
-                                )
-                mf.syslog_trace("................................",
-                                False,
-                                DEBUG
-                                )
+                mf.syslog_trace(f"Waiting  : {pause_time - time.time():.1f}s", False, DEBUG, )
+                mf.syslog_trace("................................", False, DEBUG)
                 # time.sleep(pause_time)
             else:
-                mf.syslog_trace(f"Behind   : {pause_time - time.time():.1f}s",
-                                False,
-                                DEBUG,
-                                )
-                mf.syslog_trace("................................",
-                                False,
-                                DEBUG
-                                )
+                mf.syslog_trace(f"Behind   : {pause_time - time.time():.1f}s", False, DEBUG, )
+                mf.syslog_trace("................................", False, DEBUG)
         else:
             time.sleep(1.0)
 
