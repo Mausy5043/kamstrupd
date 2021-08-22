@@ -3,16 +3,16 @@
 """Create trendbargraphs for various periods of electricity use and production."""
 
 import argparse
-import os
 from datetime import datetime as dt
 
 import matplotlib.pyplot as plt
 import numpy as np
 
+import constants
 # noinspection PyUnresolvedReferences
 import libkamstrup as kl
 
-DATABASE = os.environ["HOME"] + "/.sqlite3/electriciteit.sqlite3"
+DATABASE = constants.TREND['database']
 OPTION = ""
 
 
@@ -311,23 +311,23 @@ def main():
     global OPTION
 
     if OPTION.hours:
-        plot_graph("/tmp/kamstrupd/site/img/kam_pastday.png",
+        plot_graph(constants.TREND['day_graph'],
                    fetch_last_day(OPTION.hours),
                    f"Energietrend per uur afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    )
     if OPTION.days:
-        plot_graph("/tmp/kamstrupd/site/img/kam_pastmonth.png",
+        plot_graph(constants.TREND['month_graph'],
                    fetch_last_month(OPTION.days),
                    f"Energietrend per dag afgelopen maand ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    )
     if OPTION.months:
-        plot_graph("/tmp/kamstrupd/site/img/kam_pastyear.png",
+        plot_graph(constants.TREND['year_graph'],
                    fetch_last_year(OPTION.months),
                    f"Energietrend per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    show_data=1,
                    )
     if OPTION.years:
-        plot_graph("/tmp/kamstrupd/site/img/kam_vs_year.png",
+        plot_graph(constants.TREND['vsyear_graph'],
                    fetch_last_years(OPTION.years),
                    f"Energietrend per jaar afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    show_data=2,

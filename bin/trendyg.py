@@ -4,6 +4,7 @@
 
 import argparse
 import os
+import constants
 import time
 from datetime import datetime as dt
 
@@ -13,7 +14,7 @@ import numpy as np
 # noinspection PyUnresolvedReferences
 import libkamstrup as kl
 
-DATABASE = os.environ["HOME"] + "/.sqlite3/electriciteit.sqlite3"
+DATABASE = constants.TREND['database']
 OPTION = ""
 
 
@@ -287,12 +288,12 @@ def main():
     global OPTION
 
     if OPTION.months:
-        plot_graph("/tmp/kamstrupd/site/img/kam_vs_month.png",
+        plot_graph(constants.TREND['yg_vs_month'],
                    fetch_last_months(OPTION.months),
                    f"Stroomverbruik/levering per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    )
     if OPTION.gauge:
-        plot_graph("/tmp/kamstrupd/site/img/kam_gauge.png",
+        plot_graph(constants.TREND['yg_gauge'],
                    fetch_last_year(OPTION.gauge),
                    f"Salderingsbalans dit jaar ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    gauge=True,

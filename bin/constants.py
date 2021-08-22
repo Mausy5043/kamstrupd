@@ -3,13 +3,22 @@
 import os
 
 _MYHOME = os.environ["HOME"]
-_DATABASE = "/mnt/data/electriciteit.sqlite3"
+_DATABASE = '/mnt/data/electriciteit.sqlite3'
 if not os.path.isfile(_DATABASE):
-    _DATABASE = f"{_MYHOME}/.sqlite3/electriciteit.sqlite3"
+    _DATABASE = f'{_MYHOME}/.sqlite3/electriciteit.sqlite3'
 
 BATTERY = {'database': _DATABASE,
            'graph_file': ".local/graph.png"
            }
+
+TREND = {'database': _DATABASE,
+         'day_graph': '/tmp/kamstrupd/site/img/kam_pastday.png',
+         'month_graph': '/tmp/kamstrupd/site/img/kam_pastmonth.png',
+         'year_graph': '/tmp/kamstrupd/site/img/kam_pastyear.png',
+         'vsyear_graph': '/tmp/kamstrupd/site/img/kam_vs_year.png',
+         'yg_vs_month': '/tmp/kamstrupd/site/img/kam_vs_month.png',
+         'yg_gauge': '/tmp/kamstrupd/site/img/kam_gauge.png'
+         }
 
 KAMSTRUP = {'database': _DATABASE,
             'sql_command': "INSERT INTO kamstrup ("
