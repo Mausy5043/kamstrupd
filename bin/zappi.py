@@ -1,13 +1,13 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import argparse
 import datetime as dt
 import os
 
-import libkamstrup as kl
-import libzappi as zl
 import matplotlib.pyplot as plt
 
+import libkamstrup as kl
+import libzappi as zl
 
 # import time
 DEBUG = False
@@ -80,56 +80,55 @@ def plot_graph(output_file, data_tuple, plot_title):
     col_usage = "green"
 
     # Create a bar plot of importd
-    ax1.bar(
-        tick_pos,
-        importd,
-        width=bar_width,
-        label="Inkoop",
-        alpha=ahpla,
-        color=col_import,
-        align="center",
-        bottom=own_usage,
-    )
+    ax1.bar(tick_pos,
+            importd,
+            width=bar_width,
+            label="Inkoop",
+            alpha=ahpla,
+            color=col_import,
+            align="center",
+            bottom=own_usage,
+            )
     # Create a bar plot of import_hi
-    ax1.bar(
-        tick_pos,
-        own_usage,
-        width=bar_width,
-        label="Eigen Gebruik",
-        alpha=ahpla,
-        color=col_usage,
-        align="center",
-    )
+    ax1.bar(tick_pos,
+            own_usage,
+            width=bar_width,
+            label="Eigen Gebruik",
+            alpha=ahpla,
+            color=col_usage,
+            align="center",
+            )
     # Create a bar plot of own_usage
-    ax1.bar(
-        tick_pos,
-        ev_usage,
-        width=bar_width,
-        label="EV",
-        alpha=ahpla * 0.9,
-        color=col_ev,
-        align="center",
-    )
+    ax1.bar(tick_pos,
+            ev_usage,
+            width=bar_width,
+            label="EV",
+            alpha=ahpla * 0.9,
+            color=col_ev,
+            align="center",
+            )
 
     # Exports hang below the y-axis
     # Create a bar plot of exportd
-    ax1.bar(
-        tick_pos,
-        [-1 * i for i in exportd],
-        width=bar_width,
-        label="Verkoop",
-        alpha=ahpla,
-        color=col_export,
-        align="center",
-    )
+    ax1.bar(tick_pos,
+            [-1 * i for i in exportd],
+            width=bar_width,
+            label="Verkoop",
+            alpha=ahpla,
+            color=col_export,
+            align="center",
+            )
 
     # Set Axes stuff
     ax1.set_ylabel("[kWh]")
 
     ax1.set_xlabel("Datetime")
-    ax1.grid(
-        which="major", axis="y", color="k", linestyle="--", linewidth=0.5
-    )
+    ax1.grid(which="major",
+             axis="y",
+             color="k",
+             linestyle="--",
+             linewidth=0.5
+             )
     ax1.axhline(y=0, color="k")
     ax1.axvline(x=0, color="k")
     # Set plot stuff
@@ -149,20 +148,17 @@ def main():
     global OPTION
 
     # if OPTION.hours:
-    #     plot_graph(
-    #         "/tmp/kamstrupd/site/img/zap_pastday.png",
+    #     plot_graph("/tmp/kamstrupd/site/img/zap_pastday.png",
     #         fetch_last_day(OPTION.hours),
     #         f"Energietrend per uur afgelopen dagen ({dt.datetime.now().strftime('%d-%m-%Y %H:%M:%S')})",
     #     )
     if OPTION.day:
-        plot_graph(
-            "/tmp/kamstrupd/site/img/zap_pastday.png",
-            myenergi.fetch_data(OPTION.day),
-            f"Energietrend per uur afgelopen dagen ({dt.datetime.now().strftime('%d-%m-%Y %H:%M:%S')})"
-        )
+        plot_graph("/tmp/kamstrupd/site/img/zap_pastday.png",
+                   myenergi.fetch_data(OPTION.day),
+                   f"Energietrend per uur afgelopen dagen ({dt.datetime.now().strftime('%d-%m-%Y %H:%M:%S')})"
+                   )
     # if OPTION.days:
-    #     plot_graph(
-    #         "/tmp/kamstrupd/site/img/kam_pastmonth.png",
+    #     plot_graph("/tmp/kamstrupd/site/img/kam_pastmonth.png",
     #         fetch_last_month(OPTION.days),
     #         f"Energietrend per dag afgelopen maand ({dt.datetime.now().strftime('%d-%m-%Y %H:%M:%S')})",
     #     )
@@ -170,56 +166,52 @@ def main():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Create a trendgraph")
-    parser.add_argument(
-        "-hr",
-        "--hours",
-        type=int,
-        help="create hour-trend for last <HOURS> hours",
-    )
-    # parser.add_argument(
-    #     "-d", "--days", type=int, help="create day-trend for last <DAYS> days"
+    parser.add_argument("-hr",
+                        "--hours",
+                        type=int,
+                        help="create hour-trend for last <HOURS> hours",
+                        )
+    # parser.add_argument("-d",
+    # "--days",
+    # type=int,
+    # help="create day-trend for last <DAYS> days"
     # )
 
-    parser.add_argument(
-        "--day",
-        type=str,
-        help=argparse.SUPPRESS,
-    )
-    parser.add_argument(
-        "--iso",
-        type=str,
-        help="Fetch zappi data for a date in the ISO-format <YYYY-MM-DD>",
-    )
-    parser.add_argument(
-        "--ymd",
-        type=str,
-        help="Fetch zappi data for a date in the sensible format <YYYY-MM-DD>",
-    )
-    parser.add_argument(
-        "--dmy",
-        type=str,
-        help="Fetch zappi data for a date in the reasonable format <DD-MM-YYYY>",
-    )
-    parser.add_argument(
-        "--mdy",
-        type=str,
-        help="Fetch zappi data for a date in the idiotic format <MM-DD-YYYY>",
-    )
-    parser.add_argument(
-        "-p", "--print", action="store_true", help="Output data to stdout."
-    )
-    parser.add_argument(
-        "-s",
-        "--status",
-        action="store_true",
-        help="Display zappi current state",
-    )
-    parser.add_argument(
-        "-d",
-        "--debug",
-        action="store_true",
-        help="debug",
-    )
+    parser.add_argument("--day",
+                        type=str,
+                        help=argparse.SUPPRESS,
+                        )
+    parser.add_argument("--iso",
+                        type=str,
+                        help="Fetch zappi data for a date in the ISO-format <YYYY-MM-DD>",
+                        )
+    parser.add_argument("--ymd",
+                        type=str,
+                        help="Fetch zappi data for a date in the sensible format <YYYY-MM-DD>",
+                        )
+    parser.add_argument("--dmy",
+                        type=str,
+                        help="Fetch zappi data for a date in the reasonable format <DD-MM-YYYY>",
+                        )
+    parser.add_argument("--mdy",
+                        type=str,
+                        help="Fetch zappi data for a date in the idiotic format <MM-DD-YYYY>",
+                        )
+    parser.add_argument("-p",
+                        "--print",
+                        action="store_true",
+                        help="Output data to stdout."
+                        )
+    parser.add_argument("-s",
+                        "--status",
+                        action="store_true",
+                        help="Display zappi current state",
+                        )
+    parser.add_argument("-d",
+                        "--debug",
+                        action="store_true",
+                        help="debug",
+                        )
 
     OPTION = parser.parse_args()
     if OPTION.print or DEBUG:
