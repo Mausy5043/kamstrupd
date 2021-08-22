@@ -7,7 +7,6 @@ Store data from a Kamstrup smart-electricity meter in a sqlite3 database.
 """
 
 import argparse
-import configparser
 import datetime as dt
 import os
 import re
@@ -19,6 +18,8 @@ import traceback
 import mausy5043funcs.fileops3 as mf
 import mausy5043libs.libsignals3 as ml
 import serial
+
+import constants
 
 parser = argparse.ArgumentParser(description="Execute the telemetry daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
@@ -64,15 +65,12 @@ def main():
     """Execute main loop."""
     global PORT
     killer = ml.GracefulKiller()
-    iniconf = configparser.ConfigParser()
-    iniconf.read(f"{os.environ['HOME']}/{MYAPP}/config.ini")
-    report_time = iniconf.getint(MYID, "reporttime")
-    fdatabase = f"{os.environ['HOME']}/{iniconf.get(MYID, 'databasefile')}"
-    sqlcmd = iniconf.get(MYID, "sqlcmd")
-    samples_averaged = iniconf.getint(MYID,
-                                      "samplespercycle"
-                                      ) * iniconf.getint(MYID, "cycles")
-    sample_time = report_time / iniconf.getint(MYID, "samplespercycle")
+    report_time = int(constants.KAMSTRUP['report_time'])
+    fdatabase = constants.KAMSTRUP['database']
+    sqlcmd = constants.KAMSTRUP['sql_command']
+    samples_averaged = int(constants.KAMSTRUP['samplepercycle']) \
+                       * int(constants.KAMSTRUP['cycles'])
+    sample_time = report_time / int(constants.KAMSTRUP['samplespercycle'])
     data = []
 
     test_db_connection(fdatabase)
