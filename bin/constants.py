@@ -5,6 +5,8 @@ import os
 _MYHOME = os.environ["HOME"]
 _DATABASE = '/mnt/data/electriciteit.sqlite3'
 if not os.path.isfile(_DATABASE):
+    _DATABASE = f'.local/electriciteit.sqlite3'
+if not os.path.isfile(_DATABASE):
     _DATABASE = f'{_MYHOME}/.sqlite3/electriciteit.sqlite3'
 
 BATTERY = {'database': _DATABASE,
@@ -28,6 +30,7 @@ KAMSTRUP = {'database': _DATABASE,
                            "tarif, swits"
                            ") "
                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            'sql_table': "kamstrup",
             'report_time': 600,
             'cycles': 1,
             'samplespercycle': 58
