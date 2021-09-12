@@ -12,7 +12,7 @@ pushd "${HERE}" || exit 1
     source ./includes
 
     # shellcheck disable=SC2154
-    branch=$(<"${HOME}/.${app_name}.branch")
+    branch=$(<"${HOME}/.${app_name}.branch") || exit 1
 
     # make sure working tree exists
     if [ ! -d "/tmp/${app_name}/site/img" ]; then
