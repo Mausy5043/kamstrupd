@@ -28,8 +28,8 @@ getfilefromserver() {
     mode="${2}"
 
     #if [ ! -f "${HOME}/${file}" ]; then
-    cp -rvf "/mnt/data/.config/${file}" "${HOME}/.config"
-    chmod -R "${mode}" "${HOME}/${file}"
+    cp -rvf "/mnt/data/.config/${file}" "${HOME}/.config/"
+    chmod -R "${mode}" "${HOME}/.config/${file}"
     #fi
 }
 
