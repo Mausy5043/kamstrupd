@@ -22,7 +22,7 @@ MYROOT = "/".join(HERE[0:-3])
 # host_name :
 NODE = os.uname()[1]
 
-CONFIG_FILE = os.environ["HOME"] + "/.config/kamstrup/key.ini"
+CONFIG_FILE = os.environ["HOME"] + "/.config/zappi/keys.ini"
 
 OPTION = ""
 
