@@ -28,8 +28,8 @@ getfilefromserver() {
     mode="${2}"
 
     #if [ ! -f "${HOME}/${file}" ]; then
-    cp -rvf "${HOME}/bin/.config/home/${file}" "${HOME}/"
-    chmod "${mode}" "${HOME}/${file}"
+    cp -rvf "/mnt/data/.config/${file}" "${HOME}/.config"
+    chmod -R "${mode}" "${HOME}/${file}"
     #fi
 }
 
@@ -75,8 +75,9 @@ pushd "${HERE}" || exit 1
   python3 -m pip install -r requirements.txt
 popd || exit 1
 
-getfilefromserver ".my.kam.cnf" "0740"
-getfilefromserver ".config" "0744"
+# install account key from local fileserver
+getfilefromserver "solaredge" "0740"
+getfilefromserver "zappi" "0740"
 
 commonlibversion=$(python3 -m pip freeze | grep mausy5043 | cut -c 26-)
 if [ "${commonlibversion}" != "${required_commonlibversion}" ]; then
