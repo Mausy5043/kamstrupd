@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 
 _MYHOME = os.environ["HOME"]
-_DATABASE = '/srv/electriciteit.sqlite3'
+_DATABASE = '/srv/data/electriciteit.sqlite3'
 if not os.path.isfile(_DATABASE):
     _DATABASE = '/mnt/data/electriciteit.sqlite3'
 if not os.path.isfile(_DATABASE):
     _DATABASE = f'.local/electriciteit.sqlite3'
 if not os.path.isfile(_DATABASE):
     _DATABASE = f'{_MYHOME}/.sqlite3/electriciteit.sqlite3'
+if not os.path.isfile(_DATABASE):
+    print("Database is missing.")
+    sys.exit(1)
 
 BATTERY = {'database': _DATABASE,
            'graph_file': ".local/graph.png"
