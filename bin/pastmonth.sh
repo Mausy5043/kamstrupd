@@ -12,4 +12,4 @@ popd >/dev/null || exit
 CURRENT_EPOCH=$(date +'%s')
 # Keep upto 10 years of data
 PURGE_EPOCH=$(echo "${CURRENT_EPOCH} - (10 * 366 * 24 * 3600)" | bc)
-sqlite3 "${HOME}/.sqlite3/electriciteit.sqlite3" "DELETE FROM kamstrup WHERE sample_epoch < ${PURGE_EPOCH};"
+sqlite3 "/srv/data/electriciteit.sqlite3" "DELETE FROM kamstrup WHERE sample_epoch < ${PURGE_EPOCH};"
