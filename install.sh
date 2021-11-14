@@ -78,6 +78,8 @@ popd || exit 1
 # install account key from local fileserver
 getfilefromserver "solaredge" "0740"
 getfilefromserver "zappi" "0740"
+cp -rvf "/srv/config/.lftprc" "${HOME}/"
+chmod -R 0740 "${HOME}/.lftprc"
 
 commonlibversion=$(python3 -m pip freeze | grep mausy5043 | cut -c 26-)
 if [ "${commonlibversion}" != "${required_commonlibversion}" ]; then
