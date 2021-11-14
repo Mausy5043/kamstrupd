@@ -4,7 +4,10 @@ import os
 import sys
 
 _MYHOME = os.environ["HOME"]
-_DATABASE = '/srv/data/electriciteit.sqlite3'
+_DATABASE = '/srv/databases/electriciteit.sqlite3'
+
+if not os.path.isfile(_DATABASE):
+    _DATABASE = '/srv/data/electriciteit.sqlite3'
 if not os.path.isfile(_DATABASE):
     _DATABASE = '/mnt/data/electriciteit.sqlite3'
 if not os.path.isfile(_DATABASE):
