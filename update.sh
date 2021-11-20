@@ -9,7 +9,7 @@ HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
 
 pushd "${HERE}" || exit 1
     # shellcheck disable=SC1091
-    source ./includes
+    source ./bin/constants.sh
 
     # shellcheck disable=SC2154
     branch=$(<"${HOME}/.${app_name}.branch") || exit 1
@@ -28,8 +28,6 @@ pushd "${HERE}" || exit 1
     git checkout "${branch}"
     git reset --hard "origin/${branch}" && git clean -f -d
     chmod -x ./services/*
-    # sudo chmod -x /etc/systemd/system/kamstrup.*
-
     changed_config=0
     changed_service=0
     changed_daemon=0
@@ -62,13 +60,11 @@ pushd "${HERE}" || exit 1
         sudo systemctl restart kamstrup.kamstrup.service &
         sudo systemctl restart kamstrup.solaredge.service &
     fi
+    echo "  o Restarting daemons"
+    sudo systemctl restart kamstrup.fles.service &
+    sudo systemctl restart kamstrup.kamstrup.service &
+    sudo systemctl restart kamstrup.solaredge.service &
 
-    if [[ changed_config -eq 1 ]] || [[ changed_daemon -eq 1 ]]; then
-        echo "  ! Daemon or configuration changed"
-        echo "  o Restarting daemon"
-        sudo systemctl restart kamstrup.kamstrup.service &
-        sudo systemctl restart kamstrup.solaredge.service &
-    fi
 
     if [[ "${1}" == "--systemd" ]]; then
         echo "" > /dev/null
@@ -77,5 +73,5 @@ pushd "${HERE}" || exit 1
         sudo systemctl start kamstrup.trend.day.service &
     fi
     echo "Please wait while services start..."; wait
-    ./bin/upload.sh --all
+    # ./bin/upload.sh --all
 popd || exit
