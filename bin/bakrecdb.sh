@@ -4,6 +4,8 @@ DBFILE_1="electriciteit.sqlite3"
 #DBFILE_2="electriciteit.sqlite3"
 
 install_database_files() {
+    echo "Installs are disabled for this version."
+    exit 1
     mkdir -p "${HOME}/.sqlite3"
     recover_database_file ${DBFILE_1}
     if [ ! -e "${HOME}/.sqlite3/${DBFILE_1}" ]; then

@@ -2,6 +2,9 @@
 
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
 
+echo "Can't use upload in this version"
+exit 1
+
 copy_default_page() {
     pushd "${HERE}" >/dev/null || exit 1
     cp ../web/default.md /tmp/kamstrupd/site

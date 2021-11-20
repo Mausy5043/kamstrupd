@@ -1,9 +1,12 @@
+Flask
 matplotlib
 numpy
 pandas
 pyserial
 python-dateutil
+python-dotenv
 pytz
 requests
 scipy
 skyfield
+uwsgi
