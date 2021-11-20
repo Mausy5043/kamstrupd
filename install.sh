@@ -125,6 +125,10 @@ pushd "${HERE}" || exit 1
     sudo systemctl start kamstrup.trend.year.timer
     sudo systemctl start kamstrup.update.timer    # this will also start the daemon!
 
+    bin/pastday.sh
+    bin/pastmonth.sh
+    bin/pastyear.sh
+    
     sudo systemctl start kamstrup.kamstrup.service &
     sudo systemctl start kamstrup.solaredge.service &
     sudo systemctl start kamstrup.fles.service &
