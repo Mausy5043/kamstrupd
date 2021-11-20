@@ -33,7 +33,6 @@ def plot_graph(output_file, data_tuple, plot_title):
     """
     global DEBUG
     global OPTION
-    print("")
     data_lbls = data_tuple[0]
     importd = data_tuple[1]  # imp = P1 totaliser import
     opwekking = data_tuple[2]  # gep; PV production
@@ -63,6 +62,7 @@ def plot_graph(output_file, data_tuple, plot_title):
         print("ifx", iflux)
         print("own", own_usage)
         print(".ev", ev_usage)
+        print("")
 
     # Set the bar width
     bar_width = 0.75
