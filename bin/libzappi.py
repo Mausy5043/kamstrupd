@@ -317,7 +317,6 @@ class Myenergi:
                                          f"{this_day.day}"
                                          )
                 done_flag = True
-                print("")
             except requests.exceptions.ReadTimeout:
                 timeout_retries -= 1
                 if timeout_retries <= 0:
