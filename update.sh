@@ -57,20 +57,23 @@ pushd "${HERE}" || exit 1
         echo "  o Reinstalling timers"
         sudo cp ./services/*.timer /etc/systemd/system/
         sudo systemctl daemon-reload
-        sudo systemctl restart kamstrup.kamstrup.service &
-        sudo systemctl restart kamstrup.solaredge.service &
     fi
+
     echo "  o Restarting daemons"
     sudo systemctl restart kamstrup.fles.service &
     sudo systemctl restart kamstrup.kamstrup.service &
     sudo systemctl restart kamstrup.solaredge.service &
-
+    wait
 
     if [[ "${1}" == "--systemd" ]]; then
         echo "" > /dev/null
     else
-        echo "Updating trendgraph..."
-        sudo systemctl start kamstrup.trend.day.service &
+        echo "Creating graphs [1]"
+        bin/pastday.sh
+        echo "Creating graphs [2]"
+        bin/pastmonth.sh
+        echo "Creating graphs [3]"
+        bin/pastyear.sh
     fi
     echo "Please wait while services start..."; wait
     # ./bin/upload.sh --all

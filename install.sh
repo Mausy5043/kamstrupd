@@ -125,13 +125,6 @@ pushd "${HERE}" || exit 1
     sudo systemctl start kamstrup.trend.year.timer
     sudo systemctl start kamstrup.update.timer    # this will also start the daemon!
 
-    echo "Creating graphs [1]"
-    bin/pastday.sh
-    echo "Creating graphs [2]"
-    bin/pastmonth.sh
-    echo "Creating graphs [3]"
-    bin/pastyear.sh
-
     echo "Starting services..."
     sudo systemctl start kamstrup.kamstrup.service &
     sudo systemctl start kamstrup.solaredge.service &
