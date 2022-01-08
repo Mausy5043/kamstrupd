@@ -253,7 +253,7 @@ def do_add_to_database(result, fdatabase, sql_cmd):
                result[4],
                result[5],
                result[6],
-               result[7],
+               result[7]
                )
     mf.syslog_trace(f"   @: {out_date.strftime(dt_format)}", False, DEBUG)
     mf.syslog_trace(f"    : {results}", False, DEBUG)
