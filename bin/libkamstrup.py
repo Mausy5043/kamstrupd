@@ -38,7 +38,7 @@ class Kamstrup:
         self.electra2out = np.nan
         self.powerin = np.nan
         self.powerout = np.nan
-        self.tarif = 0
+        self.tarif = 1
         self.swits = 0
         self.list_data = list()
 
