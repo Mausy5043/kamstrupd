@@ -57,7 +57,7 @@ powerin = 0
 electra1out = 0
 electra2out = 0
 powerout = 0
-tarif = 0
+tarif = 1
 swits = 0
 
 
@@ -137,6 +137,7 @@ def do_work():
     global powerout
     global tarif
     global swits
+    tarif = 1
     # swits is not always present. The value will
     # change *if* present in the telegram.
     swits = 0
