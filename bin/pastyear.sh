@@ -10,5 +10,4 @@ pushd "${HERE}" >/dev/null || exit 1
     ./trend.py --years 0 &
     ./trendyg.py --months 0 &
     wait
-    # ./upload.sh --all
 popd >/dev/null || exit
