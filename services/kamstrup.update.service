@@ -10,6 +10,7 @@ Wants=kamstrup.update.timer
 Type=oneshot
 User=pi
 ExecStart=/home/pi/kamstrupd/update.sh --systemd
+TimeoutSec=900
 
 # [Install]
 # WantedBy=multi-user.target
