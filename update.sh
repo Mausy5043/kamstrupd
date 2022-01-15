@@ -28,6 +28,12 @@ pushd "${HERE}" || exit 1
     git checkout "${branch}"
     git reset --hard "origin/${branch}" && git clean -f -d
     chmod -x ./services/*
+
+    sudo systemctl stop kamstrup.fles.service &
+    sudo systemctl stop kamstrup.kamstrup.service &
+    sudo systemctl stop kamstrup.solaredge.service &
+    echo "Please wait while services stop..."; wait
+
     changed_config=0
     changed_service=0
     changed_daemon=0
@@ -59,12 +65,6 @@ pushd "${HERE}" || exit 1
         sudo systemctl daemon-reload
     fi
 
-    echo "  o Restarting daemons"
-    sudo systemctl restart kamstrup.fles.service &
-    sudo systemctl restart kamstrup.kamstrup.service &
-    sudo systemctl restart kamstrup.solaredge.service &
-    wait
-
     if [[ "${1}" == "--systemd" ]]; then
         echo "" > /dev/null
     else
@@ -75,6 +75,10 @@ pushd "${HERE}" || exit 1
         echo "Creating graphs [3]"
         bin/pastyear.sh
     fi
+
+    sudo systemctl start kamstrup.fles.service &
+    sudo systemctl start kamstrup.kamstrup.service &
+    sudo systemctl start kamstrup.solaredge.service &
     echo "Please wait while services start..."; wait
-    # ./bin/upload.sh --all
+
 popd || exit
