@@ -33,6 +33,10 @@ pushd "${HERE}" || exit 1
     sudo systemctl stop kamstrup.fles.service &
     sudo systemctl stop kamstrup.kamstrup.service &
     sudo systemctl stop kamstrup.solaredge.service &
+    sudo systemctl stop kamstrup.trend.day.timer &
+    sudo systemctl stop kamstrup.trend.month.timer &
+    sudo systemctl stop kamstrup.trend.year.timer &
+    sudo systemctl stop kamstrup.update.timer &
     echo "Please wait while services stop..."; wait
 
     changed_config=0
@@ -80,6 +84,10 @@ pushd "${HERE}" || exit 1
     sudo systemctl start kamstrup.fles.service &
     sudo systemctl start kamstrup.kamstrup.service &
     sudo systemctl start kamstrup.solaredge.service &
+    sudo systemctl start kamstrup.trend.day.timer &
+    sudo systemctl start kamstrup.trend.month.timer &
+    sudo systemctl start kamstrup.trend.year.timer &
+    sudo systemctl start kamstrup.update.timer &
     echo "Please wait while services start..."; wait
 
 popd || exit
