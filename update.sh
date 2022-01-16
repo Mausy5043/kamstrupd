@@ -36,7 +36,6 @@ pushd "${HERE}" || exit 1
     sudo systemctl stop kamstrup.trend.day.timer &
     sudo systemctl stop kamstrup.trend.month.timer &
     sudo systemctl stop kamstrup.trend.year.timer &
-    sudo systemctl stop kamstrup.update.timer &
     echo "Please wait while services stop..."; wait
 
     changed_service=0
@@ -76,7 +75,6 @@ pushd "${HERE}" || exit 1
     sudo systemctl start kamstrup.trend.day.timer &
     sudo systemctl start kamstrup.trend.month.timer &
     sudo systemctl start kamstrup.trend.year.timer &
-    sudo systemctl start kamstrup.update.timer &
     echo "Please wait while services start..."; wait
 
 popd || exit
