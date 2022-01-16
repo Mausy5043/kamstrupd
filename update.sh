@@ -39,22 +39,11 @@ pushd "${HERE}" || exit 1
     sudo systemctl stop kamstrup.update.timer &
     echo "Please wait while services stop..."; wait
 
-    changed_config=0
     changed_service=0
-    changed_daemon=0
     changed_lib=0
     for fname in $DIFFLIST; do
-        if [[ "${fname}" == "config.ini" ]]; then
-            changed_config=1
-        fi
         if [[ "${fname:0:9}" == "services/" ]]; then
             changed_service=1
-        fi
-        if [[ "${fname}" == "bin/kamstrup.py" ]]; then
-            changed_daemon=1
-        fi
-        if [[ "${fname}" == "bin/solaredge.py" ]]; then
-            changed_daemon=1
         fi
         if [[ "${fname:${#fname}-6}" == "lib.py" ]]; then
             changed_lib=1
