@@ -24,7 +24,6 @@ import libsolaredge as solaredge
 
 from hanging_threads import start_monitoring
 anti_freeze = constants.SOLAREDGE['report_time'] * 2
-start_monitoring(seconds_frozen=anti_freeze, test_interval=1000)
 
 parser = argparse.ArgumentParser(description="Execute the portal daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
@@ -63,6 +62,7 @@ def main():
     """Execute main loop."""
     global API_SE
     killer = ml.GracefulKiller()
+    start_monitoring(seconds_frozen=anti_freeze, test_interval=2000)
     # read api_key from the file ~/.config/solaredge/account.ini
     iniconf = configparser.ConfigParser()
     iniconf.read(f"{os.environ['HOME']}/.config/solaredge/account.ini")
