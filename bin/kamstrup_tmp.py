@@ -23,6 +23,10 @@ import serial
 
 import constants
 
+from hanging_threads import start_monitoring
+anti_freeze = constants.KAMSTRUP['report_time'] * 2
+start_monitoring(seconds_frozen=anti_freeze, test_interval=1000)
+
 parser = argparse.ArgumentParser(description="Execute the telemetry daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
 parser_group.add_argument("--start",

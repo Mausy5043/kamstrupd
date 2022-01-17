@@ -22,6 +22,10 @@ import mausy5043libs.libsignals3 as ml
 import constants
 import libsolaredge as solaredge
 
+from hanging_threads import start_monitoring
+anti_freeze = constants.SOLAREDGE['report_time'] * 2
+start_monitoring(seconds_frozen=anti_freeze, test_interval=1000)
+
 parser = argparse.ArgumentParser(description="Execute the portal daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
 parser_group.add_argument("--start",
