@@ -68,7 +68,7 @@ def main():
     """Execute main loop."""
     global PORT
     killer = ml.GracefulKiller()
-    start_monitoring(seconds_frozen=anti_freeze, test_interval=2000)
+    start_monitoring(seconds_frozen=anti_freeze, test_interval=1357)
     fdatabase = constants.KAMSTRUP['database']
     sqlcmd = constants.KAMSTRUP['sql_command']
     report_time = int(constants.KAMSTRUP['report_time'])
