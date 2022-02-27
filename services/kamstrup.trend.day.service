@@ -1,0 +1,13 @@
+# This service is for trending data from the past days
+
+[Unit]
+Description=trending electricity data from past days (service)
+Wants=kamstrup.trend.day.timer
+
+[Service]
+Type=oneshot
+User=pi
+ExecStart=/home/pi/kamstrupd/bin/pastday.sh -
+
+# [Install]
+# WantedBy=multi-user.target

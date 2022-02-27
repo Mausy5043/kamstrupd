@@ -1,40 +1,21 @@
 #!/bin/bash
 
 # Use stop.sh to stop all daemons in one go
-# You can use update.sh to get everything started kam.
+# You can use update.sh to get everything started again.
 
-pushd "$HOME/kamstrupd"
-  source ./includes
+HERE=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
 
-  # Check if DIAG daemons are running
-  for daemon in $kamlist; do
-    # command the daemon to stop regardless if it is running or not.
-    eval "./kam$daemon"d.py stop
-    # kill off any rogue daemons by the same name (it happens sometimes)
-    if [   $(pgrep -fc "kam$daemon"d.py) -ne 0 ]; then
-      kill $(pgrep -f  "kam$daemon"d.py)
-    fi
-    # log the activity
-    logger -p user.err -t kamstrupd "  * Daemon $daemon stopped."
-    # force rm the .pid file
-    rm -f "/tmp/kamstrupd/$daemon.pid"
-  done
+pushd "${HERE}" || exit 1
+    # shellcheck disable=SC1091
+    source ./bin/constants.sh
 
-  # Check if SVC daemons are running
-  for daemon in $srvclist; do
-    # command the daemon to stop regardless if it is running or not.
-    eval "./kam$daemon"d.py stop
-    # kill off any rogue daemons by the same name (it happens sometimes)
-    if [   $(pgrep -fc "kam$daemon"d.py) -ne 0 ]; then
-      kill $(pgrep -f  "kam$daemon"d.py)
-    fi
-    # log the activity
-    logger -p user.err -t kamstrupd "  * Daemon $daemon stopped."
-    # force rm the .pid file
-    rm -f "/tmp/kamstrupd/$daemon.pid"
-  done
-popd
+    sudo systemctl stop kamstrup.fles.service &
+    sudo systemctl stop kamstrup.kamstrup.service &
+    sudo systemctl stop kamstrup.solaredge.service &
 
-echo
-echo "To re-start all daemons, use:"
-echo "./update.sh"
+    sudo systemctl stop kamstrup.trend.day.timer &
+    sudo systemctl stop kamstrup.trend.month.timer &
+    sudo systemctl stop kamstrup.trend.year.timer &
+    sudo systemctl stop kamstrup.update.timer &
+    wait
+popd || exit

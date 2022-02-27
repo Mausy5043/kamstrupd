@@ -1,109 +1,82 @@
 #!/bin/bash
 
-# update.sh is run periodically by a cronjob.
-# * It synchronises the local copy of kamstrupd with the current github branch
+# update.sh is run periodically by a service.
+# * It synchronises the local copy of ${app_name} with the current GitLab branch
 # * It checks the state of and (re-)starts daemons if they are not (yet) running.
 
-HOSTNAME=$(cat /etc/hostname)
-branch=$(cat "$HOME/.kamstrupd.branch")
+logger "Started kamstrup update."
 
-# Wait for the daemons to finish their job. Prevents stale locks when restarting.
-#echo "Waiting 30s..."
-#sleep 30
+HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
 
-# make sure working tree exists
-if [ ! -d /tmp/kamstrupd/site/img ]; then
-  mkdir -p /tmp/kamstrupd/site/img
-  chmod -R 755 /tmp/kamstrupd
-fi
-# make sure working tree exists
-if [ ! -d /tmp/kamstrupd/mysql ]; then
-  mkdir -p /tmp/kamstrupd/mysql
-  chmod -R 755 /tmp/kamstrupd
-fi
+pushd "${HERE}" || exit 1
+    # shellcheck disable=SC1091
+    source ./bin/constants.sh
 
-pushd "$HOME/kamstrupd"
-  source ./includes
-  git fetch origin
-  # Check which files have changed
-  DIFFLIST=$(git --no-pager diff --name-only "$branch..origin/$branch")
-  git pull
-  git fetch origin
-  git checkout "$branch"
-  git reset --hard "origin/$branch" && git clean -f -d
-  # Set permissions
-  # chmod -R 744 ./*
+    # shellcheck disable=SC2154
+    branch=$(<"${HOME}/.${app_name}.branch") || exit 1
 
-  for fname in $DIFFLIST; do
-    echo ">   $fname was updated from GIT"
-    f5l4="${fname:0:5}${fname:${#fname}-4}"
-
-    # Detect changes
-    if [[ "$f5l4" == "kamd.py" ]]; then
-      echo "  ! Domotica daemon changed"
-      eval "./$fname stop"
+    # make sure working tree exists
+    if [ ! -d "/tmp/${app_name}/site/img" ]; then
+        mkdir -p "/tmp/${app_name}/site/img"
+        chmod -R 755 "/tmp/${app_name}"
     fi
 
-    # LIBDAEMON.PY changed
-    #if [[ "$fname" == "libdaemon.py" ]]; then
-    #  echo "  ! Diagnostic library changed"
-    #  echo "  o Restarting all kam daemons"
-    #  for daemon in $kamlist; do
-    #    echo "  +- Restart kam$daemon"
-    #    eval "./kam$daemon"d.py restart
-    #  done
-    #  echo "  o Restarting all service daemons"
-    #  for daemon in $srvclist; do
-    #    echo "  +- Restart kam$daemon"
-    #    eval "./kam$daemon"d.py restart
-    #  done
-    #fi
+    git fetch origin || sleep 60; git fetch origin
+    # Check which files have changed
+    DIFFLIST=$(git --no-pager diff --name-only "${branch}..origin/${branch}")
+    git pull
+    git fetch origin
+    git checkout "${branch}"
+    git reset --hard "origin/${branch}" && git clean -f -d
+    chmod -x ./services/*
 
-    #CONFIG.INI changed
-    if [[ "$fname" == "config.ini" ]]; then
-      echo "  ! Configuration file changed"
-      echo "  o Restarting all kam daemons"
-      for daemon in $kamlist; do
-        echo "  +- Restart kam$daemon"
-        eval "./kam$daemon"d.py restart
-      done
-      echo "  o Restarting all service daemons"
-      for daemon in $srvclist; do
-        echo "  +- Restart kam$daemon"
-        eval "./kam$daemon"d.py restart
-      done
+    sudo systemctl stop kamstrup.fles.service &
+    sudo systemctl stop kamstrup.kamstrup.service &
+    sudo systemctl stop kamstrup.solaredge.service &
+    sudo systemctl stop kamstrup.trend.day.timer &
+    sudo systemctl stop kamstrup.trend.month.timer &
+    sudo systemctl stop kamstrup.trend.year.timer &
+    echo "Please wait while services stop..."; wait
+
+    changed_service=0
+    changed_lib=0
+    for fname in $DIFFLIST; do
+        if [[ "${fname:0:9}" == "services/" ]]; then
+            changed_service=1
+        fi
+        if [[ "${fname:${#fname}-6}" == "lib.py" ]]; then
+            changed_lib=1
+        fi
+    done
+
+    if [[ changed_service -eq 1 ]] || [[ changed_lib -eq 1 ]]; then
+        echo "  ! Service or timer changed"
+        echo "  o Reinstalling services"
+        sudo cp ./services/*.service /etc/systemd/system/
+        echo "  o Reinstalling timers"
+        sudo cp ./services/*.timer /etc/systemd/system/
+        sudo systemctl daemon-reload
     fi
-  done
 
-  # Check if daemons are running
-  for daemon in $kamlist; do
-    if [ -e "/tmp/kamstrupd/$daemon.pid" ]; then
-      if ! kill -0 $(cat "/tmp/kamstrupd/$daemon.pid")  > /dev/null 2>&1; then
-        logger -p user.err -t kamstrupd "  * Stale daemon $daemon pid-file found."
-        rm "/tmp/kamstrupd/$daemon.pid"
-          echo "  * Start DIAG $daemon"
-        eval "./kam$daemon"d.py start
-      fi
+    if [ ! "${1}" == "--systemd" ]; then
+        echo "Skipping graph creation"
     else
-      logger -p user.warn -t kamstrupd "Found kam$daemon not running."
-        echo "  * Start kam$daemon"
-      eval "./kam$daemon"d.py start
+        echo "Creating graphs [1]"
+        bin/pastday.sh
+        echo "Creating graphs [2]"
+        bin/pastmonth.sh
+        echo "Creating graphs [3]"
+        bin/pastyear.sh
     fi
-  done
 
-  # Check if SVC daemons are running
-  for daemon in $srvclist; do
-    if [ -e "/tmp/kamstrupd/$daemon.pid" ]; then
-      if ! kill -0 $(cat "/tmp/kamstrupd/$daemon.pid")  > /dev/null 2>&1; then
-        logger -p user.err -t kamstrupd "  * Stale daemon $daemon pid-file found."
-        rm "/tmp/kamstrupd/$daemon.pid"
-          echo "  * Start kam$daemon"
-        eval "./kam$daemon"d.py start
-      fi
-    else
-      logger -p user.warn -t kamstrupd "Found kam$daemon not running."
-        echo "  * Start kam$daemon"
-      eval "./kam$daemon"d.py start
-    fi
-  done
-popd
+    sudo systemctl start kamstrup.fles.service &
+    sudo systemctl start kamstrup.kamstrup.service &
+    sudo systemctl start kamstrup.solaredge.service &
+    sudo systemctl start kamstrup.trend.day.timer &
+    sudo systemctl start kamstrup.trend.month.timer &
+    sudo systemctl start kamstrup.trend.year.timer &
+    echo "Please wait while services start..."; wait
+
+popd || exit
+
+logger "Finished kamstrup update."
