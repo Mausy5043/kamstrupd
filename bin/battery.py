@@ -126,18 +126,67 @@ def assess_battery(df):
     return df
 
 
+def assess_rev_battery(df):
+    """
+
+    Args:
+        df (pandas.DataFrame): raw data from database
+
+    Returns:
+        (pandas.DataFrame): battery balance data added
+
+    """
+    global OPTION
+    # set-up the battery with a pre-charge
+    df['battery'] = OPTION.soc
+    # start off the surplus at zero
+    df['surplus'] = 0
+    # start off the shortage at zero
+    df['shortge'] = 0
+    for i in range(1, len(df)):
+        # determine battery SoC at the top of the hour
+        bat_state = df.loc[i - 1, 'battery']
+        # add the hour's surplus to the battery
+        surplus = df.loc[i, 'out']
+        bat_state += surplus
+        surplus = 0
+        # skim off the surplus that doesn't fit in the battery if it tops out
+        if bat_state > OPTION.maxbat:
+            surplus = bat_state - OPTION.maxbat
+            bat_state = OPTION.maxbat
+        # remove the hour's shortage from the battery
+        shortge = df.loc[i, 'in']
+        bat_state -= shortge
+        shortge = 0
+        # determine the energy to import if the battery is drained
+        if bat_state < 0:
+            shortge = 0 - bat_state
+            bat_state = 0
+        # store the balance
+        df.loc[i, 'battery'] = bat_state
+        df.loc[i, 'surplus'] = surplus
+        df.loc[i, 'shortge'] = shortge
+
+    df.reset_index(drop=True, inplace=True)
+    return df
+
+
 def main():
     """
       This is the main loop
       """
     global MYAPP
     global OPTION
-    data = None
-    if OPTION.hours:
-        data = assess_battery(fetch_data(OPTION.hours))
-    if OPTION.days:
-        data = assess_battery(fetch_data(OPTION.days * 24))
 
+    bat_data = fetch_data(OPTION.hours)
+    data = assess_battery(bat_data)
+    # pd.set_option("display.max_rows", None, "display.max_columns", None)
+    # print(data)
+    print(f"Max. Battery SoC : {np.max(data['battery']):.0f} Wh \t cumul : {np.sum(data['battery']) / 1000:.0f} kWh")
+    print(f"Max. Surplus     : {np.max(data['surplus']):.0f} Wh \t cumul : {np.sum(data['surplus']) / 1000:.0f} kWh")
+    print(f"Max. Shortage    : {np.max(data['shortge']):.0f} Wh \t cumul : {np.sum(data['shortge']) / 1000:.0f} kWh")
+
+    data = assess_rev_battery(bat_data)
     # pd.set_option("display.max_rows", None, "display.max_columns", None)
     # print(data)
     print(f"Max. Battery SoC : {np.max(data['battery']):.0f} Wh \t cumul : {np.sum(data['battery']) / 1000:.0f} kWh")
