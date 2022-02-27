@@ -151,15 +151,14 @@ def assess_rev_battery(df):
         shortge = df.loc[i, 'in']
         bat_state -= shortge
         shortge = 0
-        # determine the energy to import if the battery is drained
-        if bat_state < 0:
-            shortge = 0 - bat_state
-            bat_state = 0
-
         # add the hour's surplus to the battery
         surplus = df.loc[i, 'out']
         bat_state += surplus
         surplus = 0
+        # determine the energy to import if the battery is drained
+        if bat_state < 0:
+            shortge = 0 - bat_state
+            bat_state = 0
         # skim off the surplus that doesn't fit in the battery if it tops out
         if bat_state > OPTION.maxbat:
             surplus = bat_state - OPTION.maxbat
