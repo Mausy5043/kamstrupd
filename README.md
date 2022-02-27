@@ -10,7 +10,7 @@ Upload trendgraphs to an external website for perusal.
 ```
 sudo su -
 cd /home/pi
-git clone https://gitlab.com/mausy5043-diagnostics/kamstrupd.git
+git clone https://github.com/Mausy5043/kamstrupd.git
 cd kamstrupd
 ./install.sh
 ./update.sh
