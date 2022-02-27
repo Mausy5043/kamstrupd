@@ -6,7 +6,7 @@ Description=daily kamstrup update
 Requires=kamstrup.update.service
 
 [Timer]
-OnCalendar=*-*-* *:00
+OnCalendar=*-*-* 04:00
 RandomizedDelaySec=3m
 
 [Install]

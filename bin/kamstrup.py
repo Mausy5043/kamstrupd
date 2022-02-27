@@ -7,7 +7,6 @@ Store data from a Kamstrup smart-electricity meter in a sqlite3 database.
 """
 
 import argparse
-import configparser
 import datetime as dt
 import os
 import re
@@ -20,14 +19,21 @@ import mausy5043funcs.fileops3 as mf
 import mausy5043libs.libsignals3 as ml
 import serial
 
+import constants
+
+from hanging_threads import start_monitoring
+anti_freeze = constants.KAMSTRUP['report_time'] * 2
+
 parser = argparse.ArgumentParser(description="Execute the telemetry daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
-parser_group.add_argument(
-    "--start", action="store_true", help="start the daemon as a service"
-)
-parser_group.add_argument(
-    "--debug", action="store_true", help="start the daemon in debugging mode"
-)
+parser_group.add_argument("--start",
+                          action="store_true",
+                          help="start the daemon as a service"
+                          )
+parser_group.add_argument("--debug",
+                          action="store_true",
+                          help="start the daemon in debugging mode"
+                          )
 OPTION = parser.parse_args()
 
 # constants
@@ -54,7 +60,7 @@ powerin = 0
 electra1out = 0
 electra2out = 0
 powerout = 0
-tarif = 0
+tarif = 1
 swits = 0
 
 
@@ -62,15 +68,13 @@ def main():
     """Execute main loop."""
     global PORT
     killer = ml.GracefulKiller()
-    iniconf = configparser.ConfigParser()
-    iniconf.read(f"{os.environ['HOME']}/{MYAPP}/config.ini")
-    report_time = iniconf.getint(MYID, "reporttime")
-    fdatabase = f"{os.environ['HOME']}/{iniconf.get(MYID, 'databasefile')}"
-    sqlcmd = iniconf.get(MYID, "sqlcmd")
-    samples_averaged = iniconf.getint(
-        MYID, "samplespercycle"
-    ) * iniconf.getint(MYID, "cycles")
-    sample_time = report_time / iniconf.getint(MYID, "samplespercycle")
+    start_monitoring(seconds_frozen=anti_freeze, test_interval=1357)
+    fdatabase = constants.KAMSTRUP['database']
+    sqlcmd = constants.KAMSTRUP['sql_command']
+    report_time = int(constants.KAMSTRUP['report_time'])
+    samples_averaged = int(constants.KAMSTRUP['samplespercycle']) \
+                       * int(constants.KAMSTRUP['cycles'])
+    sample_time = report_time / int(constants.KAMSTRUP['samplespercycle'])
     data = []
 
     test_db_connection(fdatabase)
@@ -104,34 +108,25 @@ def main():
                 if averages[0] > 0:
                     do_add_to_database(averages, fdatabase, sqlcmd)
 
-            pause_time = (
-                sample_time
-                - (time.time() - start_time)
-                - (start_time % sample_time)
-                + time.time()
-            )
+            pause_time = (sample_time
+                          - (time.time() - start_time)
+                          - (start_time % sample_time)
+                          + time.time()
+                          )
             if pause_time > 0:
-                mf.syslog_trace(
-                    f"Waiting  : {pause_time - time.time():.1f}s",
-                    False,
-                    DEBUG,
-                )
+                mf.syslog_trace(f"Waiting  : {pause_time - time.time():.1f}s", False, DEBUG)
                 # no need to wait for the next cycles
                 # the meter will pace the meaurements
                 # any required waiting will be inside gettelegram()
                 # time.sleep(pause_time)
-                mf.syslog_trace(
-                    "................................", False, DEBUG
-                )
+                mf.syslog_trace("................................", False, DEBUG)
             else:
                 mf.syslog_trace(
                     f"Behind   : {pause_time - time.time():.1f}s",
                     False,
                     DEBUG,
                 )
-                mf.syslog_trace(
-                    "................................", False, DEBUG
-                )
+                mf.syslog_trace("................................", False, DEBUG)
         else:
             time.sleep(1.0)
 
@@ -146,6 +141,7 @@ def do_work():
     global powerout
     global tarif
     global swits
+    tarif = 1
     # swits is not always present. The value will
     # change *if* present in the telegram.
     swits = 0
@@ -186,15 +182,9 @@ def do_work():
                 # ['0-0:96.13.0', '', '']
                 # not recorded
             except ValueError:
-                mf.syslog_trace(
-                    "*** Conversion not possible for element:",
-                    syslog.LOG_CRIT,
-                    DEBUG,
-                )
+                mf.syslog_trace("*** Conversion not possible for element:", syslog.LOG_CRIT, DEBUG)
                 mf.syslog_trace(f"    {element}", syslog.LOG_CRIT, DEBUG)
-                mf.syslog_trace(
-                    "*** Extracted from telegram:", syslog.LOG_DEBUG, DEBUG
-                )
+                mf.syslog_trace("*** Extracted from telegram:", syslog.LOG_DEBUG, DEBUG)
                 mf.syslog_trace(f"    {telegram}", syslog.LOG_DEBUG, DEBUG)
                 pass
 
@@ -223,15 +213,11 @@ def gettelegram():
             if line != "":
                 telegram.append(line)
         except serial.SerialException:
-            mf.syslog_trace(
-                "*** Serialport read error:", syslog.LOG_CRIT, DEBUG
-            )
+            mf.syslog_trace("*** Serialport read error:", syslog.LOG_CRIT, DEBUG)
             mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
             abort = 2
         except UnicodeDecodeError:
-            mf.syslog_trace(
-                "*** Unicode Decode error:", syslog.LOG_CRIT, DEBUG
-            )
+            mf.syslog_trace("*** Unicode Decode error:", syslog.LOG_CRIT, DEBUG)
             mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
             abort = 2
 
@@ -263,18 +249,17 @@ def do_add_to_database(result, fdatabase, sql_cmd):
     dt_format = "%Y-%m-%d %H:%M:%S"
     out_date = dt.datetime.now()  # time.strftime('%Y-%m-%dT%H:%M:%S')
     out_epoch = int(out_date.timestamp())
-    results = (
-        out_date.strftime(dt_format),
-        out_epoch,
-        result[0],
-        result[1],
-        result[2],
-        result[3],
-        result[4],
-        result[5],
-        result[6],
-        result[7],
-    )
+    results = (out_date.strftime(dt_format),
+               out_epoch,
+               result[0],
+               result[1],
+               result[2],
+               result[3],
+               result[4],
+               result[5],
+               result[6],
+               result[7]
+               )
     mf.syslog_trace(f"   @: {out_date.strftime(dt_format)}", False, DEBUG)
     mf.syslog_trace(f"    : {results}", False, DEBUG)
 
@@ -314,17 +299,11 @@ def create_db_connection(database_file):
         #  syslog.syslog(syslog.LOG_INFO, logtext)
         return consql
     except sqlite3.Error:
-        mf.syslog_trace(
-            "Unexpected SQLite3 error when connecting to server.",
-            syslog.LOG_CRIT,
-            DEBUG,
-        )
+        mf.syslog_trace("Unexpected SQLite3 error when connecting to server.", syslog.LOG_CRIT, DEBUG)
         mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
         if consql:  # attempt to close connection to SQLite3 server
             consql.close()
-            mf.syslog_trace(
-                " ** Closed SQLite3 connection. **", syslog.LOG_CRIT, DEBUG
-            )
+            mf.syslog_trace(" ** Closed SQLite3 connection. **", syslog.LOG_CRIT, DEBUG)
         raise
 
 
@@ -340,22 +319,16 @@ def test_db_connection(fdatabase):
         cursor.close()
         conn.commit()
         conn.close()
-        syslog.syslog(
-            syslog.LOG_INFO, f"Attached to SQLite3 server: {versql}"
-        )
+        syslog.syslog(syslog.LOG_INFO, f"Attached to SQLite3 server: {versql}")
     except sqlite3.Error:
-        mf.syslog_trace(
-            "Unexpected SQLite3 error during test.", syslog.LOG_CRIT, DEBUG
-        )
+        mf.syslog_trace("Unexpected SQLite3 error during test.", syslog.LOG_CRIT, DEBUG)
         mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
         raise
 
 
 if __name__ == "__main__":
     # initialise logging
-    syslog.openlog(
-        ident=f'{MYAPP}.{MYID.split(".")[0]}', facility=syslog.LOG_LOCAL0
-    )
+    syslog.openlog(ident=f'{MYAPP}.{MYID.split(".")[0]}', facility=syslog.LOG_LOCAL0)
 
     # noinspection PyUnresolvedReferences
     PORT = serial.Serial()  # pylint: disable=C0103

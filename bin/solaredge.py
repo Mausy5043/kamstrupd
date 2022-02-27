@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-"""
-Communicate with the SolarEdge API to fetch energy production data.
+"""Communicate with the SolarEdge API to fetch energy production data.
 
 - produced energy
 
@@ -17,18 +16,25 @@ import syslog
 import time
 import traceback
 
-import libsolaredge as solaredge
 import mausy5043funcs.fileops3 as mf
 import mausy5043libs.libsignals3 as ml
 
+import constants
+import libsolaredge as solaredge
+
+from hanging_threads import start_monitoring
+anti_freeze = constants.SOLAREDGE['report_time'] * 2
+
 parser = argparse.ArgumentParser(description="Execute the portal daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
-parser_group.add_argument(
-    "--start", action="store_true", help="start the daemon as a service"
-)
-parser_group.add_argument(
-    "--debug", action="store_true", help="start the daemon in debugging mode"
-)
+parser_group.add_argument("--start",
+                          action="store_true",
+                          help="start the daemon as a service"
+                          )
+parser_group.add_argument("--debug",
+                          action="store_true",
+                          help="start the daemon in debugging mode"
+                          )
 OPTION = parser.parse_args()
 
 # constants
@@ -56,19 +62,16 @@ def main():
     """Execute main loop."""
     global API_SE
     killer = ml.GracefulKiller()
+    start_monitoring(seconds_frozen=anti_freeze, test_interval=2000)
     # read api_key from the file ~/.config/solaredge/account.ini
     iniconf = configparser.ConfigParser()
     iniconf.read(f"{os.environ['HOME']}/.config/solaredge/account.ini")
     api_key = iniconf.get("account", "api_key")
-    # read the rest of the configuration from config.ini
-    iniconf = configparser.ConfigParser()
-    iniconf.read(f"{os.environ['HOME']}/{MYAPP}/config.ini")
-    report_time = iniconf.getint(MYID, "reporttime")
-    fdatabase = f"{os.environ['HOME']}/{iniconf.get(MYID, 'databasefile')}"
-    sqlcmd = iniconf.get(MYID, "sqlcmd")
-    # samples_averaged = iniconf.getint(MYID, 'samplespercycle') * iniconf.getint(MYID, 'cycles')
-    sample_time = report_time / iniconf.getint(MYID, "samplespercycle")
-    data = []  # noqa
+    fdatabase = constants.SOLAREDGE['database']
+    sqlcmd = constants.SOLAREDGE['sql_command']
+    report_time = int(constants.SOLAREDGE['report_time'])
+    sample_time = report_time / int(constants.SOLAREDGE['samplespercycle'])
+    data = list()
 
     test_db_connection(fdatabase)
 
@@ -82,14 +85,8 @@ def main():
                 try:
                     site_list = API_SE.get_list()["sites"]["site"]
                 except Exception:  # noqa
-                    mf.syslog_trace(
-                        "Error connecting to SolarEdge",
-                        syslog.LOG_CRIT,
-                        DEBUG,
-                    )
-                    mf.syslog_trace(
-                        traceback.format_exc(), syslog.LOG_CRIT, DEBUG
-                    )
+                    mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
+                    mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                     site_list = []
                     pass
 
@@ -101,39 +98,22 @@ def main():
                         mf.syslog_trace(f"Data to add : {data}", False, DEBUG)
                         do_add_to_database(data, fdatabase, sqlcmd)
                 except Exception:  # noqa
-                    mf.syslog_trace(
-                        "Unexpected error in run()", syslog.LOG_CRIT, DEBUG
-                    )
-                    mf.syslog_trace(
-                        traceback.format_exc(), syslog.LOG_CRIT, DEBUG
-                    )
+                    mf.syslog_trace("Unexpected error in run()", syslog.LOG_CRIT, DEBUG)
+                    mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                     raise
 
-            pause_time = (
-                sample_time
-                - (time.time() - start_time)
-                - (start_time % sample_time)
-                + time.time()
-            )
+            pause_time = (sample_time
+                          - (time.time() - start_time)
+                          - (start_time % sample_time)
+                          + time.time()
+                          )
             if pause_time > 0:
-                mf.syslog_trace(
-                    f"Waiting  : {pause_time - time.time():.1f}s",
-                    False,
-                    DEBUG,
-                )
-                mf.syslog_trace(
-                    "................................", False, DEBUG
-                )
+                mf.syslog_trace(f"Waiting  : {pause_time - time.time():.1f}s", False, DEBUG, )
+                mf.syslog_trace("................................", False, DEBUG)
                 # time.sleep(pause_time)
             else:
-                mf.syslog_trace(
-                    f"Behind   : {pause_time - time.time():.1f}s",
-                    False,
-                    DEBUG,
-                )
-                mf.syslog_trace(
-                    "................................", False, DEBUG
-                )
+                mf.syslog_trace(f"Behind   : {pause_time - time.time():.1f}s", False, DEBUG, )
+                mf.syslog_trace("................................", False, DEBUG)
         else:
             time.sleep(1.0)
 
@@ -150,9 +130,7 @@ def do_work(site_list):
         try:
             data_dict = API_SE.get_overview(site_id)["overview"]
         except Exception:  # noqa
-            mf.syslog_trace(
-                "Request was unsuccesful.", syslog.LOG_WARNING, DEBUG
-            )
+            mf.syslog_trace("Request was unsuccesful.", syslog.LOG_WARNING, DEBUG)
             mf.syslog_trace(traceback.format_exc(), syslog.LOG_WARNING, DEBUG)
             mf.syslog_trace("Maybe next time...", syslog.LOG_WARNING, DEBUG)
 
@@ -169,9 +147,7 @@ def do_work(site_list):
         """
         try:
             date_time = data_dict["lastUpdateTime"]
-            epoch = int(
-                dt.datetime.strptime(date_time, dt_format).timestamp()
-            )
+            epoch = int(dt.datetime.strptime(date_time, dt_format).timestamp())
             energy = data_dict["lifeTimeData"]["energy"]
             data_list.append([date_time, epoch, site_id, energy])
             mf.syslog_trace(f"    : {date_time} = {energy}", False, DEBUG)
@@ -195,25 +171,27 @@ def do_add_to_database(result_data, fdatabase, sql_cmd):
     for entry in result_data:
         results = tuple(entry)
 
-        err_flag = True
-        while err_flag:
+        err_flag = 3
+        while err_flag > 0:
             try:
                 conn = create_db_connection(fdatabase)
                 cursor = conn.cursor()
-                if not epoch_is_present_in_database(
-                    cursor, results[1], results[2]
-                ):
-                    mf.syslog_trace(
-                        f"   @: {results[0]} = {results[2]}", False, DEBUG
-                    )
+                if not epoch_is_present_in_database(cursor,
+                                                    results[1],
+                                                    results[2]
+                                                    ):
+                    mf.syslog_trace(f"   @: {results[0]} = {results[2]}", False, DEBUG)
                     cursor.execute(sql_cmd, results)
                     cursor.close()
                     conn.commit()
                     conn.close()
                 else:
                     mf.syslog_trace(f"Skip: {results[0]}", False, DEBUG)
-                err_flag = False
+                err_flag = 0
+                mf.syslog_trace("Addition succesfull", False, DEBUG)
             except sqlite3.OperationalError:
+                err_flag -= 1
+                mf.syslog_trace("Addition failed", False, DEBUG)
                 if cursor:
                     cursor.close()
                 if conn:
@@ -228,12 +206,11 @@ def epoch_is_present_in_database(db_cur, epoch, site_id):
     :param site_id: int
     :return: boolean  (true if data is present in the database for the given site at or after the given epoch)
     """
-    db_cur.execute(
-        f"SELECT MAX(sample_epoch) \
-                   FROM production \
-                   WHERE (site_id = 0) OR (site_id = {site_id}) \
-                   ;"
-    )
+    db_cur.execute(f"SELECT MAX(sample_epoch)"
+                   f" FROM production"
+                   f" WHERE (site_id = 0) OR (site_id = {site_id})"
+                   f";"
+                   )
     db_epoch = db_cur.fetchone()[0]
     if db_epoch >= epoch:
         return True
@@ -258,9 +235,7 @@ def create_db_connection(database_file):
         mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
         if consql:  # attempt to close connection to SQLite3 server
             consql.close()
-            mf.syslog_trace(
-                " ** Closed SQLite3 connection. **", syslog.LOG_CRIT, DEBUG
-            )
+            mf.syslog_trace(" ** Closed SQLite3 connection. **", syslog.LOG_CRIT, DEBUG)
         raise
 
 
@@ -276,22 +251,16 @@ def test_db_connection(fdatabase):
         cursor.close()
         conn.commit()
         conn.close()
-        syslog.syslog(
-            syslog.LOG_INFO, f"Attached to SQLite3 server: {versql}"
-        )
+        syslog.syslog(syslog.LOG_INFO, f"Attached to SQLite3 server: {versql}")
     except sqlite3.Error:
-        mf.syslog_trace(
-            "Unexpected SQLite3 error during test.", syslog.LOG_CRIT, DEBUG
-        )
+        mf.syslog_trace("Unexpected SQLite3 error during test.", syslog.LOG_CRIT, DEBUG)
         mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
         raise
 
 
 if __name__ == "__main__":
     # initialise logging
-    syslog.openlog(
-        ident=f'{MYAPP}.{MYID.split(".")[0]}', facility=syslog.LOG_LOCAL0
-    )
+    syslog.openlog(ident=f'{MYAPP}.{MYID.split(".")[0]}', facility=syslog.LOG_LOCAL0)
 
     if OPTION.debug:
         DEBUG = True
