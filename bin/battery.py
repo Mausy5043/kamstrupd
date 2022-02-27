@@ -2,7 +2,7 @@
 
 """Retrieve data for battery sizing investigations.
 18AUG2021
-$ python battery.py -d 360 -m 5.4 -s 5
+$ python3 battery.py -d 360 -m 5.4 -s 5
 Passed options: Namespace(days=360, hours=None, maxbat=5.4, soc=5.0)
 Parsed options: Namespace(days=360, hours=8640, maxbat=5400.0, soc=5000.0)
 
