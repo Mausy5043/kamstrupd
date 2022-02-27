@@ -146,14 +146,7 @@ def assess_rev_battery(df):
     for i in range(1, len(df)):
         # determine battery SoC at the top of the hour
         bat_state = df.loc[i - 1, 'battery']
-        # add the hour's surplus to the battery
-        surplus = df.loc[i, 'out']
-        bat_state += surplus
-        surplus = 0
-        # skim off the surplus that doesn't fit in the battery if it tops out
-        if bat_state > OPTION.maxbat:
-            surplus = bat_state - OPTION.maxbat
-            bat_state = OPTION.maxbat
+
         # remove the hour's shortage from the battery
         shortge = df.loc[i, 'in']
         bat_state -= shortge
@@ -162,6 +155,16 @@ def assess_rev_battery(df):
         if bat_state < 0:
             shortge = 0 - bat_state
             bat_state = 0
+
+        # add the hour's surplus to the battery
+        surplus = df.loc[i, 'out']
+        bat_state += surplus
+        surplus = 0
+        # skim off the surplus that doesn't fit in the battery if it tops out
+        if bat_state > OPTION.maxbat:
+            surplus = bat_state - OPTION.maxbat
+            bat_state = OPTION.maxbat
+
         # store the balance
         df.loc[i, 'battery'] = bat_state
         df.loc[i, 'surplus'] = surplus
