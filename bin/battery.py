@@ -188,12 +188,13 @@ def main():
     print(f"Max. Surplus     : {np.max(data['surplus']):.0f} Wh \t cumul : {np.sum(data['surplus']) / 1000:.0f} kWh")
     print(f"Max. Shortage    : {np.max(data['shortge']):.0f} Wh \t cumul : {np.sum(data['shortge']) / 1000:.0f} kWh")
 
-    data = assess_rev_battery(bat_data)
+    # this doesn't return significant differences.
+    # data = assess_rev_battery(bat_data)
     # pd.set_option("display.max_rows", None, "display.max_columns", None)
-    print("")
-    print(f"Max. Battery SoC : {np.max(data['battery']):.0f} Wh \t cumul : {np.sum(data['battery']) / 1000:.0f} kWh")
-    print(f"Max. Surplus     : {np.max(data['surplus']):.0f} Wh \t cumul : {np.sum(data['surplus']) / 1000:.0f} kWh")
-    print(f"Max. Shortage    : {np.max(data['shortge']):.0f} Wh \t cumul : {np.sum(data['shortge']) / 1000:.0f} kWh")
+    # print("")
+    # print(f"Max. Battery SoC : {np.max(data['battery']):.0f} Wh \t cumul : {np.sum(data['battery']) / 1000:.0f} kWh")
+    # print(f"Max. Surplus     : {np.max(data['surplus']):.0f} Wh \t cumul : {np.sum(data['surplus']) / 1000:.0f} kWh")
+    # print(f"Max. Shortage    : {np.max(data['shortge']):.0f} Wh \t cumul : {np.sum(data['shortge']) / 1000:.0f} kWh")
 
 
 if __name__ == "__main__":
