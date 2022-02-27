@@ -66,9 +66,9 @@ def fetch_data(hours_to_fetch):
     df = df.sort_index('index')
     # drop the column used for filtering
     df = df.drop(columns=['st'])
-    print(df['hr'])
+    dum = df.astype({'hr': 'int32'}) / 3600
     # convert the epoch seconds from str to int32 and into hours
-    df['hr'] = df.astype({'hr': 'int32'}) / 3600
+    df['hr'] = dum['hr']
     # calculate the hourly values
     df = df.diff()
     # aggregate imports and exports
