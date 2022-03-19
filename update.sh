@@ -69,13 +69,14 @@ pushd "${HERE}" || exit 1
         bin/pastyear.sh
     fi
 
+    echo "Please wait while services start..."
+    sudo systemctl start kamstrup.trend.day.timer
+    sudo systemctl start kamstrup.trend.month.timer
+    sudo systemctl start kamstrup.trend.year.timer
     sudo systemctl start kamstrup.fles.service &
     sudo systemctl start kamstrup.kamstrup.service &
     sudo systemctl start kamstrup.solaredge.service &
-    sudo systemctl start kamstrup.trend.day.timer &
-    sudo systemctl start kamstrup.trend.month.timer &
-    sudo systemctl start kamstrup.trend.year.timer &
-    echo "Please wait while services start..."; wait
+    wait
 
 popd || exit
 
